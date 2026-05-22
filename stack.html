@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Pedro Moitinho — Stack &amp; About</title>
+<meta name="description" content="Engineering strengths, tools and technologies, and a short about — Pedro Moitinho, Senior iOS Engineer.">
+<link rel="stylesheet" href="css/portfolio.css?v=8">
+<script>(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<div class="container">
+
+    <header class="site-header">
+        <a class="brand" href="index.html">Pedro Moitinho<span>Senior iOS Engineer · Brazil / Remote</span></a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+        </button>
+    </header>
+
+    <section class="hero">
+        <h1>Stack &amp; About</h1>
+        <p class="lead">A closer look at how I build — and who I am.</p>
+        <p class="see-all" style="margin-top:18px;"><a href="index.html">← Back to work &amp; experience</a></p>
+    </section>
+
+    <main id="main">
+
+        <section class="reveal" aria-labelledby="str-title">
+            <div class="section-head"><h2 class="section-title" id="str-title">Engineering Strengths</h2></div>
+            <div class="chips">
+                <span class="chip">Large-scale iOS apps</span>
+                <span class="chip">SwiftUI modernization</span>
+                <span class="chip">Modular architecture</span>
+                <span class="chip">Feature delivery behind flags</span>
+                <span class="chip">Accessibility &amp; testing</span>
+                <span class="chip">Cross-team integrations</span>
+                <span class="chip">GraphQL-backed development</span>
+                <span class="chip">AI-assisted workflows</span>
+                <span class="chip">Independent product shipping</span>
+            </div>
+        </section>
+
+        <section class="reveal" aria-labelledby="tools-title">
+            <div class="section-head"><h2 class="section-title" id="tools-title">Tools &amp; Technologies</h2></div>
+            <div class="tools">
+                <div class="tool-group">
+                    <div class="tool-label">iOS</div>
+                    <div class="tool-list">Swift, SwiftUI, UIKit, Combine, Swift Concurrency, XCTest, XCUITest, Snapshot Testing</div>
+                </div>
+                <div class="tool-group">
+                    <div class="tool-label">Architecture</div>
+                    <div class="tool-list">MVI, MVVM, MVVM-C, modular architecture, dependency injection, repository/domain layers, remote config</div>
+                </div>
+                <div class="tool-group">
+                    <div class="tool-label">APIs &amp; Tooling</div>
+                    <div class="tool-list">GraphQL, REST, GitHub Actions, Fastlane, Tuist, feature flags, analytics, accessibility</div>
+                </div>
+                <div class="tool-group">
+                    <div class="tool-label">Other</div>
+                    <div class="tool-list">Kotlin, Jetpack Compose, Next.js, TypeScript, Vercel, Claude Code, Codex</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reveal" aria-labelledby="about-title">
+            <div class="section-head"><h2 class="section-title" id="about-title">About</h2></div>
+            <p class="prose">
+                Senior iOS Engineer with deep experience in Swift, SwiftUI, UIKit, modular architecture, GraphQL,
+                accessibility, testing, and cross-team product delivery. I've worked on large-scale apps in fintech,
+                automotive, food delivery, and banking — and I also design, build, and ship independent products
+                across iOS, Android, and web.
+            </p>
+            <p class="prose">
+                Based in Brazil after 7 years working in Berlin. Husband, father of two little girls, weightlifter,
+                and builder of small products. <em>“Esse quam videri.”</em>
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <span>moitinhoneto@gmail.com · São Paulo, Brazil (UTC−3)</span>
+        <span class="footer-links">
+            <a href="index.html">Work</a>
+        </span>
+    </footer>
+
+</div>
+
+<script>
+    document.documentElement.classList.add('js');
+    (function(){
+        var btn = document.querySelector('.theme-toggle');
+        function current(){ return document.documentElement.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+        btn && btn.addEventListener('click', function(){
+            var next = current() === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch(e){}
+        });
+    })();
+    (function(){
+        var els = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window) {
+            var io = new IntersectionObserver(function(entries){
+                entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+            els.forEach(function(el){ io.observe(el); });
+        } else { els.forEach(function(el){ el.classList.add('visible'); }); }
+    })();
+</script>
+
+</body>
+</html>
