@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #eeecea;
+            --fg: #1a1a18;
+            --fg-secondary: #4a4944;
+            --fg-tertiary: #7a7872;
+            --divider: #c5c1bb;
+            --card-bg: #f7f5f2;
+            --card-border: #d8d4ce;
+            --btn-bg: #1a1a18;
+            --btn-fg: #eeecea;
+            --btn-hover: #333330;
+            --max-width: 520px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #5a5856;
+                --fg: #f2f0ec;
+                --fg-secondary: #d5d2cc;
+                --fg-tertiary: #b0ada7;
+                --divider: #706d68;
+                --card-bg: #4a4845;
+                --card-border: #635f5b;
+                --btn-bg: #f2f0ec;
+                --btn-fg: #3a3836;
+                --btn-hover: #e0ddd8;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 64px 28px;
+        }
+
+        .page {
+            max-width: var(--max-width);
+            width: 100%;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ornament {
+            text-align: center;
+            color: var(--fg-tertiary);
+            font-size: 18px;
+            letter-spacing: 0.4em;
+            margin-bottom: 44px;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.2s forwards;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(28px, 6vw, 36px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+            color: var(--fg);
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+        }
+
+        .divider {
+            width: 48px;
+            height: 1px;
+            background: var(--divider);
+            margin: 36px auto;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.5s forwards;
+        }
+
+        .body-text {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.85;
+            color: var(--fg-secondary);
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards;
+        }
+
+        /* --- FAQ --- */
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 36px;
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--fg);
+            text-align: left;
+            transition: color 0.2s ease;
+        }
+
+        .faq-question:hover {
+            color: var(--fg);
+        }
+
+        .faq-chevron {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            color: var(--fg-tertiary);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .faq-item.open .faq-chevron {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+        }
+
+        .faq-answer-inner {
+            padding: 0 20px 16px;
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--fg-secondary);
+        }
+
+        /* --- Contact --- */
+        .contact-section {
+            margin-top: 36px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards;
+        }
+
+        .contact-label {
+            font-size: 14px;
+            color: var(--fg-tertiary);
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .contact-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            color: var(--btn-fg);
+            background: var(--btn-bg);
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 100px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .contact-button:hover {
+            background: var(--btn-hover);
+            transform: translateY(-1px);
+        }
+
+        .contact-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* --- Report form --- */
+        .report-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--fg-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--fg);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 13px 15px;
+            outline: none;
+            transition: border-color 0.25s ease;
+        }
+
+        .field input:focus,
+        .field textarea:focus { border-color: var(--fg-tertiary); }
+
+        .field input::placeholder,
+        .field textarea::placeholder { color: var(--fg-tertiary); opacity: 0.8; }
+
+        .field textarea { min-height: 112px; resize: vertical; line-height: 1.6; }
+
+        .submit-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            background: var(--btn-bg);
+            color: var(--btn-fg);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 22px;
+            margin-top: 2px;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .submit-button:hover { background: var(--btn-hover); transform: translateY(-1px); }
+
+        .submit-button svg { width: 18px; height: 18px; }
+        .submit-button:disabled { opacity: 0.6; cursor: progress; }
+
+        .honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+        .form-error {
+            display: none;
+            margin-top: 2px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #b3403a;
+            text-align: left;
+        }
+        .form-error a { color: inherit; }
+        @media (prefers-color-scheme: dark) { .form-error { color: #ffb4a9; } }
+
+        .form-success {
+            display: none;
+            margin-top: 24px;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--fg-secondary);
+            text-align: center;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: 48px;
+            text-align: center;
+            line-height: 2.2;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 1.15s forwards;
+        }
+
+        .footer-link {
+            font-size: 14px;
+            font-style: italic;
+            color: var(--fg-tertiary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer-link:hover {
+            color: var(--fg-secondary);
+            border-bottom-color: var(--divider);
+        }
+
+        .footer-sep {
+            color: var(--fg-tertiary);
+            margin: 0 10px;
+            font-size: 13px;
+            opacity: 0.55;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 48px 24px; }
+            .ornament { margin-bottom: 36px; }
+            .divider { margin: 28px auto; }
+            .faq-list { margin-top: 28px; }
+            .contact-section { margin-top: 28px; }
+            .footer { margin-top: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page" id="page"></div>
+
+    <script>
+        // Reports POST straight to the shared Apps Script web app (no mail
+        // client needed) — it emails bibliahinarioccb@gmail.com, tagged with
+        // FORM_TYPE / SOURCE so Support, Book request, and CCB reports stay
+        // distinguishable in the one inbox. RECIPIENT is only the manual
+        // fallback shown if the request ever fails.
+        var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE6kYRYF31iIwoJATqHuTEUJilDLWZj0jvlCaTRtAgktWxj3is0fhczmyhMLOaQSLGHw/exec';
+        var FORM_TYPE = 'public_domain_books_support';
+        var SOURCE = 'Public Domain Books — Support';
+        var RECIPIENT = 'bibliahinarioccb@gmail.com';
+
+        // Which platform the submission came from. An explicit ?platform= (set
+        // by the app's link) wins; otherwise infer from the user agent, so every
+        // submission is tagged. Shared across all forms for a standard payload.
+        function detectPlatform() {
+            var explicit = new URLSearchParams(window.location.search).get('platform');
+            if (explicit) return explicit;
+            var ua = navigator.userAgent || '';
+            if (/Android/i.test(ua)) return 'Android';
+            if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS';
+            if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return 'iOS';
+            return 'Web';
+        }
+
+        const i18n = {
+            en: {
+                title: "Support",
+                intro: "Need help? Browse the questions below or reach out directly.",
+                faqs: [
+                    {
+                        q: "Are the books really free?",
+                        a: "Yes, always. Every title in the app is a public domain classic, free for everyone — no subscription, no in-app purchases, no hidden fees."
+                    },
+                    {
+                        q: "Will new books be added?",
+                        a: "Yes, new editions are added over time. If you'd like to request a specific title, just let me know."
+                    },
+                    {
+                        q: "I found a bug or the app crashed. What should I do?",
+                        a: "Please tell me below with as much detail as possible — your device model, iOS version, and what you were doing when it happened. I'll look into it as quickly as I can."
+                    },
+                    {
+                        q: "I noticed a typo or formatting issue in a text.",
+                        a: "Thank you for taking the time to report it! Every correction matters. Just let me know below — the book title and the passage — and I'll fix it in the next update."
+                    },
+                    {
+                        q: "Is there a subscription or premium plan?",
+                        a: "No. The app is free and every book is free — that's the whole point. If you'd like, you can support the project voluntarily."
+                    }
+                ],
+                contactLabel: "Didn't find your answer?",
+                contact: "Send an email",
+                subject: "App Support",
+                privacy: "Privacy Policy"
+            },
+            pt: {
+                title: "Suporte",
+                intro: "Precisa de ajuda? Veja as perguntas abaixo ou entre em contato diretamente.",
+                faqs: [
+                    {
+                        q: "Os livros s\u00E3o realmente gratuitos?",
+                        a: "Sim, sempre. Todos os t\u00EDtulos do app s\u00E3o cl\u00E1ssicos de dom\u00EDnio p\u00FAblico, gratuitos para todos \u2014 sem assinatura, sem compras no app, sem taxas ocultas."
+                    },
+                    {
+                        q: "Novos livros ser\u00E3o adicionados?",
+                        a: "Sim, novas edições são adicionadas com o tempo. Se quiser sugerir um título específico, é só me avisar."
+                    },
+                    {
+                        q: "Encontrei um bug ou o app travou. O que fazer?",
+                        a: "Me conte abaixo com o máximo de detalhes possível — modelo do dispositivo, versão do iOS e o que estava fazendo quando aconteceu. Verei o mais rápido que puder."
+                    },
+                    {
+                        q: "Encontrei um erro de digita\u00E7\u00E3o ou de formata\u00E7\u00E3o no texto.",
+                        a: "Obrigado por avisar! Cada correção importa. É só me contar abaixo — o nome do livro e o trecho — que corrijo na próxima atualização."
+                    },
+                    {
+                        q: "Existe assinatura ou plano pago?",
+                        a: "Não. O app é gratuito e todos os livros são gratuitos — esse é o ponto. Se quiser, você pode apoiar o projeto voluntariamente."
+                    }
+                ],
+                contactLabel: "N\u00E3o encontrou o que precisava?",
+                contact: "Enviar um e-mail",
+                subject: "Suporte ao App",
+                privacy: "Pol\u00EDtica de Privacidade"
+            },
+            es: {
+                title: "Soporte",
+                intro: "¿Necesitas ayuda? Revisa las preguntas de abajo o escr\u00EDbenos directamente.",
+                faqs: [
+                    {
+                        q: "\u00BFLos libros son realmente gratuitos?",
+                        a: "S\u00ED, siempre. Todos los t\u00EDtulos de la app son cl\u00E1sicos de dominio p\u00FAblico, gratuitos para todos \u2014 sin suscripci\u00F3n, sin compras dentro de la app, sin cargos ocultos."
+                    },
+                    {
+                        q: "\u00BFSe a\u00F1adir\u00E1n nuevos libros?",
+                        a: "Sí, se añaden nuevas ediciones con el tiempo. Si deseas solicitar un título específico, solo dímelo."
+                    },
+                    {
+                        q: "Encontr\u00E9 un error o la app fall\u00F3. ¿Qu\u00E9 hago?",
+                        a: "Cuéntame abajo con el mayor detalle posible — modelo de dispositivo, versión de iOS y qué estabas haciendo cuando ocurrió. Lo revisaré lo antes posible."
+                    },
+                    {
+                        q: "Encontr\u00E9 una errata o un problema de formato en el texto.",
+                        a: "¡Gracias por avisarnos! Cada corrección importa. Solo cuéntame abajo — el título del libro y el fragmento — y lo corrijo en la siguiente actualización."
+                    },
+                    {
+                        q: "\u00BFHay suscripci\u00F3n o plan de pago?",
+                        a: "No. La app es gratuita y todos los libros son gratuitos — ese es el propósito. Si lo deseas, puedes apoyar el proyecto voluntariamente."
+                    }
+                ],
+                contactLabel: "\u00BFNo encontraste tu respuesta?",
+                contact: "Enviar un correo",
+                subject: "Soporte de la App",
+                privacy: "Pol\u00EDtica de Privacidad"
+            },
+            it: {
+                title: "Supporto",
+                intro: "Hai bisogno di aiuto? Consulta le domande qui sotto o contattaci direttamente.",
+                faqs: [
+                    {
+                        q: "I libri sono davvero gratuiti?",
+                        a: "S\u00EC, sempre. Ogni titolo nell\u2019app \u00E8 un classico di dominio pubblico, gratuito per tutti \u2014 nessun abbonamento, nessun acquisto in-app, nessun costo nascosto."
+                    },
+                    {
+                        q: "Verranno aggiunti nuovi libri?",
+                        a: "Sì, nuove edizioni vengono aggiunte nel tempo. Se desideri richiedere un titolo specifico, fammelo sapere."
+                    },
+                    {
+                        q: "Ho trovato un bug o l\u2019app si \u00E8 bloccata. Cosa devo fare?",
+                        a: "Scrivimi qui sotto con più dettagli possibile — modello del dispositivo, versione iOS e cosa stavi facendo quando è successo. Lo verificherò il prima possibile."
+                    },
+                    {
+                        q: "Ho trovato un refuso o un problema di formattazione nel testo.",
+                        a: "Grazie per la segnalazione! Ogni correzione conta. Scrivimi qui sotto — il titolo del libro e il brano — e lo correggerò nel prossimo aggiornamento."
+                    },
+                    {
+                        q: "Esiste un abbonamento o un piano a pagamento?",
+                        a: "No. L'app è gratuita e tutti i libri sono gratuiti — è il punto centrale. Se vuoi, puoi sostenere il progetto volontariamente."
+                    }
+                ],
+                contactLabel: "Non hai trovato la tua risposta?",
+                contact: "Invia un\u2019email",
+                subject: "Supporto App",
+                privacy: "Informativa sulla Privacy"
+            },
+            fr: {
+                title: "Assistance",
+                intro: "Besoin d\u2019aide\u00A0? Consultez les questions ci-dessous ou contactez-nous directement.",
+                faqs: [
+                    {
+                        q: "Les livres sont-ils vraiment gratuits\u00A0?",
+                        a: "Oui, toujours. Chaque titre de l\u2019app est un classique du domaine public, gratuit pour tous \u2014 sans abonnement, sans achats int\u00E9gr\u00E9s, sans frais cach\u00E9s."
+                    },
+                    {
+                        q: "De nouveaux livres seront-ils ajout\u00E9s\u00A0?",
+                        a: "Oui, de nouvelles éditions sont ajoutées régulièrement. Si vous souhaitez demander un titre spécifique, dites-le-moi simplement."
+                    },
+                    {
+                        q: "J\u2019ai trouv\u00E9 un bug ou l\u2019app a plant\u00E9. Que faire\u00A0?",
+                        a: "Décrivez-le-moi ci-dessous avec autant de détails que possible — modèle d'appareil, version iOS et ce que vous faisiez au moment de l'incident. Je m'en occuperai dès que possible."
+                    },
+                    {
+                        q: "J\u2019ai remarqu\u00E9 une coquille ou un probl\u00E8me de mise en forme.",
+                        a: "Merci de l'avoir signalé ! Chaque correction compte. Indiquez-moi simplement ci-dessous — le titre du livre et le passage — et je le corrigerai dans la prochaine mise à jour."
+                    },
+                    {
+                        q: "Y a-t-il un abonnement ou un plan payant\u00A0?",
+                        a: "Non. L'app est gratuite et tous les livres sont gratuits — c'est tout le principe. Si vous le souhaitez, vous pouvez soutenir le projet volontairement."
+                    }
+                ],
+                contactLabel: "Vous n\u2019avez pas trouv\u00E9 votre r\u00E9ponse\u00A0?",
+                contact: "Envoyer un e-mail",
+                subject: "Assistance App",
+                privacy: "Politique de Confidentialit\u00E9"
+            },
+            de: {
+                title: "Support",
+                intro: "Brauchen Sie Hilfe? St\u00F6bern Sie durch die Fragen unten oder kontaktieren Sie uns direkt.",
+                faqs: [
+                    {
+                        q: "Sind die B\u00FCcher wirklich kostenlos?",
+                        a: "Ja, immer. Jeder Titel in der App ist ein gemeinfreier Klassiker, kostenlos f\u00FCr alle \u2014 kein Abonnement, keine In-App-K\u00E4ufe, keine versteckten Geb\u00FChren."
+                    },
+                    {
+                        q: "Werden neue B\u00FCcher hinzugef\u00FCgt?",
+                        a: "Ja, neue Ausgaben werden im Laufe der Zeit hinzugefügt. Wenn Sie einen bestimmten Titel wünschen, sagen Sie mir einfach Bescheid."
+                    },
+                    {
+                        q: "Ich habe einen Fehler gefunden oder die App ist abgest\u00FCrzt. Was soll ich tun?",
+                        a: "Schildern Sie mir unten so viele Details wie möglich — Gerätemodell, iOS-Version und was Sie gerade getan haben. Ich kümmere mich so schnell wie möglich darum."
+                    },
+                    {
+                        q: "Ich habe einen Tippfehler oder ein Formatierungsproblem im Text entdeckt.",
+                        a: "Danke für den Hinweis! Jede Korrektur zählt. Teilen Sie mir einfach unten den Buchtitel und die Textstelle mit, und ich behebe es im nächsten Update."
+                    },
+                    {
+                        q: "Gibt es ein Abonnement oder einen Bezahlplan?",
+                        a: "Nein. Die App ist kostenlos und alle Bücher sind kostenlos — das ist der Kerngedanke. Wenn Sie möchten, können Sie das Projekt freiwillig unterstützen."
+                    }
+                ],
+                contactLabel: "Ihre Frage nicht gefunden?",
+                contact: "E-Mail senden",
+                subject: "App-Support",
+                privacy: "Datenschutzrichtlinie"
+            },
+            ja: {
+                title: "\u30B5\u30DD\u30FC\u30C8",
+                intro: "\u304A\u5185\u5BB9\u306B\u3064\u3044\u3066\u3054\u4E0D\u660E\u306A\u70B9\u306F\u3001\u4EE5\u4E0B\u306E\u3088\u304F\u3042\u308B\u3054\u8CEA\u554F\u3092\u3054\u89A7\u308B\u304B\u3001\u76F4\u63A5\u304A\u554F\u3044\u5408\u308F\u305B\u304F\u3060\u3055\u3044\u3002",
+                faqs: [
+                    {
+                        q: "\u672C\u5F53\u306B\u7121\u6599\u3067\u3059\u304B\uFF1F",
+                        a: "\u306F\u3044\u3001\u5E38\u306B\u7121\u6599\u3067\u3059\u3002\u30A2\u30D7\u30EA\u5185\u306E\u3059\u3079\u3066\u306E\u30BF\u30A4\u30C8\u30EB\u306F\u30D1\u30D6\u30EA\u30C3\u30AF\u30C9\u30E1\u30A4\u30F3\u306E\u540D\u4F5C\u3067\u3042\u308A\u3001\u30B5\u30D6\u30B9\u30AF\u30EA\u30D7\u30B7\u30E7\u30F3\u3001\u30A2\u30D7\u30EA\u5185\u8CFC\u5165\u3001\u96A0\u308C\u305F\u6599\u91D1\u306F\u4E00\u5207\u3042\u308A\u307E\u305B\u3093\u3002"
+                    },
+                    {
+                        q: "\u65B0\u3057\u3044\u672C\u306F\u8FFD\u52A0\u3055\u308C\u307E\u3059\u304B\uFF1F",
+                        a: "はい、時間をかけて新しいエディションを追加しています。特定のタイトルをご希望の場合は、お気軽にお知らせください。"
+                    },
+                    {
+                        q: "\u30D0\u30B0\u3092\u898B\u3064\u3051\u305F\u3001\u307E\u305F\u306F\u30A2\u30D7\u30EA\u304C\u30AF\u30E9\u30C3\u30B7\u30E5\u3057\u307E\u3057\u305F\u3002\u3069\u3046\u3059\u308C\u3070\u3044\u3044\u3067\u3059\u304B\uFF1F",
+                        a: "デバイスのモデル、iOSのバージョン、発生時の操作内容など、できるだけ詳しく下のフォームからお知らせください。できる限り早く対応いたします。"
+                    },
+                    {
+                        q: "\u30C6\u30AD\u30B9\u30C8\u306B\u8AA4\u5B57\u3084\u66F8\u5F0F\u306E\u554F\u984C\u3092\u898B\u3064\u3051\u307E\u3057\u305F\u3002",
+                        a: "ご報告ありがとうございます！小さな修正も大切です。本のタイトルと該当箇所を下のフォームからお知らせください。次回のアップデートで修正いたします。"
+                    },
+                    {
+                        q: "\u30B5\u30D6\u30B9\u30AF\u30EA\u30D7\u30B7\u30E7\u30F3\u3084\u6709\u6599\u30D7\u30E9\u30F3\u306F\u3042\u308A\u307E\u3059\u304B\uFF1F",
+                        a: "いいえ。アプリは無料で、すべての本も無料です——それがこのアプリの趣旨です。よろしければ、任意でプロジェクトを応援いただけます。"
+                    }
+                ],
+                contactLabel: "\u8A72\u5F53\u3059\u308B\u56DE\u7B54\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F\u304B\uFF1F",
+                contact: "\u30E1\u30FC\u30EB\u3092\u9001\u308B",
+                subject: "\u30A2\u30D7\u30EA\u30B5\u30DD\u30FC\u30C8",
+                privacy: "\u30D7\u30E9\u30A4\u30D0\u30B7\u30FC\u30DD\u30EA\u30B7\u30FC"
+            },
+            zh: {
+                title: "\u652F\u6301",
+                intro: "\u9700\u8981\u5E2E\u52A9\uFF1F\u8BF7\u67E5\u770B\u4EE5\u4E0B\u5E38\u89C1\u95EE\u9898\uFF0C\u6216\u76F4\u63A5\u8054\u7CFB\u6211\u4EEC\u3002",
+                faqs: [
+                    {
+                        q: "\u4E66\u7C4D\u771F\u7684\u514D\u8D39\u5417\uFF1F",
+                        a: "\u662F\u7684\uFF0C\u59CB\u7EC8\u514D\u8D39\u3002\u5E94\u7528\u5185\u7684\u6240\u6709\u4F5C\u54C1\u5747\u4E3A\u516C\u5171\u9886\u57DF\u7ECF\u5178\uFF0C\u5BF9\u6240\u6709\u4EBA\u514D\u8D39\u5F00\u653E\u2014\u2014\u65E0\u9700\u8BA2\u9605\u3001\u65E0\u5185\u8D2D\u3001\u65E0\u9690\u85CF\u8D39\u7528\u3002"
+                    },
+                    {
+                        q: "\u4F1A\u6DFB\u52A0\u65B0\u4E66\u5417\uFF1F",
+                        a: "会的。新作品将逐步加入。如果您想申请某一特定书目，尽管告诉我。"
+                    },
+                    {
+                        q: "\u6211\u53D1\u73B0\u4E86\u9519\u8BEF\u6216\u5E94\u7528\u5D29\u6E83\u3002\u6211\u8BE5\u600E\u4E48\u529E\uFF1F",
+                        a: "请在下方尽量详细地告诉我——设备型号、iOS 版本，以及发生时的操作。我会尽快处理。"
+                    },
+                    {
+                        q: "\u6211\u53D1\u73B0\u4E86\u6587\u5B57\u9519\u8BEF\u6216\u683C\u5F0F\u95EE\u9898\u3002",
+                        a: "感谢您的反馈！每一处修正都很重要。请在下方告知书名及具体段落，我会在下次更新中修复。"
+                    },
+                    {
+                        q: "\u662F\u5426\u6709\u8BA2\u9605\u6216\u4ED8\u8D39\u8BA1\u5212\uFF1F",
+                        a: "没有。应用免费，所有书籍也免费——这就是这个项目的初衷。如果您愿意，可以自愿支持这个项目。"
+                    }
+                ],
+                contactLabel: "\u6CA1\u627E\u5230\u60A8\u9700\u8981\u7684\u7B54\u6848\uFF1F",
+                contact: "\u53D1\u9001\u90AE\u4EF6",
+                subject: "\u5E94\u7528\u652F\u6301",
+                privacy: "\u9690\u79C1\u653F\u7B56"
+            },
+            ru: {
+                title: "\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0430",
+                intro: "\u041D\u0443\u0436\u043D\u0430 \u043F\u043E\u043C\u043E\u0449\u044C? \u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440\u0438\u0442\u0435 \u0447\u0430\u0441\u0442\u044B\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B \u043D\u0438\u0436\u0435 \u0438\u043B\u0438 \u0441\u0432\u044F\u0436\u0438\u0442\u0435\u0441\u044C \u0441 \u043D\u0430\u043C\u0438 \u043D\u0430\u043F\u0440\u044F\u043C\u0443\u044E.",
+                faqs: [
+                    {
+                        q: "\u041A\u043D\u0438\u0433\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0431\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u044B\u0435?",
+                        a: "\u0414\u0430, \u0432\u0441\u0435\u0433\u0434\u0430. \u041A\u0430\u0436\u0434\u044B\u0439 \u0442\u0438\u0442\u0443\u043B \u0432 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0438 \u2014 \u044D\u0442\u043E \u043A\u043B\u0430\u0441\u0441\u0438\u043A\u0430 \u043E\u0431\u0449\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u0433\u043E \u0434\u043E\u0441\u0442\u043E\u044F\u043D\u0438\u044F, \u0431\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E \u0434\u043B\u044F \u0432\u0441\u0435\u0445. \u0411\u0435\u0437 \u043F\u043E\u0434\u043F\u0438\u0441\u043E\u043A, \u043F\u043E\u043A\u0443\u043F\u043E\u043A \u0438 \u0441\u043A\u0440\u044B\u0442\u044B\u0445 \u043F\u043B\u0430\u0442\u0435\u0436\u0435\u0439."
+                    },
+                    {
+                        q: "\u0411\u0443\u0434\u0443\u0442 \u043B\u0438 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u044B \u043D\u043E\u0432\u044B\u0435 \u043A\u043D\u0438\u0433\u0438?",
+                        a: "Да, новые издания добавляются со временем. Если хотите предложить конкретную книгу, просто дайте знать."
+                    },
+                    {
+                        q: "\u042F \u043D\u0430\u0448\u0451\u043B(\u0430) \u043E\u0448\u0438\u0431\u043A\u0443 \u0438\u043B\u0438 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u0432\u044B\u043B\u0435\u0442\u0435\u043B\u043E. \u0427\u0442\u043E \u0434\u0435\u043B\u0430\u0442\u044C?",
+                        a: "Опишите ниже как можно подробнее: модель устройства, версию iOS и что происходило в момент сбоя. Я разберусь в кратчайшие сроки."
+                    },
+                    {
+                        q: "\u042F \u0437\u0430\u043C\u0435\u0442\u0438\u043B(\u0430) \u043E\u043F\u0435\u0447\u0430\u0442\u043A\u0443 \u0438\u043B\u0438 \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u0443 \u0444\u043E\u0440\u043C\u0430\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F \u0432 \u0442\u0435\u043A\u0441\u0442\u0435.",
+                        a: "Спасибо, что сообщили! Каждое исправление важно. Просто напишите ниже название книги и нужный отрывок, и я исправлю это в следующем обновлении."
+                    },
+                    {
+                        q: "\u0415\u0441\u0442\u044C \u043B\u0438 \u043F\u043E\u0434\u043F\u0438\u0441\u043A\u0430 \u0438\u043B\u0438 \u043F\u043B\u0430\u0442\u043D\u044B\u0439 \u043F\u043B\u0430\u043D?",
+                        a: "Нет. Приложение бесплатное и все книги бесплатны — в этом весь смысл. При желании вы можете поддержать проект добровольно."
+                    }
+                ],
+                contactLabel: "\u041D\u0435 \u043D\u0430\u0448\u043B\u0438 \u043E\u0442\u0432\u0435\u0442?",
+                contact: "\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u043F\u0438\u0441\u044C\u043C\u043E",
+                subject: "\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0430 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F",
+                privacy: "\u041F\u043E\u043B\u0438\u0442\u0438\u043A\u0430 \u043A\u043E\u043D\u0444\u0438\u0434\u0435\u043D\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u0438"
+            },
+            ko: {
+                title: "\uC9C0\uC6D0",
+                intro: "\uB3C4\uC6C0\uC774 \uD544\uC694\uD558\uC2DC\uB098\uC694? \uC544\uB798 \uC790\uC8FC \uBB3B\uB294 \uC9C8\uBB38\uC744 \uD655\uC778\uD558\uAC70\uB098 \uC9C1\uC811 \uBB38\uC758\uD574 \uC8FC\uC138\uC694.",
+                faqs: [
+                    {
+                        q: "\uCC45\uC774 \uC815\uB9D0 \uBB34\uB8CC\uC778\uAC00\uC694?",
+                        a: "\uB124, \uD56D\uC0C1 \uBB34\uB8CC\uC785\uB2C8\uB2E4. \uC571\uC758 \uBAA8\uB4E0 \uC791\uD488\uC740 \uD37C\uBE14\uB9AD \uB3C4\uBA54\uC778 \uACE0\uC804\uC73C\uB85C, \uAD6C\uB3C5\uB8CC\uB098 \uC571 \uB0B4 \uAD6C\uB9E4 \uB610\uB294 \uD22C\uBA85\uD558\uC9C0 \uC54A\uC740 \uBE44\uC6A9 \uC5C6\uC774 \uBAA8\uB450\uC5D0\uAC8C \uBB34\uB8CC\uB85C \uC81C\uACF5\uB429\uB2C8\uB2E4."
+                    },
+                    {
+                        q: "\uC0C8\uB85C\uC6B4 \uCC45\uC774 \uCD94\uAC00\uB418\uB098\uC694?",
+                        a: "네, 시간이 지나면서 새 에디션이 추가될 예정입니다. 특정 제목을 요청하고 싶다면 알려 주세요."
+                    },
+                    {
+                        q: "\uBC84\uADF8\uB97C \uBC1C\uACAC\uD558\uAC70\uB098 \uC571\uC774 \uCDA9\uB3CC\uD588\uC2B5\uB2C8\uB2E4. \uC5B4\uB5BB\uAC8C \uD558\uB098\uC694?",
+                        a: "기기 모델, iOS 버전, 발생 당시의 조작 내용 등 가능한 한 자세히 아래 양식으로 알려 주세요. 최대한 빨리 확인하겠습니다."
+                    },
+                    {
+                        q: "\uD14D\uC2A4\uD2B8\uC5D0\uC11C \uC624\uD0C0 \uB610\uB294 \uD3EC\uB9F7 \uBB38\uC81C\uB97C \uBC1C\uACAC\uD588\uC2B5\uB2C8\uB2E4.",
+                        a: "신고해 주셔서 감사합니다! 작은 수정도 소중합니다. 아래에 책 제목과 해당 구절을 알려 주시면 다음 업데이트에서 수정하겠습니다."
+                    },
+                    {
+                        q: "\uAD6C\uB3C5\uB8CC \uB610\uB294 \uC720\uB8CC \uD50C\uB79C\uC774 \uC788\uB098\uC694?",
+                        a: "아니요. 앱은 무료이고 모든 책도 무료입니다—그것이 이 앱의 핵심입니다. 원하신다면 자발적으로 프로젝트를 후원하실 수 있습니다."
+                    }
+                ],
+                contactLabel: "\uB2F5\uBCC0\uC744 \uCC3E\uC9C0 \uBABB\uD558\uC168\uB098\uC694?",
+                contact: "\uC774\uBA54\uC77C \uBCF4\uB0B4\uAE30",
+                subject: "\uC571 \uC9C0\uC6D0",
+                privacy: "\uAC1C\uC778\uC815\uBCF4 \uCC98\uB9AC\uBC29\uCE68"
+            },
+            tr: {
+                title: "Destek",
+                intro: "Yard\u0131ma m\u0131 ihtiyac\u0131n\u0131z var? A\u015Fa\u011F\u0131daki s\u0131k sorulan sorulara g\u00F6z at\u0131n ya da bize do\u011Frudan ula\u015F\u0131n.",
+                faqs: [
+                    {
+                        q: "Kitaplar ger\u00E7ekten \u00FCcretsiz mi?",
+                        a: "Evet, her zaman. Uygulamadaki her ba\u015Fl\u0131k, herkes i\u00E7in \u00FCcretsiz olan bir kamu alan\u0131 klas\u0131\u011Fidir. Abonelik, uygulama i\u00E7i sat\u0131n alma veya gizli \u00FCcret yoktur."
+                    },
+                    {
+                        q: "Yeni kitaplar eklenecek mi?",
+                        a: "Evet, zamanla yeni edisyonlar ekleniyor. Belirli bir başlık talep etmek isterseniz bana bildirmeniz yeterli."
+                    },
+                    {
+                        q: "Bir hata buldum veya uygulama \u00E7\u00F6kt\u00FC. Ne yapmal\u0131y\u0131m?",
+                        a: "Cihaz modeliniz, iOS sürümünüz ve o sırada ne yaptığınız gibi mümkün olduğunca fazla ayrıntıyı aşağıdaki formdan iletin. En kısa sürede inceleyeceğim."
+                    },
+                    {
+                        q: "Metinde bir yaz\u0131m hatas\u0131 veya bi\u00E7imlendirme sorunu fark ettim.",
+                        a: "Bildirdiğiniz için teşekkürler! Her düzeltme önemlidir. Kitabın adını ve ilgili bölümü aşağıdan iletmeniz yeterli; bir sonraki güncellemede düzeltirim."
+                    },
+                    {
+                        q: "Abonelik veya \u00FCcretli plan var m\u0131?",
+                        a: "Hayır. Uygulama ücretsiz ve tüm kitaplar ücretsiz — projenin amacı da bu. İsterseniz projeyi gönüllü olarak destekleyebilirsiniz."
+                    }
+                ],
+                contactLabel: "Arad\u0131\u011F\u0131n\u0131z\u0131 bulamad\u0131n\u0131z m\u0131?",
+                contact: "E-posta g\u00F6nder",
+                subject: "Uygulama Deste\u011Fi",
+                privacy: "Gizlilik Politikas\u0131"
+            }
+        };
+
+        // Report-form microcopy (email required). Mirrors bookrequest.html:
+        // fields compose a mailto on submit. Same 11 locales as i18n above.
+        const formStrings = {
+            en: { msgLabel: "Message", msgPlaceholder: "Describe the bug, the issue, or your feedback\u2026", emailLabel: "Your email", emailPlaceholder: "So I can get back to you", submit: "Send message", bodyContact: "Contact", moreRequest: "Request a book", success: "Thank you! Your message was sent.", netError: "Couldn\u2019t send just now \u2014 please try again, or email me at" },
+            pt: { msgLabel: "Mensagem", msgPlaceholder: "Descreva o bug, o problema ou seu feedback\u2026", emailLabel: "Seu e-mail", emailPlaceholder: "Para eu poder te responder", submit: "Enviar mensagem", bodyContact: "Contato", moreRequest: "Pedir um livro", success: "Obrigado! Sua mensagem foi enviada.", netError: "N\u00e3o foi poss\u00edvel enviar agora \u2014 tente novamente ou envie um e-mail para" },
+            es: { msgLabel: "Mensaje", msgPlaceholder: "Describe el error, el problema o tu comentario\u2026", emailLabel: "Tu correo", emailPlaceholder: "Para poder responderte", submit: "Enviar mensaje", bodyContact: "Contacto", moreRequest: "Pedir un libro", success: "\u00a1Gracias! Tu mensaje fue enviado.", netError: "No se pudo enviar ahora \u2014 int\u00e9ntalo de nuevo o escr\u00edbeme a" },
+            it: { msgLabel: "Messaggio", msgPlaceholder: "Descrivi il bug, il problema o il tuo feedback\u2026", emailLabel: "La tua email", emailPlaceholder: "Cos\u00ec posso risponderti", submit: "Invia messaggio", bodyContact: "Contatto", moreRequest: "Richiedi un libro", success: "Grazie! Il tuo messaggio \u00e8 stato inviato.", netError: "Impossibile inviare ora \u2014 riprova o scrivimi a" },
+            fr: { msgLabel: "Message", msgPlaceholder: "D\u00e9crivez le bug, le probl\u00e8me ou votre retour\u2026", emailLabel: "Votre e-mail", emailPlaceholder: "Pour que je puisse vous r\u00e9pondre", submit: "Envoyer le message", bodyContact: "Contact", moreRequest: "Demander un livre", success: "Merci ! Votre message a \u00e9t\u00e9 envoy\u00e9.", netError: "Impossible d\u2019envoyer pour l\u2019instant \u2014 r\u00e9essayez ou \u00e9crivez-moi \u00e0" },
+            de: { msgLabel: "Nachricht", msgPlaceholder: "Beschreibe den Fehler, das Problem oder dein Feedback\u2026", emailLabel: "Deine E-Mail", emailPlaceholder: "Damit ich dir antworten kann", submit: "Nachricht senden", bodyContact: "Kontakt", moreRequest: "Buch w\u00fcnschen", success: "Danke! Deine Nachricht wurde gesendet.", netError: "Konnte gerade nicht senden \u2014 versuch es erneut oder schreib mir an" },
+            ja: { msgLabel: "\u30e1\u30c3\u30bb\u30fc\u30b8", msgPlaceholder: "\u4e0d\u5177\u5408\u30fb\u554f\u984c\u30fb\u3054\u610f\u898b\u3092\u3054\u8a18\u5165\u304f\u3060\u3055\u3044\u2026", emailLabel: "\u30e1\u30fc\u30eb\u30a2\u30c9\u30ec\u30b9", emailPlaceholder: "\u8fd4\u4fe1\u306e\u305f\u3081\u306b\u304a\u77e5\u3089\u305b\u304f\u3060\u3055\u3044", submit: "\u30e1\u30c3\u30bb\u30fc\u30b8\u3092\u9001\u4fe1", bodyContact: "\u9023\u7d61\u5148", moreRequest: "\u672c\u3092\u30ea\u30af\u30a8\u30b9\u30c8", success: "\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\uff01\u30e1\u30c3\u30bb\u30fc\u30b8\u3092\u9001\u4fe1\u3057\u307e\u3057\u305f\u3002", netError: "\u73fe\u5728\u9001\u4fe1\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f\u3002\u3082\u3046\u4e00\u5ea6\u304a\u8a66\u3057\u3044\u305f\u3060\u304f\u304b\u3001\u3053\u3061\u3089\u307e\u3067\u30e1\u30fc\u30eb\u3057\u3066\u304f\u3060\u3055\u3044:" },
+            zh: { msgLabel: "\u7559\u8a00", msgPlaceholder: "\u8bf7\u63cf\u8ff0\u6545\u969c\u3001\u95ee\u9898\u6216\u60a8\u7684\u53cd\u9988\u2026", emailLabel: "\u4f60\u7684\u90ae\u7bb1", emailPlaceholder: "\u4ee5\u4fbf\u6211\u56de\u590d\u4f60", submit: "\u53d1\u9001\u7559\u8a00", bodyContact: "\u8054\u7cfb\u65b9\u5f0f", moreRequest: "\u7533\u8bf7\u65b0\u4e66", success: "\u8c22\u8c22\uff01\u60a8\u7684\u7559\u8a00\u5df2\u53d1\u9001\u3002", netError: "\u6682\u65f6\u65e0\u6cd5\u53d1\u9001\u2014\u2014\u8bf7\u91cd\u8bd5\uff0c\u6216\u53d1\u9001\u90ae\u4ef6\u81f3" },
+            ru: { msgLabel: "\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435", msgPlaceholder: "\u041e\u043f\u0438\u0448\u0438\u0442\u0435 \u043e\u0448\u0438\u0431\u043a\u0443, \u043f\u0440\u043e\u0431\u043b\u0435\u043c\u0443 \u0438\u043b\u0438 \u0432\u0430\u0448 \u043e\u0442\u0437\u044b\u0432\u2026", emailLabel: "\u0412\u0430\u0448 e-mail", emailPlaceholder: "\u0427\u0442\u043e\u0431\u044b \u044f \u043c\u043e\u0433 \u0432\u0430\u043c \u043e\u0442\u0432\u0435\u0442\u0438\u0442\u044c", submit: "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435", bodyContact: "\u041a\u043e\u043d\u0442\u0430\u043a\u0442", moreRequest: "\u0417\u0430\u043f\u0440\u043e\u0441\u0438\u0442\u044c \u043a\u043d\u0438\u0433\u0443", success: "\u0421\u043f\u0430\u0441\u0438\u0431\u043e! \u0412\u0430\u0448\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e.", netError: "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0441\u0435\u0439\u0447\u0430\u0441 \u2014 \u043f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u0435\u0449\u0451 \u0440\u0430\u0437 \u0438\u043b\u0438 \u043d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u043c\u043d\u0435 \u043d\u0430" },
+            ko: { msgLabel: "\uba54\uc2dc\uc9c0", msgPlaceholder: "\ubc84\uadf8, \ubb38\uc81c \ub610\ub294 \uc758\uacac\uc744 \uc801\uc5b4 \uc8fc\uc138\uc694\u2026", emailLabel: "\uc774\uba54\uc77c", emailPlaceholder: "\ub2f5\uc7a5\uc744 \ub4dc\ub9b4 \uc218 \uc788\ub3c4\ub85d", submit: "\uba54\uc2dc\uc9c0 \ubcf4\ub0b4\uae30", bodyContact: "\uc5f0\ub77d\ucc98", moreRequest: "\ucc45 \uc694\uccad", success: "\uac10\uc0ac\ud569\ub2c8\ub2e4! \uba54\uc2dc\uc9c0\uac00 \uc804\uc1a1\ub418\uc5c8\uc2b5\ub2c8\ub2e4.", netError: "\uc9c0\uae08\uc740 \uc804\uc1a1\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4 \u2014 \ub2e4\uc2dc \uc2dc\ub3c4\ud558\uac70\ub098 \ub2e4\uc74c \uc8fc\uc18c\ub85c \uc774\uba54\uc77c\uc744 \ubcf4\ub0b4 \uc8fc\uc138\uc694:" },
+            tr: { msgLabel: "Mesaj", msgPlaceholder: "Hatay\u0131, sorunu veya geri bildiriminizi yaz\u0131n\u2026", emailLabel: "E-postan\u0131z", emailPlaceholder: "Size geri d\u00f6nebilmem i\u00e7in", submit: "Mesaj g\u00f6nder", bodyContact: "\u0130leti\u015fim", moreRequest: "Kitap iste", success: "Te\u015fekk\u00fcrler! Mesaj\u0131n\u0131z g\u00f6nderildi.", netError: "\u015eu anda g\u00f6nderilemedi \u2014 tekrar deneyin veya bana \u015fu adresten yaz\u0131n:" }
+        };
+
+        function sendReport(event) {
+            event.preventDefault();
+            var locale = getLocale();
+            var t = i18n[locale];
+            var fs = formStrings[locale] || formStrings.en;
+            var message = document.getElementById('report-message').value.trim();
+            var email = document.getElementById('report-email').value.trim();
+            var errorEl = document.getElementById('form-error');
+            var button = document.getElementById('submit-button');
+
+            // Honeypot: a bot that fills the hidden field is silently dropped.
+            if (document.getElementById('_hp').value) { return; }
+
+            var data = new FormData();
+            data.set('formType', FORM_TYPE);
+            data.set('source', SOURCE);
+            data.set('subject', t.subject);
+            data.set('message', message);
+            data.set('contact', email);
+            data.set('platform', detectPlatform());
+            data.set('pageLanguage', locale);
+            var v = new URLSearchParams(window.location.search).get('v');
+            if (v) data.set('appVersion', v);
+
+            errorEl.style.display = 'none';
+            button.disabled = true;
+
+            fetch(SCRIPT_URL, { method: 'POST', body: data })
+                .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                .then(function() {
+                    document.getElementById('form-wrap').style.display = 'none';
+                    var s = document.getElementById('form-success');
+                    s.textContent = fs.success;
+                    s.style.display = 'block';
+                })
+                .catch(function() {
+                    errorEl.innerHTML = fs.netError + ' <a href="mail' + 'to:' + RECIPIENT + '">' + RECIPIENT + '</a>';
+                    errorEl.style.display = 'block';
+                    button.disabled = false;
+                });
+        }
+
+        function getLocale() {
+            var lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+            var primary = lang.split('-')[0];
+            if (i18n[primary]) return primary;
+            return 'en';
+        }
+
+        function buildFaqItem(q, a, index) {
+            return '<div class="faq-item" data-index="' + index + '">' +
+                '<button class="faq-question" onclick="toggleFaq(' + index + ')" aria-expanded="false">' +
+                    '<span>' + q + '</span>' +
+                    '<svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>' +
+                '</button>' +
+                '<div class="faq-answer"><div class="faq-answer-inner">' + a + '</div></div>' +
+            '</div>';
+        }
+
+        function toggleFaq(index) {
+            var item = document.querySelector('.faq-item[data-index="' + index + '"]');
+            var btn = item.querySelector('.faq-question');
+            var isOpen = item.classList.contains('open');
+            // Close all
+            document.querySelectorAll('.faq-item.open').forEach(function(el) {
+                el.classList.remove('open');
+                el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+            });
+            // Open clicked if it was closed
+            if (!isOpen) {
+                item.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        function render() {
+            var locale = getLocale();
+            var t = i18n[locale];
+            document.documentElement.lang = locale === 'zh' ? 'zh-Hans' : locale;
+
+            var fs = formStrings[locale] || formStrings.en;
+
+            var faqsHtml = t.faqs.map(function(f, i) {
+                return buildFaqItem(f.q, f.a, i);
+            }).join('');
+
+            var sendSvg = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>';
+
+            document.getElementById('page').innerHTML =
+                '<div class="ornament">\u2022 \u2003 \u2022 \u2003 \u2022</div>' +
+                '<h1>' + t.title + '</h1>' +
+                '<div class="divider"></div>' +
+                '<p class="body-text">' + t.intro + '</p>' +
+                '<div class="faq-list">' + faqsHtml + '</div>' +
+                '<div class="contact-section">' +
+                    '<p class="contact-label">' + t.contactLabel + '</p>' +
+                    '<div id="form-wrap">' +
+                    '<form class="report-form" onsubmit="sendReport(event)">' +
+                        '<div class="field">' +
+                            '<label for="report-message">' + fs.msgLabel + '</label>' +
+                            '<textarea id="report-message" required placeholder="' + fs.msgPlaceholder + '"></textarea>' +
+                        '</div>' +
+                        '<div class="field">' +
+                            '<label for="report-email">' + fs.emailLabel + '</label>' +
+                            '<input id="report-email" type="email" required placeholder="' + fs.emailPlaceholder + '">' +
+                        '</div>' +
+                        '<input type="text" id="_hp" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+                        '<p class="form-error" id="form-error"></p>' +
+                        '<button type="submit" class="submit-button" id="submit-button">' + sendSvg + fs.submit + '</button>' +
+                    '</form>' +
+                    '</div>' +
+                    '<p class="form-success" id="form-success"></p>' +
+                '</div>' +
+                '<div class="footer">' +
+                    '<a href="bookrequest.html" class="footer-link">' + fs.moreRequest + '</a>' +
+                    '<span class="footer-sep">·</span>' +
+                    '<a href="privacy.html" class="footer-link">' + t.privacy + '</a>' +
+                '</div>';
+        }
+
+        render();
+    </script>
+</body>
+</html>

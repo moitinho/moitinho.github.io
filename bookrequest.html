@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request a Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #eeecea;
+            --fg: #1a1a18;
+            --fg-secondary: #4a4944;
+            --fg-tertiary: #7a7872;
+            --divider: #c5c1bb;
+            --card-bg: #f7f5f2;
+            --card-border: #d8d4ce;
+            --btn-bg: #1a1a18;
+            --btn-fg: #eeecea;
+            --btn-hover: #333330;
+            --max-width: 520px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #5a5856;
+                --fg: #f2f0ec;
+                --fg-secondary: #d5d2cc;
+                --fg-tertiary: #b0ada7;
+                --divider: #706d68;
+                --card-bg: #4a4845;
+                --card-border: #635f5b;
+                --btn-bg: #f2f0ec;
+                --btn-fg: #3a3836;
+                --btn-hover: #e0ddd8;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 56px 24px 64px;
+            animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ornament {
+            text-align: center;
+            color: var(--fg-tertiary);
+            font-size: 0.7rem;
+            letter-spacing: 0.6em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            font-size: 2rem;
+            text-align: center;
+            letter-spacing: 0.01em;
+        }
+
+        .divider {
+            width: 56px;
+            height: 1px;
+            background: var(--divider);
+            margin: 22px auto 26px;
+        }
+
+        .body-text {
+            color: var(--fg-secondary);
+            text-align: center;
+            font-size: 1.02rem;
+            font-weight: 300;
+            margin-bottom: 36px;
+        }
+
+        form { display: flex; flex-direction: column; gap: 22px; }
+
+        .field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--fg-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--fg);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 13px 15px;
+            outline: none;
+            transition: border-color 0.25s ease;
+        }
+
+        .field input:focus,
+        .field textarea:focus { border-color: var(--fg-tertiary); }
+
+        .field input::placeholder,
+        .field textarea::placeholder { color: var(--fg-tertiary); opacity: 0.8; }
+
+        .field textarea { min-height: 96px; resize: vertical; }
+
+        .submit-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 500;
+            background: var(--btn-bg);
+            color: var(--btn-fg);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 22px;
+            margin-top: 6px;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .submit-button:hover { background: var(--btn-hover); transform: translateY(-1px); }
+
+        .submit-button svg { width: 18px; height: 18px; }
+        .submit-button:disabled { opacity: 0.6; cursor: progress; }
+
+        .honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+        .form-error {
+            display: none;
+            margin-top: 2px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #b3403a;
+            text-align: left;
+        }
+        .form-error a { color: inherit; }
+        @media (prefers-color-scheme: dark) { .form-error { color: #ffb4a9; } }
+
+        .form-success {
+            display: none;
+            margin-top: 28px;
+            font-size: 1.02rem;
+            line-height: 1.7;
+            color: var(--fg-secondary);
+            text-align: center;
+        }
+
+        .footer {
+            margin-top: 44px;
+            text-align: center;
+        }
+
+        .footer-link {
+            color: var(--fg-tertiary);
+            font-size: 0.85rem;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.25s ease;
+        }
+
+        .footer-link:hover { border-color: var(--fg-tertiary); }
+
+        .footer-sep {
+            color: var(--fg-tertiary);
+            margin: 0 10px;
+            font-size: 0.8rem;
+            opacity: 0.55;
+        }
+
+        @media (max-width: 480px) {
+            .page { padding: 44px 20px 56px; }
+            h1 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page" id="page"></div>
+
+    <script>
+        // Requests POST straight to the shared Apps Script web app (no mail
+        // client needed) — it emails bibliahinarioccb@gmail.com, tagged with
+        // FORM_TYPE / SOURCE so Support, Book request, and CCB reports stay
+        // distinguishable in the one inbox. RECIPIENT is only the manual
+        // fallback shown if the request ever fails.
+        var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE6kYRYF31iIwoJATqHuTEUJilDLWZj0jvlCaTRtAgktWxj3is0fhczmyhMLOaQSLGHw/exec';
+        var FORM_TYPE = 'public_domain_books_request';
+        var SOURCE = 'Public Domain Books — Book request';
+        var RECIPIENT = 'bibliahinarioccb@gmail.com';
+
+        // Which platform the submission came from. An explicit ?platform= (set
+        // by the app's link) wins; otherwise infer from the user agent, so every
+        // submission is tagged. Shared across all forms for a standard payload.
+        function detectPlatform() {
+            var explicit = new URLSearchParams(window.location.search).get('platform');
+            if (explicit) return explicit;
+            var ua = navigator.userAgent || '';
+            if (/Android/i.test(ua)) return 'Android';
+            if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS';
+            if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return 'iOS';
+            return 'Web';
+        }
+
+        const i18n = {
+            en: {
+                title: "Request a Book",
+                intro: "Tell us which classic you're missing — or which language you'd love to read one in. Every edition in the library began as a request like yours.",
+                bookLabel: "The book",
+                bookPlaceholder: "Title and author",
+                langLabel: "Language or translation (optional)",
+                langPlaceholder: "e.g. Portuguese",
+                emailLabel: "Your email",
+                emailPlaceholder: "So we can tell you when it arrives",
+                notesLabel: "Anything else? (optional)",
+                notesPlaceholder: "A particular edition, links, context…",
+                submit: "Send request",
+                subject: "Book request — Public Domain Books",
+                trTitle: "Request a Translation",
+                trIntro: "This book is already in the library in its original language or a classic public-domain edition — and we translate on request. Tell us which language you'd love to read it in. Shorter works can be ready within days (longer ones take a bit more), and the new edition appears in the app automatically — nothing to install or update.",
+                trSubject: "Translation request — Public Domain Books",
+                introNote: "Two notes: only works in the public domain can join the library, and new editions appear in the app automatically once ready.",
+                bodyBook: "Book", bodyLang: "Language", bodyContact: "Contact",
+                privacy: "Privacy Policy",
+                support: "Support",
+                success: "Thank you! Your request was sent.",
+                netError: "Couldn’t send just now — please try again, or email me at"
+            },
+            pt: {
+                title: "Peça um Livro",
+                intro: "Conte qual clássico está faltando — ou em qual idioma você adoraria ler um deles. Cada edição da biblioteca começou com um pedido como o seu.",
+                bookLabel: "O livro",
+                bookPlaceholder: "Título e autor",
+                langLabel: "Idioma ou tradução (opcional)",
+                langPlaceholder: "ex.: português",
+                emailLabel: "Seu e-mail",
+                emailPlaceholder: "Para avisarmos quando chegar",
+                notesLabel: "Algo mais? (opcional)",
+                notesPlaceholder: "Uma edição específica, links, contexto…",
+                submit: "Enviar pedido",
+                subject: "Pedido de livro — Public Domain Books",
+                trTitle: "Peça uma Tradução",
+                trIntro: "Este livro já está na biblioteca no idioma original ou em uma edição clássica de domínio público — e traduzimos sob pedido. Conte em qual idioma você adoraria lê-lo. Obras mais curtas podem ficar prontas em poucos dias (as mais longas levam um pouco mais), e a nova edição aparece no app automaticamente — sem precisar instalar ou atualizar nada.",
+                trSubject: "Pedido de tradução — Public Domain Books",
+                introNote: "Duas observações: só podemos incluir obras em domínio público, e as novas edições aparecem no app automaticamente assim que ficam prontas.",
+                bodyBook: "Livro", bodyLang: "Idioma", bodyContact: "Contato",
+                privacy: "Política de Privacidade",
+                support: "Suporte",
+                success: "Obrigado! Seu pedido foi enviado.",
+                netError: "Não foi possível enviar agora — tente novamente ou envie um e-mail para"
+            },
+            es: {
+                title: "Pide un Libro",
+                intro: "Cuéntanos qué clásico falta — o en qué idioma te encantaría leer uno. Cada edición de la biblioteca empezó con una petición como la tuya.",
+                bookLabel: "El libro",
+                bookPlaceholder: "Título y autor",
+                langLabel: "Idioma o traducción (opcional)",
+                langPlaceholder: "p. ej., español",
+                emailLabel: "Tu correo",
+                emailPlaceholder: "Para avisarte cuando llegue",
+                notesLabel: "¿Algo más? (opcional)",
+                notesPlaceholder: "Una edición concreta, enlaces, contexto…",
+                submit: "Enviar petición",
+                subject: "Petición de libro — Public Domain Books",
+                trTitle: "Pide una Traducción",
+                trIntro: "Este libro ya está en la biblioteca en su idioma original o en una edición clásica de dominio público — y traducimos a pedido. Cuéntanos en qué idioma te encantaría leerlo. Las obras más cortas pueden estar listas en pocos días (las más largas tardan un poco más), y la nueva edición aparece en la app automáticamente — sin instalar ni actualizar nada.",
+                trSubject: "Petición de traducción — Public Domain Books",
+                introNote: "Dos notas: solo podemos incluir obras en dominio público, y las nuevas ediciones aparecen en la app automáticamente en cuanto están listas.",
+                bodyBook: "Libro", bodyLang: "Idioma", bodyContact: "Contacto",
+                privacy: "Política de Privacidad",
+                support: "Soporte",
+                success: "¡Gracias! Tu solicitud fue enviada.",
+                netError: "No se pudo enviar ahora — inténtalo de nuevo o escríbeme a"
+            },
+            it: {
+                title: "Richiedi un Libro",
+                intro: "Dicci quale classico manca — o in quale lingua ti piacerebbe leggerne uno. Ogni edizione della biblioteca è nata da una richiesta come la tua.",
+                bookLabel: "Il libro",
+                bookPlaceholder: "Titolo e autore",
+                langLabel: "Lingua o traduzione (facoltativo)",
+                langPlaceholder: "es. italiano",
+                emailLabel: "La tua email",
+                emailPlaceholder: "Per avvisarti quando arriva",
+                notesLabel: "Altro? (facoltativo)",
+                notesPlaceholder: "Un'edizione particolare, link, contesto…",
+                submit: "Invia richiesta",
+                subject: "Richiesta di libro — Public Domain Books",
+                trTitle: "Richiedi una Traduzione",
+                trIntro: "Questo libro è già in biblioteca nella lingua originale o in un'edizione classica di pubblico dominio — e traduciamo su richiesta. Dicci in quale lingua ti piacerebbe leggerlo. Le opere più brevi possono essere pronte in pochi giorni (le più lunghe richiedono un po' di più), e la nuova edizione appare nell'app automaticamente — senza installare né aggiornare nulla.",
+                trSubject: "Richiesta di traduzione — Public Domain Books",
+                introNote: "Due note: possiamo includere solo opere di pubblico dominio, e le nuove edizioni appaiono nell'app automaticamente appena pronte.",
+                bodyBook: "Libro", bodyLang: "Lingua", bodyContact: "Contatto",
+                privacy: "Informativa sulla Privacy",
+                support: "Supporto",
+                success: "Grazie! La tua richiesta è stata inviata.",
+                netError: "Impossibile inviare ora — riprova o scrivimi a"
+            },
+            fr: {
+                title: "Demandez un Livre",
+                intro: "Dites-nous quel classique il manque — ou dans quelle langue vous aimeriez en lire un. Chaque édition de la bibliothèque est née d'une demande comme la vôtre.",
+                bookLabel: "Le livre",
+                bookPlaceholder: "Titre et auteur",
+                langLabel: "Langue ou traduction (facultatif)",
+                langPlaceholder: "p. ex. français",
+                emailLabel: "Votre e-mail",
+                emailPlaceholder: "Pour vous prévenir à son arrivée",
+                notesLabel: "Autre chose ? (facultatif)",
+                notesPlaceholder: "Une édition particulière, des liens, du contexte…",
+                submit: "Envoyer la demande",
+                subject: "Demande de livre — Public Domain Books",
+                trTitle: "Demandez une Traduction",
+                trIntro: "Ce livre est déjà dans la bibliothèque, dans sa langue d'origine ou dans une édition classique du domaine public — et nous traduisons à la demande. Dites-nous dans quelle langue vous aimeriez le lire. Les œuvres courtes peuvent être prêtes en quelques jours (les plus longues demandent un peu plus), et la nouvelle édition apparaît automatiquement dans l'app — rien à installer ni à mettre à jour.",
+                trSubject: "Demande de traduction — Public Domain Books",
+                introNote: "Deux précisions : seules les œuvres du domaine public peuvent rejoindre la bibliothèque, et les nouvelles éditions apparaissent automatiquement dans l'app dès qu'elles sont prêtes.",
+                bodyBook: "Livre", bodyLang: "Langue", bodyContact: "Contact",
+                privacy: "Politique de Confidentialité",
+                support: "Assistance",
+                success: "Merci ! Votre demande a été envoyée.",
+                netError: "Impossible d’envoyer pour l’instant — réessayez ou écrivez-moi à"
+            },
+            de: {
+                title: "Wünsch dir ein Buch",
+                intro: "Sag uns, welcher Klassiker fehlt — oder in welcher Sprache du einen lesen möchtest. Jede Ausgabe der Bibliothek begann mit einem Wunsch wie deinem.",
+                bookLabel: "Das Buch",
+                bookPlaceholder: "Titel und Autor",
+                langLabel: "Sprache oder Übersetzung (optional)",
+                langPlaceholder: "z. B. Deutsch",
+                emailLabel: "Deine E-Mail",
+                emailPlaceholder: "Damit wir dir Bescheid geben können",
+                notesLabel: "Noch etwas? (optional)",
+                notesPlaceholder: "Eine bestimmte Ausgabe, Links, Kontext…",
+                submit: "Wunsch senden",
+                subject: "Buchwunsch — Public Domain Books",
+                trTitle: "Wünsch dir eine Übersetzung",
+                trIntro: "Dieses Buch ist bereits in der Bibliothek — in der Originalsprache oder in einer klassischen gemeinfreien Ausgabe — und wir übersetzen auf Wunsch. Sag uns, in welcher Sprache du es gern lesen möchtest. Kürzere Werke können in wenigen Tagen fertig sein (längere brauchen etwas mehr), und die neue Ausgabe erscheint automatisch in der App — nichts zu installieren, nichts zu aktualisieren.",
+                trSubject: "Übersetzungswunsch — Public Domain Books",
+                introNote: "Zwei Hinweise: Nur gemeinfreie Werke können in die Bibliothek aufgenommen werden, und neue Ausgaben erscheinen automatisch in der App, sobald sie fertig sind.",
+                bodyBook: "Buch", bodyLang: "Sprache", bodyContact: "Kontakt",
+                privacy: "Datenschutzerklärung",
+                support: "Support",
+                success: "Danke! Deine Anfrage wurde gesendet.",
+                netError: "Konnte gerade nicht senden — versuch es erneut oder schreib mir an"
+            },
+            ja: {
+                title: "本のリクエスト",
+                intro: "読みたい古典や、希望の言語をお知らせください。このライブラリーのすべての版は、あなたのようなリクエストから生まれました。",
+                bookLabel: "本",
+                bookPlaceholder: "タイトルと著者",
+                langLabel: "言語・翻訳（任意）",
+                langPlaceholder: "例：日本語",
+                emailLabel: "メールアドレス",
+                emailPlaceholder: "公開時にお知らせします",
+                notesLabel: "その他（任意）",
+                notesPlaceholder: "特定の版、リンク、補足など…",
+                submit: "リクエストを送信",
+                subject: "本のリクエスト — Public Domain Books",
+                trTitle: "翻訳のリクエスト",
+                trIntro: "この本はすでに原語版、または著作権保護期間の満了した古典的な翻訳でライブラリに収録されています。翻訳はリクエストに応じて制作しています。読みたい言語を教えてください。短い作品は数日で完成することもあります（長編はもう少しかかります）。新しい版は自動的にアプリに追加され、インストールや更新は不要です。",
+                trSubject: "翻訳リクエスト — Public Domain Books",
+                introNote: "ご注意：ライブラリに追加できるのはパブリックドメインの作品のみです。新しい版は完成しだい自動的にアプリに表示されます。",
+                bodyBook: "本", bodyLang: "言語", bodyContact: "連絡先",
+                privacy: "プライバシーポリシー",
+                support: "サポート",
+                success: "ありがとうございます！リクエストを送信しました。",
+                netError: "現在送信できませんでした。もう一度お試しいただくか、こちらまでメールしてください:"
+            },
+            ko: {
+                title: "책 요청하기",
+                intro: "어떤 고전이 필요한지, 어떤 언어로 읽고 싶은지 알려주세요. 이 라이브러리의 모든 판본은 당신과 같은 요청에서 시작되었습니다.",
+                bookLabel: "책",
+                bookPlaceholder: "제목과 저자",
+                langLabel: "언어 또는 번역 (선택)",
+                langPlaceholder: "예: 한국어",
+                emailLabel: "이메일",
+                emailPlaceholder: "출간 시 알려드립니다",
+                notesLabel: "기타 (선택)",
+                notesPlaceholder: "특정 판본, 링크, 참고 사항…",
+                submit: "요청 보내기",
+                subject: "책 요청 — Public Domain Books",
+                trTitle: "번역 요청",
+                trIntro: "이 책은 이미 원어판 또는 저작권이 만료된 고전 번역본으로 서재에 있습니다. 번역은 요청에 따라 준비됩니다. 어떤 언어로 읽고 싶은지 알려주세요. 짧은 작품은 며칠 안에 준비되기도 하며(긴 작품은 조금 더 걸립니다), 새 판은 앱에 자동으로 나타나 설치나 업데이트가 필요 없습니다.",
+                trSubject: "번역 요청 — Public Domain Books",
+                introNote: "참고: 퍼블릭 도메인 작품만 서재에 추가할 수 있으며, 새 판은 준비되는 대로 앱에 자동으로 표시됩니다.",
+                bodyBook: "책", bodyLang: "언어", bodyContact: "연락처",
+                privacy: "개인정보 처리방침",
+                support: "지원",
+                success: "감사합니다! 요청이 전송되었습니다.",
+                netError: "지금은 전송할 수 없습니다 — 다시 시도하거나 다음 주소로 이메일을 보내 주세요:"
+            },
+            ru: {
+                title: "Запросить книгу",
+                intro: "Расскажите, какой классики не хватает — или на каком языке вы хотели бы её прочесть. Каждое издание в библиотеке началось с такой просьбы.",
+                bookLabel: "Книга",
+                bookPlaceholder: "Название и автор",
+                langLabel: "Язык или перевод (необязательно)",
+                langPlaceholder: "напр., русский",
+                emailLabel: "Ваш e-mail",
+                emailPlaceholder: "Чтобы сообщить, когда книга появится",
+                notesLabel: "Что-то ещё? (необязательно)",
+                notesPlaceholder: "Особое издание, ссылки, контекст…",
+                submit: "Отправить запрос",
+                subject: "Запрос книги — Public Domain Books",
+                trTitle: "Запрос перевода",
+                trIntro: "Эта книга уже есть в библиотеке — в оригинале или в классическом издании, перешедшем в общественное достояние. Переводы мы готовим по запросу: напишите, на каком языке вам хотелось бы её читать. Короткие произведения могут быть готовы за несколько дней (длинные — чуть дольше), и новое издание появится в приложении автоматически — ничего устанавливать и обновлять не нужно.",
+                trSubject: "Запрос перевода — Public Domain Books",
+                introNote: "Два замечания: в библиотеку могут войти только произведения в общественном достоянии, а новые издания появляются в приложении автоматически, как только будут готовы.",
+                bodyBook: "Книга", bodyLang: "Язык", bodyContact: "Контакт",
+                privacy: "Политика конфиденциальности",
+                support: "Поддержка",
+                success: "Спасибо! Ваш запрос отправлен.",
+                netError: "Не удалось отправить сейчас — попробуйте ещё раз или напишите мне на"
+            },
+            zh: {
+                title: "申请新书",
+                intro: "告诉我们你想要哪部经典，或希望用哪种语言阅读。这座图书馆的每一版都始于像你这样的请求。",
+                bookLabel: "书籍",
+                bookPlaceholder: "书名与作者",
+                langLabel: "语言或译本（可选）",
+                langPlaceholder: "例如：中文",
+                emailLabel: "你的邮箱",
+                emailPlaceholder: "上架时通知你",
+                notesLabel: "其他（可选）",
+                notesPlaceholder: "特定版本、链接、背景…",
+                submit: "发送请求",
+                subject: "图书请求 — Public Domain Books",
+                trTitle: "请求翻译",
+                trIntro: "这本书已以原文或经典公版译本收录在书库中。翻译按请求制作——告诉我们您希望用哪种语言阅读它。较短的作品几天内即可完成（较长的作品需要更久），新版本会自动出现在应用中，无需安装或更新。",
+                trSubject: "翻译请求 — Public Domain Books",
+                introNote: "两点说明：书库只能收录公有领域的作品；新版本完成后会自动出现在应用中。",
+                bodyBook: "书籍", bodyLang: "语言", bodyContact: "联系方式",
+                privacy: "隐私政策",
+                support: "支持",
+                success: "谢谢！您的请求已发送。",
+                netError: "暂时无法发送——请重试，或发送邮件至"
+            },
+            tr: {
+                title: "Kitap İste",
+                intro: "Hangi klasiğin eksik olduğunu — ya da hangi dilde okumak istediğini — bize söyle. Kütüphanedeki her basım, senin gibi bir istekle başladı.",
+                bookLabel: "Kitap",
+                bookPlaceholder: "Başlık ve yazar",
+                langLabel: "Dil veya çeviri (isteğe bağlı)",
+                langPlaceholder: "örn. Türkçe",
+                emailLabel: "E-postan",
+                emailPlaceholder: "Geldiğinde haber verebilmemiz için",
+                notesLabel: "Başka bir şey? (isteğe bağlı)",
+                notesPlaceholder: "Belirli bir basım, bağlantılar, bağlam…",
+                submit: "İsteği gönder",
+                subject: "Kitap isteği — Public Domain Books",
+                trTitle: "Bir Çeviri İsteyin",
+                trIntro: "Bu kitap özgün dilinde veya kamu malı klasik bir çeviriyle zaten kitaplıkta. Çeviriler istek üzerine hazırlanır — hangi dilde okumak istediğinizi söyleyin. Kısa eserler birkaç günde hazır olabilir (uzunlar biraz daha sürer) ve yeni basım uygulamada kendiliğinden görünür — kurulum ya da güncelleme gerekmez.",
+                trSubject: "Çeviri isteği — Public Domain Books",
+                introNote: "İki not: Kitaplığa yalnızca kamu malı eserler eklenebilir ve yeni basımlar hazır olduğunda uygulamada kendiliğinden görünür.",
+                bodyBook: "Kitap", bodyLang: "Dil", bodyContact: "İletişim",
+                privacy: "Gizlilik Politikası",
+                support: "Destek",
+                success: "Teşekkürler! İsteğiniz gönderildi.",
+                netError: "Şu anda gönderilemedi — tekrar deneyin veya bana şu adresten yazın:"
+            }
+        };
+
+        function getLocale() {
+            var lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+            var primary = lang.split('-')[0];
+            if (i18n[primary]) return primary;
+            return 'en';
+        }
+
+        // Translation mode: the reader's "not in your language yet" banner
+        // links here with ?mode=translation&book=<title>&lang=<name or code>.
+        // Same form, same payload contract — only the copy, the prefill, and
+        // the subject line change (plus an additive `mode` field). A plain
+        // visit without params behaves exactly as before.
+        var PARAMS = new URLSearchParams(window.location.search);
+        var MODE = PARAMS.get('mode') === 'translation' ? 'translation' : 'request';
+
+        // If `lang` arrives as one of the app's language codes, expand it to
+        // the language's own native name (locale-independent). Anything else
+        // passes through untouched.
+        var LANG_NAMES = {
+            en: "English", pt: "Português", es: "Español", it: "Italiano",
+            fr: "Français", de: "Deutsch", ja: "日本語", ko: "한국어",
+            ru: "Русский", zh: "中文", tr: "Türkçe", la: "Latina"
+        };
+        function requestedLanguage() {
+            var raw = (PARAMS.get('lang') || '').trim();
+            return LANG_NAMES[raw.toLowerCase()] || raw;
+        }
+
+        function sendRequest(event) {
+            event.preventDefault();
+            var locale = getLocale();
+            var t = i18n[locale];
+            var book = document.getElementById('book').value.trim();
+            var language = document.getElementById('language').value.trim();
+            var email = document.getElementById('email').value.trim();
+            var notes = document.getElementById('notes').value.trim();
+            var errorEl = document.getElementById('form-error');
+            var button = document.getElementById('submit-button');
+
+            // Honeypot: a bot that fills the hidden field is silently dropped.
+            if (document.getElementById('_hp').value) { return; }
+
+            var data = new FormData();
+            data.set('formType', FORM_TYPE);
+            data.set('source', SOURCE);
+            data.set('subject', MODE === 'translation' ? t.trSubject : t.subject);
+            if (MODE === 'translation') data.set('mode', 'translation');
+            data.set('book', book);
+            if (language) data.set('language', language);
+            data.set('contact', email);
+            if (notes) data.set('notes', notes);
+            data.set('platform', detectPlatform());
+            data.set('pageLanguage', locale);
+            var v = new URLSearchParams(window.location.search).get('v');
+            if (v) data.set('appVersion', v);
+
+            errorEl.style.display = 'none';
+            button.disabled = true;
+
+            fetch(SCRIPT_URL, { method: 'POST', body: data })
+                .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                .then(function() {
+                    document.getElementById('form-wrap').style.display = 'none';
+                    var s = document.getElementById('form-success');
+                    s.textContent = t.success;
+                    s.style.display = 'block';
+                })
+                .catch(function() {
+                    errorEl.innerHTML = t.netError + ' <a href="mail' + 'to:' + RECIPIENT + '">' + RECIPIENT + '</a>';
+                    errorEl.style.display = 'block';
+                    button.disabled = false;
+                });
+        }
+
+        function render() {
+            var locale = getLocale();
+            var t = i18n[locale];
+            document.documentElement.lang = locale === 'zh' ? 'zh-Hans' : locale;
+            var title = MODE === 'translation' ? t.trTitle : t.title;
+            var intro = MODE === 'translation'
+                ? t.trIntro
+                : t.intro + ' ' + t.introNote;
+            document.title = title;
+            // In translation mode the language IS the request — require it,
+            // and drop the "(optional)" parenthetical from the label (the
+            // regex handles Western and full-width CJK parentheses alike).
+            var langRequired = MODE === 'translation' ? ' required' : '';
+            var langLabel = MODE === 'translation'
+                ? t.langLabel.replace(/\s*[（(][^)）]*[)）]\s*$/, '')
+                : t.langLabel;
+
+            document.getElementById('page').innerHTML =
+                '<div class="ornament">•   •   •</div>' +
+                '<h1>' + title + '</h1>' +
+                '<div class="divider"></div>' +
+                '<p class="body-text">' + intro + '</p>' +
+                '<div id="form-wrap">' +
+                '<form onsubmit="sendRequest(event)">' +
+                    '<div class="field">' +
+                        '<label for="book">' + t.bookLabel + '</label>' +
+                        '<input id="book" type="text" required placeholder="' + t.bookPlaceholder + '">' +
+                    '</div>' +
+                    '<div class="field">' +
+                        '<label for="language">' + langLabel + '</label>' +
+                        '<input id="language" type="text"' + langRequired + ' placeholder="' + t.langPlaceholder + '">' +
+                    '</div>' +
+                    '<div class="field">' +
+                        '<label for="email">' + t.emailLabel + '</label>' +
+                        '<input id="email" type="email" required placeholder="' + t.emailPlaceholder + '">' +
+                    '</div>' +
+                    '<div class="field">' +
+                        '<label for="notes">' + t.notesLabel + '</label>' +
+                        '<textarea id="notes" placeholder="' + t.notesPlaceholder + '"></textarea>' +
+                    '</div>' +
+                    '<input type="text" id="_hp" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+                    '<p class="form-error" id="form-error"></p>' +
+                    '<button type="submit" class="submit-button" id="submit-button">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>' +
+                        t.submit +
+                    '</button>' +
+                '</form>' +
+                '</div>' +
+                '<p class="form-success" id="form-success"></p>' +
+                '<div class="footer">' +
+                    '<a href="support.html" class="footer-link">' + t.support + '</a>' +
+                    '<span class="footer-sep">·</span>' +
+                    '<a href="privacy.html" class="footer-link">' + t.privacy + '</a>' +
+                '</div>';
+        }
+
+        render();
+
+        // Prefill from the app's deep link — assigned via .value (never
+        // interpolated into markup) so URL params can't inject HTML. Both
+        // fields stay editable; the user can still adjust before sending.
+        (function prefill() {
+            var book = (PARAMS.get('book') || '').trim();
+            if (book) document.getElementById('book').value = book;
+            var lang = requestedLanguage();
+            if (lang) document.getElementById('language').value = lang;
+        })();
+    </script>
+</body>
+</html>
