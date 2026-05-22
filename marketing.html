@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic Editions — Public Domain Books</title>
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        :root {
+            --bg: #eeecea;
+            --fg: #1a1a18;
+            --fg-secondary: #4a4944;
+            --fg-tertiary: #7a7872;
+            --divider: #c5c1bb;
+            --card-bg: #f7f5f2;
+            --card-border: #d8d4ce;
+            --card-hover-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 6px 24px rgba(0,0,0,0.06);
+            --btn-bg: #1a1a18;
+            --btn-fg: #eeecea;
+            --btn-hover: #333330;
+            --icon-edge: rgba(0, 0, 0, 0.12);
+            --max-width: 520px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #5a5856;
+                --fg: #f2f0ec;
+                --fg-secondary: #d5d2cc;
+                --fg-tertiary: #b0ada7;
+                --divider: #706d68;
+                --card-bg: #4a4845;
+                --card-border: #635f5b;
+                --card-hover-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 6px 24px rgba(0,0,0,0.2);
+                --btn-bg: #f2f0ec;
+                --btn-fg: #3a3836;
+                --btn-hover: #e0ddd8;
+                --icon-edge: rgba(255, 255, 255, 0.16);
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 64px 28px;
+        }
+
+        .page {
+            max-width: var(--max-width);
+            width: 100%;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ornament {
+            text-align: center;
+            color: var(--fg-tertiary);
+            font-size: 18px;
+            letter-spacing: 0.4em;
+            margin-bottom: 44px;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.2s forwards;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(28px, 6vw, 36px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+            color: var(--fg);
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+        }
+
+        .divider {
+            width: 48px;
+            height: 1px;
+            background: var(--divider);
+            margin: 36px auto;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.5s forwards;
+        }
+
+        .body-text {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.85;
+            color: var(--fg-secondary);
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards;
+        }
+
+        /* --- Book list --- */
+        .book-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 40px;
+        }
+
+        .book-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        a.book-card:hover {
+            border-color: transparent;
+            box-shadow: var(--card-hover-shadow);
+            transform: translateY(-2px);
+        }
+
+        .book-card.coming-soon {
+            cursor: default;
+        }
+
+        .book-icon {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            border-radius: 11px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: var(--divider);
+        }
+
+        /* The artwork sits on top of the letter tile rather than replacing it,
+           so the letter is still there underneath if the file ever 404s. */
+        .book-icon img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* App Store artwork ships square and edge-to-edge, so the rounding is
+           ours to apply — and a light icon on a light card, or a dark one in
+           dark mode, has no edge of its own. Hairline inset, drawn over the
+           image only when there is an image. */
+        .book-icon.has-art::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px var(--icon-edge);
+            pointer-events: none;
+        }
+
+        .book-icon-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #6b5b4a, #8a7a68);
+        }
+
+        .book-info { flex: 1; min-width: 0; }
+
+        .book-author {
+            display: block;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 12px;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--fg-tertiary);
+            letter-spacing: 0.02em;
+            margin-bottom: 1px;
+        }
+
+        .book-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--fg);
+            line-height: 1.3;
+        }
+
+        .book-desc {
+            font-size: 14px;
+            color: var(--fg-secondary);
+            margin-top: 2px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .book-badge {
+            display: inline-block;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 11px;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--fg-tertiary);
+            margin-top: 4px;
+        }
+
+        .book-arrow {
+            color: var(--fg-tertiary);
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        a.book-card:hover .book-arrow {
+            color: var(--fg);
+            transform: translateX(3px);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            margin-top: 48px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .footer-link {
+            font-size: 14px;
+            font-style: italic;
+            color: var(--fg-tertiary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer-link:hover {
+            color: var(--fg-secondary);
+            border-bottom-color: var(--divider);
+        }
+
+        .footer-brand {
+            margin-top: 28px;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--fg-tertiary);
+            font-weight: 500;
+        }
+
+        .footer-credit {
+            margin-top: 8px;
+            font-size: 14px;
+            font-style: italic;
+            color: var(--fg-tertiary);
+            font-weight: 400;
+        }
+
+        .footer-credit a {
+            color: var(--fg-tertiary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-credit a:hover {
+            color: var(--fg);
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 48px 24px; }
+            .ornament { margin-bottom: 36px; }
+            .divider { margin: 28px auto; }
+            .book-list { margin-top: 32px; }
+            .book-card { padding: 14px 16px; gap: 12px; }
+            .book-icon { width: 46px; height: 46px; border-radius: 10px; }
+            .footer { margin-top: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page" id="page"></div>
+
+    <script>
+        /*
+         * ──────────────────────────────────────────
+         *  BOOK CATALOGUE
+         *
+         *  To add a new book, append an entry below.
+         *  • Set appId + country once it's live on
+         *    the App Store — that builds the link.
+         *  • Drop the 512px App Store artwork into
+         *    icons/ and point `icon` at it. The page
+         *    used to ask itunes.apple.com for that
+         *    URL on every visit, which sent every
+         *    reader's IP to Apple twice per card for
+         *    an image that changes about once a year.
+         *    Fetch it once, by hand, and commit it.
+         *  • Leave appId empty while under review;
+         *    leave `icon` empty and the letter tile
+         *    stands in.
+         * ──────────────────────────────────────────
+         */
+        var books = [
+            {
+                id: 'classics',
+                author: 'Public Domain Books',
+                fallbackInitial: 'P',
+                icon: 'icons/app-classics.png',
+                appId: '6787402596',
+                country: 'us'
+            },
+            {
+                id: 'debrevitate',
+                author: 'Seneca',
+                fallbackInitial: 'S',
+                icon: 'icons/app-de-brevitate-vitae.png',
+                appId: '6759208725',
+                country: 'us'
+            },
+            {
+                id: 'meditations',
+                author: 'Marcus Aurelius',
+                fallbackInitial: 'M',
+                icon: 'icons/app-meditations.png',
+                appId: '6759670450',
+                country: 'us'
+            },
+            {
+                id: 'artofwar',
+                author: 'Sun Tzu',
+                fallbackInitial: 'S',
+                icon: 'icons/app-art-of-war.png',
+                appId: '6768119516',
+                country: 'us'
+            },
+            {
+                id: 'theprince',
+                author: 'Niccolò Machiavelli',
+                fallbackInitial: 'N',
+                icon: 'icons/app-the-prince.png',
+                appId: '6777144484',
+                country: 'us'
+            }
+        ];
+
+        var i18n = {
+            en: {
+                pageTitle: "Classic Editions",
+                intro: "Public domain masterpieces, designed to feel like reading a real, premium book. No ads, no subscriptions \u2014 just the text, free for everyone.",
+                comingSoon: "Coming soon",
+                support: "Support",
+                bookRequest: "Request a book",
+                privacy: "Privacy Policy",
+                madeBy: "Made with care by",
+                books: {
+                    classics:     { title: "Classics", desc: "The whole library, in a single app." },
+                    debrevitate:  { title: "De Brevitate Vitae", desc: "On the shortness of life." },
+                    meditations:  { title: "Meditations", desc: "Private reflections of a Roman emperor." },
+                    artofwar:     { title: "The Art of War", desc: "Ancient strategy and the art of victory." },
+                    theprince:    { title: "The Prince", desc: "On power, and how rulers keep it." }
+                }
+            },
+            pt: {
+                pageTitle: "Edi\u00E7\u00F5es Cl\u00E1ssicas",
+                intro: "Obras-primas de dom\u00EDnio p\u00FAblico, projetadas para parecer a leitura de um livro real e de qualidade. Sem an\u00FAncios, sem assinaturas \u2014 apenas o texto, gratuito para todos.",
+                comingSoon: "Em breve",
+                support: "Suporte",
+                bookRequest: "Pedir um livro",
+                privacy: "Pol\u00EDtica de Privacidade",
+                madeBy: "Feito com carinho por",
+                books: {
+                    classics:     { title: "Clássicos", desc: "Toda a biblioteca reunida em um só app." },
+                    debrevitate:  { title: "De Brevitate Vitae", desc: "Sobre a brevidade da vida." },
+                    meditations:  { title: "Medita\u00E7\u00F5es", desc: "Reflex\u00F5es privadas de um imperador romano." },
+                    artofwar:     { title: "A Arte da Guerra", desc: "Estratégia antiga e a arte da vitória." },
+                    theprince:    { title: "O Príncipe", desc: "Sobre o poder e como mantê-lo." }
+                }
+            },
+            es: {
+                pageTitle: "Ediciones Cl\u00E1sicas",
+                intro: "Obras maestras de dominio p\u00FAblico, dise\u00F1adas para sentirse como leer un libro real y de calidad. Sin anuncios, sin suscripciones \u2014 solo el texto, gratis para todos.",
+                comingSoon: "Pr\u00F3ximamente",
+                support: "Soporte",
+                bookRequest: "Pedir un libro",
+                privacy: "Pol\u00EDtica de Privacidad",
+                madeBy: "Hecho con cari\u00F1o por",
+                books: {
+                    classics:     { title: "Clásicos", desc: "Toda la biblioteca reunida en una sola app." },
+                    debrevitate:  { title: "De Brevitate Vitae", desc: "Sobre la brevedad de la vida." },
+                    meditations:  { title: "Meditaciones", desc: "Reflexiones privadas de un emperador romano." },
+                    artofwar:     { title: "El Arte de la Guerra", desc: "Estrategia antigua y el arte de la victoria." },
+                    theprince:    { title: "El Príncipe", desc: "Sobre el poder y cómo conservarlo." }
+                }
+            },
+            it: {
+                pageTitle: "Edizioni Classiche",
+                intro: "Capolavori di dominio pubblico, progettati per sembrare la lettura di un vero libro di pregio. Nessuna pubblicit\u00E0, nessun abbonamento \u2014 solo il testo, gratuito per tutti.",
+                comingSoon: "Prossimamente",
+                support: "Supporto",
+                bookRequest: "Richiedi un libro",
+                privacy: "Informativa sulla Privacy",
+                madeBy: "Fatto con cura da",
+                books: {
+                    classics:     { title: "Classici", desc: "Tutta la biblioteca in un'unica app." },
+                    debrevitate:  { title: "De Brevitate Vitae", desc: "Sulla brevit\u00E0 della vita." },
+                    meditations:  { title: "Meditazioni", desc: "Riflessioni private di un imperatore romano." },
+                    artofwar:     { title: "L'Arte della Guerra", desc: "Strategia antica e l'arte della vittoria." },
+                    theprince:    { title: "Il Principe", desc: "Sul potere e come conservarlo." }
+                }
+            },
+            fr: {
+                pageTitle: "\u00C9ditions Classiques",
+                intro: "Des chefs-d\u2019\u0153uvre du domaine public, con\u00E7us pour ressembler \u00E0 la lecture d\u2019un vrai beau livre. Pas de publicit\u00E9, pas d\u2019abonnement \u2014 juste le texte, gratuit pour tous.",
+                comingSoon: "Bient\u00F4t disponible",
+                support: "Assistance",
+                bookRequest: "Demander un livre",
+                privacy: "Politique de Confidentialit\u00E9",
+                madeBy: "Fait avec soin par",
+                books: {
+                    classics:     { title: "Classiques", desc: "Toute la biblioth\u00E8que en une seule application." },
+                    debrevitate:  { title: "De Brevitate Vitae", desc: "Sur la bri\u00E8vet\u00E9 de la vie." },
+                    meditations:  { title: "M\u00E9ditations", desc: "R\u00E9flexions priv\u00E9es d\u2019un empereur romain." },
+                    artofwar:     { title: "L'Art de la Guerre", desc: "Strat\u00E9gie antique et l'art de la victoire." },
+                    theprince:    { title: "Le Prince", desc: "Sur le pouvoir et comment le garder." }
+                }
+            },
+            de: {
+                pageTitle: "Klassische Ausgaben",
+                intro: "Meisterwerke der Gemeinfreiheit, gestaltet, um sich wie ein echtes, hochwertiges Buch anzuf\u00FChlen. Keine Werbung, kein Abonnement \u2014 nur der Text, kostenlos f\u00FCr alle.",
+                comingSoon: "Demn\u00E4chst",
+                support: "Support",
+                bookRequest: "Buch wünschen",
+                privacy: "Datenschutzrichtlinie",
+                madeBy: "Mit Sorgfalt gemacht von",
+                books: {
+                    classics:     { title: "Klassiker", desc: "Die gesamte Bibliothek in einer einzigen App." },
+                    debrevitate:  { title: "De Brevitate Vitae", desc: "\u00DCber die K\u00FCrze des Lebens." },
+                    meditations:  { title: "Selbstbetrachtungen", desc: "Private Gedanken eines r\u00F6mischen Kaisers." },
+                    artofwar:     { title: "Die Kunst des Krieges", desc: "Alte Strategie und die Kunst des Sieges." },
+                    theprince:    { title: "Der F\u00FCrst", desc: "\u00DCber die Macht und ihren Erhalt." }
+                }
+            },
+            ja: {
+                pageTitle: "\u53E4\u5178\u30A8\u30C7\u30A3\u30B7\u30E7\u30F3",
+                intro: "\u30D1\u30D6\u30EA\u30C3\u30AF\u30C9\u30E1\u30A4\u30F3\u306E\u540D\u4F5C\u3092\u3001\u672C\u7269\u306E\u4E0A\u8CEA\u306A\u66F8\u7C4D\u306E\u3088\u3046\u306B\u8AAD\u3081\u308B\u3088\u3046\u8A2D\u8A08\u3057\u307E\u3057\u305F\u3002\u5E83\u544A\u306A\u3057\u3001\u30B5\u30D6\u30B9\u30AF\u30EA\u30D7\u30B7\u30E7\u30F3\u306A\u3057\u2014\u2014\u30C6\u30AD\u30B9\u30C8\u3060\u3051\u3092\u3001\u7121\u6599\u3067\u3002",
+                comingSoon: "\u8FD1\u65E5\u516C\u958B",
+                support: "\u30B5\u30DD\u30FC\u30C8",
+                bookRequest: "\u672C\u3092\u30EA\u30AF\u30A8\u30B9\u30C8",
+                privacy: "\u30D7\u30E9\u30A4\u30D0\u30B7\u30FC\u30DD\u30EA\u30B7\u30FC",
+                madeBy: "\u5FC3\u3092\u8FBC\u3081\u3066\u4F5C\u308A\u307E\u3057\u305F",
+                books: {
+                    classics:     { title: "\u30AF\u30E9\u30B7\u30C3\u30AF\u30B9", desc: "\u3059\u3079\u3066\u306E\u672C\u3092\u4E00\u3064\u306E\u30A2\u30D7\u30EA\u306B\u53CE\u9332\u3002" },
+                    debrevitate:  { title: "\u4EBA\u751F\u306E\u77ED\u3055\u306B\u3064\u3044\u3066", desc: "\u30BB\u30CD\u30AB\u306B\u3088\u308B\u751F\u3068\u6642\u9593\u306E\u8003\u5BDF\u3002" },
+                    meditations:  { title: "\u81EA\u7701\u9332", desc: "\u30ED\u30FC\u30DE\u7687\u5E1D\u306E\u79C1\u7684\u306A\u7784\u60F3\u3002" },
+                    artofwar:     { title: "\u5B6B\u5B50", desc: "\u53E4\u4EE3\u4E2D\u56FD\u306E\u5175\u6CD5\u3068\u52DD\u5229\u306E\u8853\u3002" },
+                    theprince:    { title: "\u541B\u4E3B\u8AD6", desc: "\u6A29\u529B\u306E\u7372\u5F97\u3068\u305D\u306E\u7DAD\u6301\u306B\u3064\u3044\u3066\u3002" }
+                }
+            },
+            zh: {
+                pageTitle: "\u7ECF\u5178\u7248\u672C",
+                intro: "\u516C\u5171\u9886\u57DF\u7684\u4F20\u4E16\u6770\u4F5C\uFF0C\u8BBE\u8BA1\u5982\u540C\u9605\u8BFB\u4E00\u672C\u771F\u6B63\u7684\u7CBE\u88C5\u4E66\u7C4D\u3002\u65E0\u5E7F\u544A\uFF0C\u65E0\u8BA2\u9605\u2014\u2014\u53EA\u6709\u6587\u5B57\uFF0C\u5BF9\u6240\u6709\u4EBA\u514D\u8D39\u3002",
+                comingSoon: "\u5373\u5C06\u63A8\u51FA",
+                support: "\u652F\u6301",
+                bookRequest: "\u7533\u8BF7\u65B0\u4E66",
+                privacy: "\u9690\u79C1\u653F\u7B56",
+                madeBy: "\u7528\u5FC3\u5236\u4F5C",
+                books: {
+                    classics:     { title: "\u7ECF\u5178\u5408\u96C6", desc: "\u5C06\u5168\u90E8\u4E66\u7C4D\u6536\u5F55\u4E8E\u4E00\u4E2A\u5E94\u7528\u3002" },
+                    debrevitate:  { title: "\u8BBA\u751F\u547D\u7684\u77ED\u6682", desc: "\u585E\u6D85\u5361\u5BF9\u751F\u547D\u4E0E\u65F6\u95F4\u7684\u6C89\u601D\u3002" },
+                    meditations:  { title: "\u6C89\u601D\u5F55", desc: "\u4E00\u4F4D\u7F57\u9A6C\u7687\u5E1D\u7684\u79C1\u4EBA\u611F\u609F\u3002" },
+                    artofwar:     { title: "\u5B59\u5B50\u5175\u6CD5", desc: "\u53E4\u4EE3\u5175\u6CD5\u4E0E\u5236\u80DC\u4E4B\u9053\u3002" },
+                    theprince:    { title: "\u541B\u4E3B\u8BBA", desc: "\u8BBA\u6743\u529B\u7684\u83B7\u53D6\u4E0E\u7EF4\u7CFB\u3002" }
+                }
+            },
+            ru: {
+                pageTitle: "\u041A\u043B\u0430\u0441\u0441\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u0438\u0437\u0434\u0430\u043D\u0438\u044F",
+                intro: "\u0428\u0435\u0434\u0435\u0432\u0440\u044B \u043E\u0431\u0449\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u0433\u043E \u0434\u043E\u0441\u0442\u043E\u044F\u043D\u0438\u044F, \u043E\u0444\u043E\u0440\u043C\u043B\u0435\u043D\u043D\u044B\u0435 \u043A\u0430\u043A \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0438\u0435 \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0435 \u043A\u043D\u0438\u0433\u0438. \u0411\u0435\u0437 \u0440\u0435\u043A\u043B\u0430\u043C\u044B, \u0431\u0435\u0437 \u043F\u043E\u0434\u043F\u0438\u0441\u043E\u043A \u2014 \u0442\u043E\u043B\u044C\u043A\u043E \u0442\u0435\u043A\u0441\u0442, \u0431\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E \u0434\u043B\u044F \u0432\u0441\u0435\u0445.",
+                comingSoon: "\u0421\u043A\u043E\u0440\u043E",
+                support: "\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0430",
+                bookRequest: "\u0417\u0430\u043F\u0440\u043E\u0441\u0438\u0442\u044C \u043A\u043D\u0438\u0433\u0443",
+                privacy: "\u041F\u043E\u043B\u0438\u0442\u0438\u043A\u0430 \u043A\u043E\u043D\u0444\u0438\u0434\u0435\u043D\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u0438",
+                madeBy: "\u0421\u0434\u0435\u043B\u0430\u043D\u043E \u0441 \u0437\u0430\u0431\u043E\u0442\u043E\u0439",
+                books: {
+                    classics:     { title: "\u041A\u043B\u0430\u0441\u0441\u0438\u043A\u0430", desc: "\u0412\u0441\u044F \u0431\u0438\u0431\u043B\u0438\u043E\u0442\u0435\u043A\u0430 \u0432 \u043E\u0434\u043D\u043E\u043C \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0438." },
+                    debrevitate:  { title: "O \u043A\u0440\u0430\u0442\u043A\u043E\u0441\u0442\u0438 \u0436\u0438\u0437\u043D\u0438", desc: "\u0420\u0430\u0437\u043C\u044B\u0448\u043B\u0435\u043D\u0438\u044F \u0421\u0435\u043D\u0435\u043A\u0438 \u043E \u0436\u0438\u0437\u043D\u0438 \u0438 \u0432\u0440\u0435\u043C\u0435\u043D\u0438." },
+                    meditations:  { title: "\u0420\u0430\u0437\u043C\u044B\u0448\u043B\u0435\u043D\u0438\u044F", desc: "\u041B\u0438\u0447\u043D\u044B\u0435 \u0437\u0430\u043F\u0438\u0441\u0438 \u0440\u0438\u043C\u0441\u043A\u043E\u0433\u043E \u0438\u043C\u043F\u0435\u0440\u0430\u0442\u043E\u0440\u0430." },
+                    artofwar:     { title: "\u0418\u0441\u043A\u0443\u0441\u0441\u0442\u0432\u043E \u0432\u043E\u0439\u043D\u044B", desc: "\u0414\u0440\u0435\u0432\u043D\u044F\u044F \u0441\u0442\u0440\u0430\u0442\u0435\u0433\u0438\u044F \u0438 \u0438\u0441\u043A\u0443\u0441\u0441\u0442\u0432\u043E \u043F\u043E\u0431\u0435\u0434\u044B." },
+                    theprince:    { title: "\u0413\u043E\u0441\u0443\u0434\u0430\u0440\u044C", desc: "\u041E \u0432\u043B\u0430\u0441\u0442\u0438 \u0438 \u0438\u0441\u043A\u0443\u0441\u0441\u0442\u0432\u0435 \u0435\u0451 \u0443\u0434\u0435\u0440\u0436\u0430\u043D\u0438\u044F." }
+                }
+            },
+            ko: {
+                pageTitle: "\uD074\uB798\uC2DD \uC5D0\uB514\uC158",
+                intro: "\uD37C\uBE14\uB9AD \uB3C4\uBA54\uC778 \uBA85\uC791\uC744, \uC9C4\uC9DC \uACE0\uAE09 \uCC45\uC744 \uC77D\uB294 \uB290\uB08C\uC73C\uB85C \uC124\uACC4\uD588\uC2B5\uB2C8\uB2E4. \uAD11\uACE0 \uC5C6\uC774, \uAD6C\uB3C5 \uC5C6\uC774\u2014\uD14D\uC2A4\uD2B8\uB9CC, \uBAA8\uB450\uC5D0\uAC8C \uBB34\uB8CC\uB85C.",
+                comingSoon: "\uCD9C\uC2DC \uC608\uC815",
+                support: "\uC9C0\uC6D0",
+                bookRequest: "\uCC45 \uC694\uCCAD",
+                privacy: "\uAC1C\uC778\uC815\uBCF4 \uCC98\uB9AC\uBC29\uCE68",
+                madeBy: "\uC815\uC131\uC744 \uB2F4\uC544 \uB9CC\uB4E4\uC5C8\uC2B5\uB2C8\uB2E4",
+                books: {
+                    classics:     { title: "\uD074\uB798\uC2DD \uBAA8\uC74C", desc: "\uBAA8\uB4E0 \uCC45\uC744 \uD558\uB098\uC758 \uC571\uC5D0 \uB2F4\uC558\uC2B5\uB2C8\uB2E4." },
+                    debrevitate:  { title: "\uC0B6\uC758 \uC9E7\uC74C\uC5D0 \uB300\uD558\uC5EC", desc: "\uC138\uB124\uCE74\uC758 \uC0B6\uACFC \uC2DC\uAC04\uC5D0 \uB300\uD55C \uC131\uCC30." },
+                    meditations:  { title: "\uBA85\uC0C1\uB85D", desc: "\uB85C\uB9C8 \uD669\uC81C\uC758 \uC0AC\uC801\uC778 \uC131\uCC30." },
+                    artofwar:     { title: "\uC190\uC790\uBCD1\uBC95", desc: "\uACE0\uB300 \uC804\uB7B5\uACFC \uC2B9\uB9AC\uC758 \uAE30\uC220." },
+                    theprince:    { title: "\uAD70\uC8FC\uB860", desc: "\uAD8C\uB825\uACFC \uADF8\uAC83\uC744 \uC9C0\uD0A4\uB294 \uBC95\uC5D0 \uAD00\uD558\uC5EC." }
+                }
+            },
+            tr: {
+                pageTitle: "Klasik Edisyonlar",
+                intro: "Kamu alan\u0131 ba\u015Fyap\u0131tlar\u0131, ger\u00E7ek, kaliteli bir kitap okuyormu\u015F gibi tasarlanm\u0131\u015Ft\u0131r. Reklam yok, abonelik yok \u2014 sadece metin, herkes i\u00E7in \u00FCcretsiz.",
+                comingSoon: "Yak\u0131nda",
+                support: "Destek",
+                bookRequest: "Kitap iste",
+                privacy: "Gizlilik Politikas\u0131",
+                madeBy: "\u00D6zenle yap\u0131lm\u0131\u015Ft\u0131r",
+                books: {
+                    classics:     { title: "Klasikler", desc: "T\u00FCm kitapl\u0131\u011F\u0131 tek bir uygulamada birle\u015Ftirir." },
+                    debrevitate:  { title: "De Brevitate Vitae", desc: "Hayat\u0131n k\u0131sal\u0131\u011F\u0131 \u00FCzerine." },
+                    meditations:  { title: "D\u00FC\u015F\u00FCnceler", desc: "Bir Roma imparatorunun \u00F6zel d\u00FC\u015F\u00FCnceleri." },
+                    artofwar:     { title: "Sava\u015F Sanat\u0131", desc: "Antik strateji ve zafer sanat\u0131." },
+                    theprince:    { title: "H\u00FCk\u00FCmdar", desc: "\u0130ktidar ve onu koruman\u0131n sanat\u0131 \u00FCzerine." }
+                }
+            }
+        };
+
+        function getLocale() {
+            var lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+            var primary = lang.split('-')[0];
+            if (i18n[primary]) return primary;
+            return 'en';
+        }
+
+        function render() {
+            var locale = getLocale();
+            var t = i18n[locale];
+            document.documentElement.lang = locale === 'zh' ? 'zh-Hans' : locale;
+            document.title = t.pageTitle + ' — Public Domain Books';
+
+            var cardsHtml = books.map(function(book, i) {
+                var bt = t.books[book.id] || {};
+                var delay = (0.8 + i * 0.1).toFixed(1);
+                var tag = book.appId ? 'a' : 'div';
+                var href = book.appId ? ' href="https://apps.apple.com/' + book.country + '/app/id' + book.appId + '" target="_blank" rel="noopener"' : '';
+                var cls = book.appId ? 'book-card' : 'book-card coming-soon';
+                var arrow = book.appId
+                    ? '<svg class="book-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"/></svg>'
+                    : '<span class="book-badge">' + t.comingSoon + '</span>';
+
+                // The letter tile is always rendered; the artwork, when we have
+                // it, is layered over it. Nothing here touches the network.
+                var art = book.icon
+                    ? '<img src="' + book.icon + '" alt="" width="52" height="52" loading="lazy" decoding="async">'
+                    : '';
+                var iconCls = book.icon ? 'book-icon has-art' : 'book-icon';
+
+                // data-appid / data-country used to exist only so the icon fetch
+                // could read them back off the DOM. Nothing reads them now.
+                return '<' + tag + href + ' class="' + cls + '" style="animation-delay:' + delay + 's">' +
+                    '<div class="' + iconCls + '"><div class="book-icon-fallback">' + book.fallbackInitial + '</div>' + art + '</div>' +
+                    '<div class="book-info">' +
+                        '<span class="book-author">' + book.author + '</span>' +
+                        '<div class="book-title">' + (bt.title || book.id) + '</div>' +
+                        '<div class="book-desc">' + (bt.desc || '') + '</div>' +
+                    '</div>' +
+                    arrow +
+                '</' + tag + '>';
+            }).join('');
+
+            var footerDelay = (0.8 + books.length * 0.1 + 0.2).toFixed(1);
+
+            document.getElementById('page').innerHTML =
+                '<div class="ornament">\u2022 \u2003 \u2022 \u2003 \u2022</div>' +
+                '<h1>' + t.pageTitle + '</h1>' +
+                '<div class="divider"></div>' +
+                '<p class="body-text">' + t.intro + '</p>' +
+                '<div class="book-list">' + cardsHtml + '</div>' +
+                '<div class="footer" style="animation-delay:' + footerDelay + 's">' +
+                    '<div class="footer-links">' +
+                        '<a href="support.html" class="footer-link">' + t.support + '</a>' +
+                        '<a href="bookrequest.html" class="footer-link">' + t.bookRequest + '</a>' +
+                        '<a href="privacy.html" class="footer-link">' + t.privacy + '</a>' +
+                    '</div>' +
+                    '<p class="footer-brand">Public Domain Books</p>' +
+                    '<p class="footer-credit">' + t.madeBy + ' <a href="https://moitinho.github.io/" target="_blank" rel="noopener">Pedro Moitinho</a></p>' +
+                '</div>';
+
+            // The icons are already on this origin — there is no lookup to do.
+            // The only thing left is the failure case: if a file is ever
+            // missing, fall back to the letter tile underneath rather than
+            // leave a broken-image glyph on the card.
+            document.querySelectorAll('.book-icon img').forEach(function(img) {
+                img.addEventListener('error', function() {
+                    var tile = img.parentNode;
+                    if (tile) tile.classList.remove('has-art');
+                    img.remove();
+                });
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>

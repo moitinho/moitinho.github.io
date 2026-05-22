@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report a Problem - Bíblia e Hinário CCB</title>
+    <meta name="description" content="Report an issue or content error in Bíblia e Hinário CCB.">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        :root {
+            --bg: #eeecea;
+            --fg: #1a1a18;
+            --fg-secondary: #4a4944;
+            --fg-tertiary: #7a7872;
+            --divider: #c5c1bb;
+            --card-bg: #f7f5f2;
+            --card-border: #d8d4ce;
+            --field-bg: #fffdfa;
+            --btn-bg: #1a1a18;
+            --btn-fg: #eeecea;
+            --btn-hover: #333330;
+            --error: #9f2f2f;
+            --max-width: 560px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #5a5856;
+                --fg: #f2f0ec;
+                --fg-secondary: #d5d2cc;
+                --fg-tertiary: #b0ada7;
+                --divider: #706d68;
+                --card-bg: #4a4845;
+                --card-border: #635f5b;
+                --field-bg: #3f3d3a;
+                --btn-bg: #f2f0ec;
+                --btn-fg: #3a3836;
+                --btn-hover: #e0ddd8;
+                --error: #ffb4a9;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 56px 24px;
+        }
+
+        .page {
+            max-width: var(--max-width);
+            width: 100%;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ornament {
+            text-align: center;
+            color: var(--fg-tertiary);
+            font-size: 18px;
+            letter-spacing: 0.4em;
+            margin-bottom: 36px;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.2s forwards;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(28px, 6vw, 36px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+            color: var(--fg);
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+        }
+
+        .divider {
+            width: 48px;
+            height: 1px;
+            background: var(--divider);
+            margin: 30px auto;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.5s forwards;
+        }
+
+        .body-text {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.85;
+            color: var(--fg-secondary);
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards;
+        }
+
+        .report-form {
+            margin-top: 34px;
+            padding: 22px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 15px;
+            color: var(--fg);
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            font: inherit;
+            color: var(--fg);
+            background: var(--field-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 13px;
+            outline: none;
+        }
+
+        textarea:focus,
+        input:focus {
+            border-color: var(--fg-tertiary);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .hint {
+            margin-top: 6px;
+            font-size: 13px;
+            color: var(--fg-tertiary);
+        }
+
+        .error {
+            display: none;
+            margin: -4px 0 16px;
+            font-size: 14px;
+            color: var(--error);
+        }
+
+        /* Advisory only — never blocks submission. Reuses the page's hint
+           styling so it reads as a suggestion, not an error. */
+        .email-suggestion {
+            display: none;
+            margin-top: 6px;
+            font-size: 13px;
+            color: var(--fg-secondary);
+        }
+
+        .email-suggestion button {
+            font: inherit;
+            color: inherit;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .email-suggestion-accept {
+            color: var(--fg);
+            font-weight: 600;
+        }
+
+        .cta-button {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            color: var(--btn-fg);
+            background: var(--btn-bg);
+            border: 0;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 100px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: var(--btn-hover);
+            transform: translateY(-1px);
+        }
+
+        .cta-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .fallback {
+            display: none;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--card-border);
+            color: var(--fg-secondary);
+            font-size: 14px;
+        }
+
+        .fallback strong {
+            color: var(--fg);
+        }
+
+        .fallback-message {
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--fg-secondary);
+        }
+
+        .honeypot {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
+
+        .cta-button:disabled {
+            opacity: 0.6;
+            cursor: progress;
+        }
+
+        .success {
+            display: none;
+            margin-top: 34px;
+            padding: 22px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            text-align: center;
+            color: var(--fg-secondary);
+            font-size: 16px;
+            line-height: 1.85;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 1s forwards;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            font-style: italic;
+            color: var(--fg-secondary);
+            font-weight: 400;
+        }
+
+        .footer-link {
+            color: var(--fg-tertiary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--fg);
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 40px 20px; }
+            .ornament { margin-bottom: 30px; }
+            .divider { margin: 26px auto; }
+            .report-form { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="ornament">•   •   •</div>
+        <h1 id="title"></h1>
+        <div class="divider"></div>
+        <p class="body-text" id="intro"></p>
+
+        <form class="report-form" id="reportForm" novalidate>
+            <div class="field">
+                <label for="message" id="messageLabel"></label>
+                <textarea id="message" name="message" required></textarea>
+                <p class="hint" id="messageHint"></p>
+            </div>
+
+            <div class="field">
+                <label for="contact" id="contactLabel"></label>
+                <input id="contact" name="contact" type="email" autocomplete="email" required>
+                <p class="hint" id="contactHint"></p>
+                <p class="email-suggestion" id="emailSuggestion" role="status" aria-live="polite"></p>
+            </div>
+
+            <input type="text" name="_honeypot" id="_honeypot" class="honeypot" tabindex="-1" autocomplete="off">
+
+            <p class="error" id="error"></p>
+
+            <button type="submit" class="cta-button" id="submitButton">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5A2.25 2.25 0 0 1 19.5 19.5h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0l-7.5-4.615a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                <span id="buttonText"></span>
+            </button>
+
+            <div class="fallback" id="fallback">
+                <p id="fallbackIntro"></p>
+                <p><strong id="emailLabel"></strong> <span id="recipient"></span></p>
+                <div class="fallback-message" id="fallbackMessage"></div>
+            </div>
+        </form>
+
+        <div class="success" id="success">
+            <p id="successText"></p>
+        </div>
+
+        <div class="footer">
+            <span class="footer-text" id="footer"></span>
+        </div>
+    </div>
+
+    <script>
+        // Apps Script web app endpoint. To rotate the URL, redeploy the same
+        // version through "Manage deployments" — never click "New deployment",
+        // which would change the URL and break this page.
+        var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE6kYRYF31iIwoJATqHuTEUJilDLWZj0jvlCaTRtAgktWxj3is0fhczmyhMLOaQSLGHw/exec';
+        var FORM_TYPE = 'report_problem';
+        var SOURCE = 'Bíblia e Hinário CCB — Report a problem';
+        var RECIPIENT = 'bibliahinarioccb@gmail.com';
+
+        var i18n = {
+            en: {
+                documentTitle: 'Report a Problem - Bíblia e Hinário CCB',
+                title: 'Report a problem',
+                intro: 'Please describe what happened in the app. This page helps make sure your message is not sent empty.',
+                messageLabel: 'What happened?',
+                messageHint: 'If it is a content error, include the Bible book and chapter or the hymn number.',
+                messagePlaceholder: 'Write the details here...',
+                contactLabel: 'Your email',
+                contactHint: 'We use this only to reply to you. Please do not include passwords or private account details.',
+                emailError: 'Please enter a valid email so we can reply.',
+                emailSuggestion: 'Did you mean {email}?',
+                emailSuggestionDismiss: 'Keep as typed',
+                contactPlaceholder: 'name@example.com',
+                button: 'Send report',
+                error: 'Please write a few details before sending.',
+                subject: 'Issue or content error in Bíblia e Hinário CCB app',
+                detailsHeader: 'Report details:',
+                contactHeader: 'Reply email:',
+                metadataHeader: 'App information:',
+                fallbackIntro: 'If your email app did not open, send the message below to:',
+                emailLabel: 'Email:',
+                footer: 'Thank you for helping',
+                success: 'Thank you! Your report was received.',
+                networkError: 'Could not send right now. Please try again or use the email below.'
+            },
+            pt: {
+                documentTitle: 'Reportar um problema - Bíblia e Hinário CCB',
+                title: 'Reportar um problema',
+                intro: 'Descreva o que aconteceu no aplicativo. Esta página ajuda a garantir que a mensagem não seja enviada em branco.',
+                messageLabel: 'O que aconteceu?',
+                messageHint: 'Se for erro de conteúdo, informe o livro e capítulo da Bíblia ou o número do hino.',
+                messagePlaceholder: 'Escreva os detalhes aqui...',
+                contactLabel: 'Seu e-mail',
+                contactHint: 'Usaremos apenas para responder a você. Não informe senhas nem dados particulares da sua conta.',
+                emailError: 'Digite um e-mail válido para que possamos responder.',
+                emailSuggestion: 'Você quis dizer {email}?',
+                emailSuggestionDismiss: 'Manter como digitei',
+                contactPlaceholder: 'nome@exemplo.com',
+                button: 'Enviar relato',
+                error: 'Por favor, escreva alguns detalhes antes de enviar.',
+                subject: 'Problema ou erro no aplicativo Bíblia e Hinário CCB',
+                detailsHeader: 'Detalhes do relato:',
+                contactHeader: 'E-mail para resposta:',
+                metadataHeader: 'Informações do aplicativo:',
+                fallbackIntro: 'Se o aplicativo de e-mail não abriu, envie a mensagem abaixo para:',
+                emailLabel: 'E-mail:',
+                footer: 'Obrigado pela ajuda',
+                success: 'Obrigado! Seu relato foi recebido.',
+                networkError: 'Não foi possível enviar agora. Tente novamente ou use o e-mail abaixo.'
+            },
+            es: {
+                documentTitle: 'Reportar un problema - Biblia e Himnario CCB',
+                title: 'Reportar un problema',
+                intro: 'Describe lo que ocurrió en la aplicación. Esta página ayuda a evitar que el mensaje se envíe vacío.',
+                messageLabel: '¿Qué ocurrió?',
+                messageHint: 'Si es un error de contenido, incluye el libro y capítulo de la Biblia o el número del himno.',
+                messagePlaceholder: 'Escribe los detalles aquí...',
+                contactLabel: 'Tu correo',
+                contactHint: 'Lo usaremos solo para responderte. No incluyas contraseñas ni datos privados de tu cuenta.',
+                emailError: 'Ingresa un correo válido para poder responderte.',
+                emailSuggestion: '¿Quisiste decir {email}?',
+                emailSuggestionDismiss: 'Mantener como lo escribí',
+                contactPlaceholder: 'nombre@ejemplo.com',
+                button: 'Enviar reporte',
+                error: 'Por favor, escribe algunos detalles antes de enviar.',
+                subject: 'Problema o error de contenido en la app Biblia e Himnario CCB',
+                detailsHeader: 'Detalles del reporte:',
+                contactHeader: 'Correo para responder:',
+                metadataHeader: 'Información de la app:',
+                fallbackIntro: 'Si tu app de correo no se abrió, envía el mensaje de abajo a:',
+                emailLabel: 'Correo:',
+                footer: 'Gracias por ayudar',
+                success: '¡Gracias! Tu reporte fue recibido.',
+                networkError: 'No fue posible enviar ahora. Inténtalo de nuevo o usa el correo de abajo.'
+            },
+            it: {
+                documentTitle: 'Segnala un problema - Bibbia e Innario CCB',
+                title: 'Segnala un problema',
+                intro: 'Descrivi cosa è successo nell’app. Questa pagina aiuta a evitare che il messaggio venga inviato vuoto.',
+                messageLabel: 'Che cosa è successo?',
+                messageHint: 'Se è un errore di contenuto, indica il libro e capitolo della Bibbia o il numero dell’inno.',
+                messagePlaceholder: 'Scrivi qui i dettagli...',
+                contactLabel: 'La tua email',
+                contactHint: 'La useremo solo per risponderti. Non includere password o dati privati del tuo account.',
+                emailError: 'Inserisci un’email valida così possiamo risponderti.',
+                emailSuggestion: 'Intendevi {email}?',
+                emailSuggestionDismiss: 'Mantieni come scritto',
+                contactPlaceholder: 'nome@esempio.com',
+                button: 'Invia segnalazione',
+                error: 'Scrivi qualche dettaglio prima di inviare.',
+                subject: 'Problema o errore di contenuto nell’app Bibbia e Innario CCB',
+                detailsHeader: 'Dettagli della segnalazione:',
+                contactHeader: 'Email per la risposta:',
+                metadataHeader: 'Informazioni sull’app:',
+                fallbackIntro: 'Se l’app email non si è aperta, invia il messaggio qui sotto a:',
+                emailLabel: 'Email:',
+                footer: 'Grazie per l’aiuto',
+                success: 'Grazie! La tua segnalazione è stata ricevuta.',
+                networkError: 'Non è stato possibile inviare ora. Riprova o usa l’email qui sotto.'
+            },
+            fr: {
+                documentTitle: 'Signaler un problème - Bible et Recueil CCB',
+                title: 'Signaler un problème',
+                intro: 'Décrivez ce qui s’est passé dans l’application. Cette page aide à éviter l’envoi d’un message vide.',
+                messageLabel: 'Que s’est-il passé ?',
+                messageHint: 'S’il s’agit d’une erreur de contenu, indiquez le livre et chapitre biblique ou le numéro du cantique.',
+                messagePlaceholder: 'Écrivez les détails ici...',
+                contactLabel: 'Votre e-mail',
+                contactHint: 'Nous l’utiliserons uniquement pour vous répondre. N’indiquez pas de mot de passe ni d’information privée de compte.',
+                emailError: 'Veuillez saisir un e-mail valide pour que nous puissions répondre.',
+                emailSuggestion: 'Vouliez-vous dire {email} ?',
+                emailSuggestionDismiss: 'Garder tel quel',
+                contactPlaceholder: 'nom@exemple.com',
+                button: 'Envoyer le signalement',
+                error: 'Veuillez écrire quelques détails avant l’envoi.',
+                subject: 'Problème ou erreur de contenu dans l’app Bible et Recueil CCB',
+                detailsHeader: 'Détails du signalement :',
+                contactHeader: 'E-mail de réponse :',
+                metadataHeader: 'Informations de l’app :',
+                fallbackIntro: 'Si votre app de messagerie ne s’est pas ouverte, envoyez le message ci-dessous à :',
+                emailLabel: 'E-mail:',
+                footer: 'Merci pour votre aide',
+                success: 'Merci ! Votre signalement a été reçu.',
+                networkError: 'Impossible d’envoyer maintenant. Réessayez ou utilisez l’e-mail ci-dessous.'
+            },
+            de: {
+                documentTitle: 'Problem melden - Bibel und Gesangbuch CCB',
+                title: 'Problem melden',
+                intro: 'Beschreiben Sie bitte, was in der App passiert ist. Diese Seite hilft, leere Nachrichten zu vermeiden.',
+                messageLabel: 'Was ist passiert?',
+                messageHint: 'Wenn es ein Inhaltsfehler ist, nennen Sie bitte Bibelbuch und Kapitel oder die Liednummer.',
+                messagePlaceholder: 'Schreiben Sie die Details hier...',
+                contactLabel: 'Ihre E-Mail',
+                contactHint: 'Wir verwenden sie nur, um Ihnen zu antworten. Bitte keine Passwörter oder privaten Kontodaten angeben.',
+                emailError: 'Bitte geben Sie eine gültige E-Mail an, damit wir antworten können.',
+                emailSuggestion: 'Meinten Sie {email}?',
+                emailSuggestionDismiss: 'So beibehalten',
+                contactPlaceholder: 'name@beispiel.com',
+                button: 'Meldung senden',
+                error: 'Bitte schreiben Sie vor dem Senden einige Details.',
+                subject: 'Problem oder Inhaltsfehler in der Bibel und Gesangbuch CCB App',
+                detailsHeader: 'Details der Meldung:',
+                contactHeader: 'E-Mail für Antwort:',
+                metadataHeader: 'App-Informationen:',
+                fallbackIntro: 'Falls Ihre E-Mail-App nicht geöffnet wurde, senden Sie die folgende Nachricht an:',
+                emailLabel: 'E-Mail:',
+                footer: 'Danke für Ihre Hilfe',
+                success: 'Danke! Ihre Meldung wurde empfangen.',
+                networkError: 'Senden derzeit nicht möglich. Bitte erneut versuchen oder die E-Mail unten verwenden.'
+            },
+            ja: {
+                documentTitle: '問題を報告 - Bíblia e Hinário CCB',
+                title: '問題を報告',
+                intro: 'アプリで起きたことを書いてください。このページは、内容のないメール送信を防ぐためのものです。',
+                messageLabel: '何が起きましたか？',
+                messageHint: '内容の誤りの場合は、聖書の書名と章、または賛美歌の番号を書いてください。',
+                messagePlaceholder: 'ここに詳細を書いてください...',
+                contactLabel: 'メールアドレス',
+                contactHint: '返信のためだけに使用します。パスワードや個人のアカウント情報は書かないでください。',
+                emailError: '返信できるよう、有効なメールアドレスを入力してください。',
+                emailSuggestion: '{email} のことですか？',
+                emailSuggestionDismiss: 'このまま使う',
+                contactPlaceholder: 'name@example.com',
+                button: '報告を送信',
+                error: '送信する前に、少し詳しく内容を書いてください。',
+                subject: 'Bíblia e Hinário CCB アプリの問題または内容の誤り',
+                detailsHeader: '報告内容:',
+                contactHeader: '返信先メール:',
+                metadataHeader: 'アプリ情報:',
+                fallbackIntro: 'メールアプリが開かない場合は、下の内容を次の宛先へ送ってください:',
+                emailLabel: 'メール:',
+                footer: 'ご協力ありがとうございます',
+                success: 'ありがとうございます！報告を受け取りました。',
+                networkError: '送信できませんでした。もう一度お試しいただくか、下のメールアドレスをご利用ください。'
+            }
+        };
+
+        function getLocale() {
+            var params = new URLSearchParams(window.location.search);
+            var requested = (params.get('lang') || '').toLowerCase().split('-')[0];
+            if (i18n[requested]) return requested;
+
+            var languages = navigator.languages || [navigator.language || navigator.userLanguage || 'en'];
+            for (var i = 0; i < languages.length; i++) {
+                var primary = String(languages[i]).toLowerCase().split('-')[0];
+                if (i18n[primary]) return primary;
+            }
+            return 'en';
+        }
+
+        // Which app the report came from. An explicit ?platform= (set per
+        // store build in the remote-config action URL) wins; otherwise fall
+        // back to the user agent so every report is tagged automatically.
+        function detectPlatform() {
+            var explicit = new URLSearchParams(window.location.search).get('platform');
+            if (explicit) return explicit;
+            var ua = navigator.userAgent || '';
+            if (/Android/i.test(ua)) return 'Android';
+            if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS';
+            // iPadOS Safari can report as desktop Mac but still has touch.
+            if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return 'iOS';
+            return 'Web';
+        }
+
+        // --- Email typo guard (T-FORM-EMAIL) ---
+        // Local-only, no network call. isEmailSyntaxValid() catches addresses
+        // that can never be delivered (no dot in the domain, a trailing dot,
+        // doubled @, internal whitespace) and is the one thing here allowed
+        // to block submission — none of those forms would ever reach a real
+        // inbox anyway. suggestEmailDomain() is a *guess* at a mistyped
+        // well-known domain (gimail.com -> gmail.com) via edit distance
+        // against a short known-domains list, so a new typo needs no code
+        // change; it only ever offers, never corrects or blocks.
+        var KNOWN_EMAIL_DOMAINS = [
+            'gmail.com', 'googlemail.com', 'yahoo.com', 'outlook.com', 'hotmail.com',
+            'icloud.com', 'me.com', 'live.com', 'aol.com', 'protonmail.com',
+            'gmx.com', 'yandex.com', 'mail.com', 'zoho.com'
+        ];
+
+        function isEmailSyntaxValid(value) {
+            if (!value || /\s/.test(value)) return false;
+            if ((value.match(/@/g) || []).length !== 1) return false;
+            var at = value.indexOf('@');
+            var local = value.slice(0, at);
+            var domain = value.slice(at + 1);
+            if (!local || !domain) return false;
+            if (domain.charAt(0) === '.' || domain.charAt(domain.length - 1) === '.') return false;
+            if (domain.indexOf('..') !== -1) return false;
+            if (domain.indexOf('.') === -1) return false;
+            var labels = domain.split('.');
+            var tld = labels[labels.length - 1];
+            return /^[a-zA-Z]{2,}$/.test(tld);
+        }
+
+        function levenshtein(a, b) {
+            var m = a.length, n = b.length;
+            var prev = [];
+            for (var j = 0; j <= n; j++) prev[j] = j;
+            for (var i = 1; i <= m; i++) {
+                var cur = [i];
+                for (j = 1; j <= n; j++) {
+                    var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+                    cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+                }
+                prev = cur;
+            }
+            return prev[n];
+        }
+
+        function suggestEmailDomain(value) {
+            var at = value.lastIndexOf('@');
+            if (at === -1 || at === value.length - 1) return null;
+            var domain = value.slice(at + 1).toLowerCase();
+            if (KNOWN_EMAIL_DOMAINS.indexOf(domain) !== -1) return null;
+
+            var best = null, bestDist = Infinity;
+            for (var i = 0; i < KNOWN_EMAIL_DOMAINS.length; i++) {
+                var candidate = KNOWN_EMAIL_DOMAINS[i];
+                if (Math.abs(candidate.length - domain.length) > 3) continue;
+                var dist = levenshtein(domain, candidate);
+                if (dist < bestDist) { bestDist = dist; best = candidate; }
+            }
+            var threshold = domain.length <= 5 ? 1 : 2;
+            if (best && bestDist > 0 && bestDist <= threshold) {
+                return value.slice(0, at + 1) + best;
+            }
+            return null;
+        }
+
+        // Wires the inline "did you mean…?" suggestion onto one email input.
+        // Purely advisory: accepting fills the field, dismissing just hides
+        // it for that exact typed value, and either way the form still
+        // submits whatever the reader leaves in the field.
+        function setupEmailSuggestion(input, container, strings) {
+            if (!input || !container) return;
+            var dismissedFor = null;
+
+            function clear() {
+                container.textContent = '';
+                container.style.display = 'none';
+            }
+
+            function show(rawValue, suggested) {
+                container.textContent = '';
+                var template = strings.suggestion;
+                var idx = template.indexOf('{email}');
+                var before = idx === -1 ? template : template.slice(0, idx);
+                var after = idx === -1 ? '' : template.slice(idx + 7);
+                container.appendChild(document.createTextNode(before));
+                var acceptBtn = document.createElement('button');
+                acceptBtn.type = 'button';
+                acceptBtn.className = 'email-suggestion-accept';
+                acceptBtn.textContent = suggested;
+                acceptBtn.addEventListener('click', function() {
+                    input.value = suggested;
+                    clear();
+                    input.focus();
+                });
+                container.appendChild(acceptBtn);
+                container.appendChild(document.createTextNode(after + ' '));
+                var dismissBtn = document.createElement('button');
+                dismissBtn.type = 'button';
+                dismissBtn.className = 'email-suggestion-dismiss';
+                dismissBtn.textContent = strings.dismiss;
+                dismissBtn.addEventListener('click', function() {
+                    dismissedFor = rawValue;
+                    clear();
+                });
+                container.appendChild(dismissBtn);
+                container.style.display = 'block';
+            }
+
+            function evaluate() {
+                var value = input.value.trim();
+                if (!value || value === dismissedFor) { clear(); return; }
+                var suggested = suggestEmailDomain(value);
+                if (suggested && suggested.toLowerCase() !== value.toLowerCase()) {
+                    show(value, suggested);
+                } else {
+                    clear();
+                }
+            }
+
+            input.addEventListener('blur', evaluate);
+            input.addEventListener('input', function() {
+                if (container.style.display !== 'none') clear();
+            });
+        }
+
+        function getMetadata(locale) {
+            var params = new URLSearchParams(window.location.search);
+            var metadata = [];
+            metadata.push('Page language: ' + locale);
+            metadata.push('Platform: ' + detectPlatform());
+            if (params.get('version')) metadata.push('App version: ' + params.get('version'));
+            if (params.get('mode')) metadata.push('Mode: ' + params.get('mode'));
+            if (params.get('reference')) metadata.push('Reference: ' + params.get('reference'));
+            return metadata;
+        }
+
+        function buildEmailBody(t, locale) {
+            var message = document.getElementById('message').value.trim();
+            var contact = document.getElementById('contact').value.trim();
+            var metadata = getMetadata(locale);
+            var parts = [
+                t.detailsHeader,
+                message
+            ];
+
+            if (contact) {
+                parts.push('', t.contactHeader, contact);
+            }
+
+            if (metadata.length) {
+                parts.push('', t.metadataHeader, metadata.join('\n'));
+            }
+
+            return parts.join('\n');
+        }
+
+        function render() {
+            var locale = getLocale();
+            var t = i18n[locale];
+            document.documentElement.lang = locale;
+            document.title = t.documentTitle;
+
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('intro').textContent = t.intro;
+            document.getElementById('messageLabel').textContent = t.messageLabel;
+            document.getElementById('message').placeholder = t.messagePlaceholder;
+            document.getElementById('messageHint').textContent = t.messageHint;
+            document.getElementById('contactLabel').textContent = t.contactLabel;
+            document.getElementById('contact').placeholder = t.contactPlaceholder;
+            document.getElementById('contactHint').textContent = t.contactHint;
+            document.getElementById('buttonText').textContent = t.button;
+            document.getElementById('error').textContent = t.error;
+            document.getElementById('fallbackIntro').textContent = t.fallbackIntro;
+            document.getElementById('emailLabel').textContent = t.emailLabel;
+            document.getElementById('recipient').textContent = RECIPIENT;
+            document.getElementById('footer').textContent = t.footer;
+
+            var form = document.getElementById('reportForm');
+            var error = document.getElementById('error');
+            var submitButton = document.getElementById('submitButton');
+
+            setupEmailSuggestion(
+                document.getElementById('contact'),
+                document.getElementById('emailSuggestion'),
+                { suggestion: t.emailSuggestion, dismiss: t.emailSuggestionDismiss }
+            );
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var message = document.getElementById('message').value.trim();
+                if (message.length < 8) {
+                    error.textContent = t.error;
+                    error.style.display = 'block';
+                    return;
+                }
+                var contactEl = document.getElementById('contact');
+                var contact = contactEl.value.trim();
+                contactEl.value = contact;
+                if (!isEmailSyntaxValid(contact)) {
+                    error.textContent = t.emailError;
+                    error.style.display = 'block';
+                    contactEl.focus();
+                    return;
+                }
+                error.style.display = 'none';
+                document.getElementById('fallback').style.display = 'none';
+
+                var formData = new FormData(form);
+                formData.set('formType', FORM_TYPE);
+                formData.set('source', SOURCE);
+                formData.set('subject', t.subject);
+                formData.set('pageLanguage', locale);
+                formData.set('platform', detectPlatform());
+
+                // Pass through any URL params the iOS/Android app added so
+                // they end up as separate fields in the Sheet.
+                var urlParams = new URLSearchParams(window.location.search);
+                ['version', 'mode', 'reference'].forEach(function(k) {
+                    var v = urlParams.get(k);
+                    if (v) formData.set(k, v);
+                });
+
+                submitButton.disabled = true;
+
+                fetch(SCRIPT_URL, { method: 'POST', body: formData })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+                        return response.text();
+                    })
+                    .then(function() {
+                        document.getElementById('successText').textContent = t.success;
+                        form.style.display = 'none';
+                        document.getElementById('success').style.display = 'block';
+                    })
+                    .catch(function() {
+                        // Reveal the prepared email + recipient so the user
+                        // has a manual escape hatch.
+                        error.textContent = t.networkError;
+                        error.style.display = 'block';
+
+                        var body = buildEmailBody(t, locale);
+                        document.getElementById('fallbackMessage').textContent = body;
+                        document.getElementById('fallback').style.display = 'block';
+
+                        submitButton.disabled = false;
+                    });
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>
