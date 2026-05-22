@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bíblia e Hinário 5 CCB — baixe grátis</title>
+<meta name="description" content="Bíblia, hinário com partituras, mapa das casas de oração e cultos. Grátis, sem anúncios e sem cadastro. iPhone e Android.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bíblia e Hinário 5 CCB">
+<meta property="og:description" content="Bíblia, hinário com partituras, mapa das casas de oração e cultos. Grátis, sem anúncios e sem cadastro.">
+<meta property="og:image" content="https://moitinho.github.io/icons/app-ccb-512.png">
+<meta property="og:url" content="https://moitinho.github.io/ccb/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/icons/app-ccb.png">
+<link rel="apple-touch-icon" href="/icons/app-ccb.png">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--fg:#1f1d1a;--muted:#6b665e;--btn:#1f1d1a;--btnfg:#fff;--line:#e4e0d8}
+@media (prefers-color-scheme:dark){:root{--bg:#141311;--card:#1d1c19;--fg:#f1eee8;--muted:#a8a296;--btn:#f1eee8;--btnfg:#141311;--line:#2c2a26}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:420px;margin:0 auto;padding:40px 16px;text-align:center}
+img.icon{width:112px;height:112px;border-radius:24px;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+h1{font-size:1.45rem;margin:18px 0 6px}p{color:var(--muted);margin:0 0 26px}
+a.btn{display:block;background:var(--btn);color:var(--btnfg);text-decoration:none;font-weight:600;padding:14px 16px;border-radius:12px;margin:0 0 4px}
+small.dest{display:block;color:var(--muted);font-size:.78rem;margin:0 0 16px}
+footer{margin-top:28px;font-size:.8rem;color:var(--muted)}footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <img class="icon" src="/icons/app-ccb-512.png" alt="Ícone do app Bíblia e Hinário 5 CCB">
+  <h1>Bíblia e Hinário 5 CCB</h1>
+  <p>Bíblia, hinário com partituras, mapa das casas de oração e cultos.<br>Grátis, sem anúncios e sem cadastro.</p>
+  <a class="btn" id="ios" href="https://apps.apple.com/br/app/apple-store/id6504291938?pt=2183464&amp;ct=share&amp;mt=8">Baixar na App Store (iPhone e iPad)</a>
+  <small class="dest">apps.apple.com</small>
+  <a class="btn" id="android" href="https://play.google.com/store/apps/details?id=moitinho.bibleandhymnal&amp;referrer=utm_source%3Dshare%26utm_medium%3Dlink%26utm_campaign%3Dshare">Baixar no Google Play (Android)</a>
+  <small class="dest">play.google.com</small>
+  <footer><a href="/support.html">Suporte</a> · <a href="/privacy.html">Privacidade</a></footer>
+</main>
+<script>
+(function(){
+  if (/[?&]show=1\b/.test(location.search)) return;
+  var ua = navigator.userAgent || "";
+  var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var android = /Android/.test(ua);
+  var target = ios ? document.getElementById("ios") : android ? document.getElementById("android") : null;
+  if (target) location.replace(target.href);
+})();
+</script>
+</body>
+</html>
