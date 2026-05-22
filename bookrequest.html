@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request a Book</title>
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        :root {
+            --bg: #eeecea;
+            --fg: #1a1a18;
+            --fg-secondary: #4a4944;
+            --fg-tertiary: #7a7872;
+            --divider: #c5c1bb;
+            --card-bg: #f7f5f2;
+            --card-border: #d8d4ce;
+            --btn-bg: #1a1a18;
+            --btn-fg: #eeecea;
+            --btn-hover: #333330;
+            --max-width: 520px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #5a5856;
+                --fg: #f2f0ec;
+                --fg-secondary: #d5d2cc;
+                --fg-tertiary: #b0ada7;
+                --divider: #706d68;
+                --card-bg: #4a4845;
+                --card-border: #635f5b;
+                --btn-bg: #f2f0ec;
+                --btn-fg: #3a3836;
+                --btn-hover: #e0ddd8;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* One visible focus ring for every interactive element, so the
+           keyboard path through jump link → fields → submit → list → sponsor
+           is never invisible. Inputs keep their own border-colour cue too. */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--fg-tertiary);
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
+        /* The scroll target is focusable so the jump link moves keyboard focus
+           into the list, not just the viewport — but it must not draw a ring
+           of its own when reached by pointer. */
+        [tabindex="-1"]:focus { outline: none; }
+
+        .page {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 26px 24px 64px;
+            animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .page { animation: none; }
+            .submit-button, .sponsor-button { transition: none; }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            font-size: 2rem;
+            text-align: center;
+            letter-spacing: 0.01em;
+        }
+
+        .divider {
+            width: 56px;
+            height: 1px;
+            background: var(--divider);
+            margin: 22px auto 26px;
+        }
+
+        .body-text {
+            color: var(--fg-secondary);
+            text-align: center;
+            font-size: 1.02rem;
+            font-weight: 300;
+            margin-bottom: 18px;
+        }
+
+        /* Discovery without displacement: a quiet in-page anchor that says the
+           waiting list exists and takes the reader there. Deliberately typed
+           down (small, tertiary rule) so it never competes with the form —
+           the form is what the page is for. */
+        .jump-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: fit-content;
+            max-width: 100%;
+            min-height: 44px;
+            margin: 0 auto 34px;
+            padding: 8px 4px;
+            color: var(--fg-secondary);
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-align: center;
+            text-decoration: none;
+            border-bottom: 1px solid var(--divider);
+            transition: border-color 0.25s ease, color 0.25s ease;
+        }
+
+        .jump-link:hover { color: var(--fg); border-color: var(--fg-tertiary); }
+        .jump-link .arrow { color: var(--fg-tertiary); font-size: 0.85rem; }
+
+        /* The breath between the form and the list. The two used to collide —
+           the list heading sat directly under the submit button — so an
+           ornament now closes one section and opens the other. It is the only
+           one left on the page: the copy that used to sit above the title
+           bought nothing but a screenful of empty. */
+        .section-break {
+            text-align: center;
+            color: var(--fg-tertiary);
+            font-size: 0.65rem;
+            letter-spacing: 0.6em;
+            margin: 40px 0 32px;
+        }
+
+        .priority-section {
+            scroll-margin-top: 18px;
+        }
+
+        .priority-section h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .priority-intro,
+        .priority-status {
+            color: var(--fg-secondary);
+            font-size: 0.92rem;
+            font-weight: 300;
+            text-align: center;
+        }
+
+        .priority-intro { margin-bottom: 16px; }
+
+        .priority-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            list-style: none;
+        }
+
+        /* One request, one row: rank | book | +1 with its count. The card used
+           to spend five stacked lines on four facts (title, author, language,
+           count, and the button alone underneath), and seven of them made the
+           section taller than the rest of the page put together. Author and
+           language now share a line and the count rides on the control it
+           belongs to; a reply from the endpoint drops onto its own row below,
+           so it can be long without stretching the row that is always there. */
+        .priority-item {
+            display: grid;
+            grid-template-columns: 20px minmax(0, 1fr) auto;
+            column-gap: 10px;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 8px 12px;
+        }
+
+        .priority-rank {
+            color: var(--fg-tertiary);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1rem;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        /* A four-word title and a forty-character one have to survive the same
+           row, so the text column may shrink to nothing and breaks anywhere
+           rather than pushing the +1 control off the card. */
+        .priority-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.02rem;
+            font-weight: 600;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+
+        .priority-meta,
+        .priority-sponsors {
+            color: var(--fg-secondary);
+            font-size: 0.82rem;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .priority-author { font-style: italic; }
+        .priority-sep { color: var(--fg-tertiary); }
+        .priority-sponsors { margin-top: 3px; }
+
+        /* 44px stays 44px: the count moved inside the control to save height,
+           not to shrink the target. The visible "+1 · 3" is the short form;
+           the accessible name spells the number out, because the count is the
+           whole justification for the order the list is in. */
+        .plus-one-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            min-width: 62px;
+            padding: 4px 12px;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--fg);
+            background: transparent;
+            border: 1px solid var(--divider);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .plus-one-button:hover:not(:disabled) {
+            border-color: var(--fg-tertiary);
+            background: var(--bg);
+        }
+
+        .plus-one-count {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .plus-one-count::before {
+            content: "·";
+            margin: 0 7px;
+            color: var(--fg-tertiary);
+            font-weight: 400;
+        }
+
+        /* Disabled means "not now", not "broken": the frame recedes and the
+           +1 goes quiet, but the count keeps its contrast, because with the
+           endpoint down it is the only thing on the row still worth reading. */
+        .plus-one-button:disabled {
+            color: var(--fg-tertiary);
+            border-color: var(--card-border);
+            background: transparent;
+            cursor: default;
+        }
+
+        .plus-one-button:disabled .plus-one-count { color: var(--fg-secondary); }
+
+        .request-message {
+            grid-column: 2 / -1;
+            color: var(--fg-secondary);
+            font-size: 0.8rem;
+            line-height: 1.35;
+        }
+
+        .request-message:not(:empty) { margin: 6px 0 2px; }
+
+        .request-message.is-error { color: #b3403a; }
+        @media (prefers-color-scheme: dark) { .request-message.is-error { color: #ffb4a9; } }
+
+        .priority-status {
+            margin-top: 14px;
+            min-height: 1.5em;
+        }
+
+        /* Sponsoring is an offer, not a footnote, so it gets a card of its own
+           and carries its framing with it — what support does opens the card,
+           the "not a sale, not a pre-sale, no date promised" line closes it,
+           and both travel with the button wherever the card appears.
+           The standalone modifier is the copy that sits between the form and
+           the list: far enough below Send, and framed enough, that it reads as
+           a separate offer rather than a second submit button. */
+        .sponsor-card--standalone { margin-top: 36px; }
+
+        .sponsor-lead {
+            margin-bottom: 14px;
+            color: var(--fg-secondary);
+            font-size: 0.92rem;
+            font-weight: 300;
+            line-height: 1.55;
+        }
+
+        .sponsor-card {
+            margin-top: 30px;
+            padding: 20px 18px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .sponsor-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 11px 20px;
+            color: var(--fg);
+            background: transparent;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 0.98rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid var(--fg-tertiary);
+            border-radius: 10px;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .sponsor-button:hover { background: var(--bg); border-color: var(--fg); }
+
+        .sponsor-note {
+            margin-top: 13px;
+            color: var(--fg-tertiary);
+            font-size: 0.8rem;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        /* Way back to the form from the foot of the list, for the reader who
+           followed the jump link down and now wants to ask for their own. */
+        .back-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: fit-content;
+            max-width: 100%;
+            min-height: 44px;
+            margin: 26px auto 0;
+            padding: 8px 4px;
+            color: var(--fg-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+            text-decoration: none;
+            border-bottom: 1px solid var(--divider);
+            transition: border-color 0.25s ease, color 0.25s ease;
+        }
+
+        .back-link:hover { color: var(--fg); border-color: var(--fg-tertiary); }
+        .back-link .arrow { color: var(--fg-tertiary); font-size: 0.85rem; }
+
+        form { display: flex; flex-direction: column; gap: 22px; }
+
+        .field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--fg-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--fg);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 13px 15px;
+            outline: none;
+            transition: border-color 0.25s ease;
+        }
+
+        .field input:focus,
+        .field textarea:focus { border-color: var(--fg-tertiary); }
+
+        .field input::placeholder,
+        .field textarea::placeholder { color: var(--fg-tertiary); opacity: 0.8; }
+
+        .field textarea { min-height: 96px; resize: vertical; }
+
+        /* The two conditions a reader has to know — public domain only, and
+           new editions arrive on their own — used to sit in the opening
+           paragraph. They now sit under the field each one is about, where
+           they are read at the moment they matter. */
+        .field-hint {
+            margin-top: 7px;
+            color: var(--fg-tertiary);
+            font-size: 0.82rem;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        .submit-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 500;
+            background: var(--btn-bg);
+            color: var(--btn-fg);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 22px;
+            margin-top: 6px;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .submit-button:hover { background: var(--btn-hover); transform: translateY(-1px); }
+
+        .submit-button svg { width: 18px; height: 18px; }
+        .submit-button:disabled { opacity: 0.6; cursor: progress; }
+
+        .honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+        .form-error {
+            display: none;
+            margin-top: 2px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #b3403a;
+            text-align: left;
+        }
+        .form-error a { color: inherit; }
+        @media (prefers-color-scheme: dark) { .form-error { color: #ffb4a9; } }
+
+        /* Advisory only — never blocks submission. Reuses the field-hint
+           styling so it reads as a suggestion, not an error. */
+        .email-suggestion {
+            display: none;
+            margin-top: 7px;
+            color: var(--fg-secondary);
+            font-size: 0.82rem;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        .email-suggestion button {
+            font: inherit;
+            font-weight: 500;
+            color: inherit;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .email-suggestion-accept {
+            color: var(--fg);
+            font-weight: 600;
+        }
+
+        .form-success {
+            display: none;
+            text-align: center;
+        }
+
+        .form-success-text {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--fg-secondary);
+        }
+
+        .footer {
+            margin-top: 44px;
+            text-align: center;
+        }
+
+        .footer-link {
+            color: var(--fg-tertiary);
+            font-size: 0.85rem;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.25s ease;
+        }
+
+        .footer-link:hover { border-color: var(--fg-tertiary); }
+
+        .footer-sep {
+            color: var(--fg-tertiary);
+            margin: 0 10px;
+            font-size: 0.8rem;
+            opacity: 0.55;
+        }
+
+        @media (max-width: 480px) {
+            .page { padding: 18px 20px 52px; }
+            h1 { font-size: 1.7rem; }
+            .body-text { font-size: 0.98rem; margin-bottom: 16px; }
+            .jump-link { margin-bottom: 30px; }
+            .section-break { margin: 34px 0 28px; }
+            .sponsor-card { padding: 18px 15px 15px; }
+            .sponsor-button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page" id="page" tabindex="-1">
+        <section class="priority-section" id="priority-section" tabindex="-1" aria-labelledby="priority-heading">
+            <h2 id="priority-heading">Upcoming editions and translations</h2>
+            <p class="priority-intro" id="priority-intro">This list is ordered by demand, with priority influenced by support.</p>
+            <ol class="priority-list" id="priority-list">
+                <li class="priority-item" data-request-id="the-idiot-es">
+                    <span class="priority-rank">1</span>
+                    <div class="priority-main"><h3 class="priority-title">The Idiot</h3><p class="priority-meta"><span class="priority-author">Fyodor Dostoevsky</span><span class="priority-sep"> · </span><span class="priority-language">Spanish</span></p></div>
+                    <button class="plus-one-button" type="button" disabled aria-label="+1 this request — Reader requests: 1"><span class="plus-one-label">+1</span><span class="plus-one-count" data-count="1">1</span></button>
+                    <p class="request-message" role="status" aria-live="polite"></p>
+                </li>
+                <li class="priority-item" data-request-id="phantom-of-the-opera-en">
+                    <span class="priority-rank">2</span>
+                    <div class="priority-main"><h3 class="priority-title">The Phantom of the Opera</h3><p class="priority-meta"><span class="priority-author">Gaston Leroux</span><span class="priority-sep"> · </span><span class="priority-language">English</span></p></div>
+                    <button class="plus-one-button" type="button" disabled aria-label="+1 this request — Reader requests: 1"><span class="plus-one-label">+1</span><span class="plus-one-count" data-count="1">1</span></button>
+                    <p class="request-message" role="status" aria-live="polite"></p>
+                </li>
+                <li class="priority-item" data-request-id="north-and-south-en">
+                    <span class="priority-rank">3</span>
+                    <div class="priority-main"><h3 class="priority-title">North and South</h3><p class="priority-meta"><span class="priority-author">Elizabeth Gaskell</span><span class="priority-sep"> · </span><span class="priority-language">English</span></p></div>
+                    <button class="plus-one-button" type="button" disabled aria-label="+1 this request — Reader requests: 1"><span class="plus-one-label">+1</span><span class="plus-one-count" data-count="1">1</span></button>
+                    <p class="request-message" role="status" aria-live="polite"></p>
+                </li>
+                <li class="priority-item" data-request-id="the-odyssey-it">
+                    <span class="priority-rank">4</span>
+                    <div class="priority-main"><h3 class="priority-title">The Odyssey</h3><p class="priority-meta"><span class="priority-author">Homer</span><span class="priority-sep"> · </span><span class="priority-language">Italian</span></p></div>
+                    <button class="plus-one-button" type="button" disabled aria-label="+1 this request — Reader requests: 1"><span class="plus-one-label">+1</span><span class="plus-one-count" data-count="1">1</span></button>
+                    <p class="request-message" role="status" aria-live="polite"></p>
+                </li>
+                <li class="priority-item" data-request-id="pushkin-poems-ru">
+                    <span class="priority-rank">5</span>
+                    <div class="priority-main"><h3 class="priority-title">Poems by Pushkin</h3><p class="priority-meta"><span class="priority-author">Alexander Pushkin</span><span class="priority-sep"> · </span><span class="priority-language">Russian</span></p></div>
+                    <button class="plus-one-button" type="button" disabled aria-label="+1 this request — Reader requests: 1"><span class="plus-one-label">+1</span><span class="plus-one-count" data-count="1">1</span></button>
+                    <p class="request-message" role="status" aria-live="polite"></p>
+                </li>
+                <li class="priority-item" data-request-id="golden-cockerel-ru">
+                    <span class="priority-rank">6</span>
+                    <div class="priority-main"><h3 class="priority-title">The Golden Cockerel</h3><p class="priority-meta"><span class="priority-author">Alexander Pushkin</span><span class="priority-sep"> · </span><span class="priority-language">Russian</span></p></div>
+                    <button class="plus-one-button" type="button" disabled aria-label="+1 this request — Reader requests: 1"><span class="plus-one-label">+1</span><span class="plus-one-count" data-count="1">1</span></button>
+                    <p class="request-message" role="status" aria-live="polite"></p>
+                </li>
+                <li class="priority-item" data-request-id="brothers-karamazov-es">
+                    <span class="priority-rank">7</span>
+                    <div class="priority-main"><h3 class="priority-title">The Brothers Karamazov</h3><p class="priority-meta"><span class="priority-author">Fyodor Dostoevsky</span><span class="priority-sep"> · </span><span class="priority-language">Spanish</span></p></div>
+                    <button class="plus-one-button" type="button" disabled aria-label="+1 this request — Reader requests: 1"><span class="plus-one-label">+1</span><span class="plus-one-count" data-count="1">1</span></button>
+                    <p class="request-message" role="status" aria-live="polite"></p>
+                </li>
+            </ol>
+            <p class="priority-status" id="priority-status">Live ranking needs JavaScript and a connection. This saved list stays available; +1 is disabled.</p>
+            <!-- The no-JS copy of the offer. With scripts running, render()
+                 takes this card out and the block above the list is the only
+                 one the reader sees; without them there is no form to sit
+                 above, so the offer stays here at the foot of the list. -->
+            <div class="sponsor-card">
+                <p class="sponsor-lead">Sponsoring helps fund the next editions; priority is influenced by support.</p>
+                <a class="sponsor-button" href="https://donate.stripe.com/14A5kE9Pe3fk5MA49OfUQ00" target="_blank" rel="noopener">Sponsor a request</a>
+                <p class="sponsor-note">Sponsorship is not a sale or pre-sale, does not reserve or purchase a book, and does not promise a publication date.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Requests POST straight to the shared Apps Script web app (no mail
+        // client needed) — it emails bibliahinarioccb@gmail.com, tagged with
+        // FORM_TYPE / SOURCE so Support, Book request, and CCB reports stay
+        // distinguishable in the one inbox. RECIPIENT is only the manual
+        // fallback shown if the request ever fails.
+        var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE6kYRYF31iIwoJATqHuTEUJilDLWZj0jvlCaTRtAgktWxj3is0fhczmyhMLOaQSLGHw/exec';
+        var FORM_TYPE = 'public_domain_books_request';
+        var SOURCE = 'Public Domain Books — Book request';
+        var RECIPIENT = 'bibliahinarioccb@gmail.com';
+        var PRIORITY_URL = 'https://pyqvubxmmlksjgbbtgva.supabase.co/functions/v1/book-priority';
+        // Sponsoring leaves the page for Stripe, so every place it is offered
+        // opens in a new tab (target=_blank + rel=noopener): a half-filled
+        // form is never navigated out from under the reader. Same URL as the
+        // static sponsor card below the list — kept here so the two cannot
+        // drift apart.
+        var SPONSOR_URL = 'https://donate.stripe.com/14A5kE9Pe3fk5MA49OfUQ00';
+
+        // Which platform the submission came from. An explicit ?platform= (set
+        // by the app's link) wins; otherwise infer from the user agent, so every
+        // submission is tagged. Shared across all forms for a standard payload.
+        function detectPlatform() {
+            var explicit = new URLSearchParams(window.location.search).get('platform');
+            if (explicit) return explicit;
+            var ua = navigator.userAgent || '';
+            if (/Android/i.test(ua)) return 'Android';
+            if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS';
+            if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return 'iOS';
+            return 'Web';
+        }
+
+        const i18n = {
+            en: {
+                title: "Request a Book",
+                intro: "Tell us which classic you're missing — or which language you'd love to read one in. Every edition in the library began as a request like yours.",
+                bookLabel: "The book",
+                bookPlaceholder: "Title and author",
+                langLabel: "Language or translation (optional)",
+                langPlaceholder: "e.g. Portuguese",
+                emailLabel: "Your email",
+                emailPlaceholder: "So we can tell you when it arrives",
+                emailError: "Please enter a valid email address.",
+                emailSuggestion: "Did you mean {email}?",
+                emailSuggestionDismiss: "Keep as typed",
+                notesLabel: "Anything else? (optional)",
+                notesPlaceholder: "A particular edition, links, context…",
+                submit: "Send request",
+                subject: "Book request — Public Domain Books",
+                trTitle: "Request a Translation",
+                trIntro: "This book is already in the library in its original language or a classic public-domain edition — and we translate on request. Tell us which language you'd love to read it in.",
+                trTiming: "Shorter works can be ready within days (longer ones take a bit more).",
+                trSubject: "Translation request — Public Domain Books",
+                noteDomain: "Only works in the public domain can join the library.",
+                noteAuto: "New editions appear in the app automatically once ready.",
+                bodyBook: "Book", bodyLang: "Language", bodyContact: "Contact",
+                privacy: "Privacy Policy",
+                support: "Support",
+                success: "Thank you! Your request was sent.",
+                netError: "Couldn’t send just now — please try again, or email me at",
+                priorityTitle: "Upcoming editions and translations",
+                priorityIntro: "This list is ordered by demand, with priority influenced by support.",
+                sponsorLead: "Sponsoring helps fund the next editions; priority is influenced by support.",
+                sponsorNote: "Sponsorship is not a sale or pre-sale, does not reserve or purchase a book, and does not promise a publication date.",
+                readerRequests: "Reader requests: {count}",
+                plusOne: "+1 this request",
+                plusOnePending: "Adding…",
+                plusOneSuccess: "Your support was added.",
+                plusOneAlready: "You already supported this request today.",
+                plusOneInvalid: "This request could not be validated.",
+                plusOneMissing: "This request is no longer available.",
+                plusOneConflict: "The count changed at the same time. Please try again.",
+                plusOneUnavailable: "Live support is temporarily unavailable.",
+                plusOneError: "Couldn’t update this request. Please try again.",
+                priorityFallback: "Live ranking needs JavaScript and a connection. This saved list stays available; +1 is disabled.",
+                sponsors: "Sponsors: {names}",
+                sponsorCta: "Sponsor a request"
+            },
+            pt: {
+                title: "Peça um Livro",
+                intro: "Conte qual clássico está faltando — ou em qual idioma você adoraria ler um deles. Cada edição da biblioteca começou com um pedido como o seu.",
+                bookLabel: "O livro",
+                bookPlaceholder: "Título e autor",
+                langLabel: "Idioma ou tradução (opcional)",
+                langPlaceholder: "ex.: português",
+                emailLabel: "Seu e-mail",
+                emailPlaceholder: "Para avisarmos quando chegar",
+                emailError: "Digite um e-mail válido.",
+                emailSuggestion: "Você quis dizer {email}?",
+                emailSuggestionDismiss: "Manter como digitei",
+                notesLabel: "Algo mais? (opcional)",
+                notesPlaceholder: "Uma edição específica, links, contexto…",
+                submit: "Enviar pedido",
+                subject: "Pedido de livro — Public Domain Books",
+                trTitle: "Peça uma Tradução",
+                trIntro: "Este livro já está na biblioteca no idioma original ou em uma edição clássica de domínio público — e traduzimos sob pedido. Conte em qual idioma você adoraria lê-lo.",
+                trTiming: "Obras mais curtas podem ficar prontas em poucos dias (as mais longas levam um pouco mais).",
+                trSubject: "Pedido de tradução — Public Domain Books",
+                noteDomain: "Só podemos incluir obras em domínio público.",
+                noteAuto: "As novas edições aparecem no app automaticamente assim que ficam prontas.",
+                bodyBook: "Livro", bodyLang: "Idioma", bodyContact: "Contato",
+                privacy: "Política de Privacidade",
+                support: "Suporte",
+                success: "Obrigado! Seu pedido foi enviado.",
+                netError: "Não foi possível enviar agora — tente novamente ou envie um e-mail para",
+                priorityTitle: "Próximas edições e traduções",
+                priorityIntro: "Esta lista é ordenada pela demanda, com a prioridade influenciada pelo apoio.",
+                sponsorLead: "Patrocinar ajuda a custear as próximas edições; a prioridade é influenciada pelo apoio.",
+                sponsorNote: "O patrocínio não é uma venda nem pré-venda, não reserva nem compra um livro e não promete uma data de publicação.",
+                readerRequests: "Pedidos de leitores: {count}",
+                plusOne: "+1 neste pedido",
+                plusOnePending: "Adicionando…",
+                plusOneSuccess: "Seu apoio foi adicionado.",
+                plusOneAlready: "Você já apoiou este pedido hoje.",
+                plusOneInvalid: "Não foi possível validar este pedido.",
+                plusOneMissing: "Este pedido não está mais disponível.",
+                plusOneConflict: "A contagem mudou ao mesmo tempo. Tente novamente.",
+                plusOneUnavailable: "O apoio ao vivo está temporariamente indisponível.",
+                plusOneError: "Não foi possível atualizar este pedido. Tente novamente.",
+                priorityFallback: "A classificação ao vivo precisa de JavaScript e conexão. Esta lista salva continua disponível; o +1 está desativado.",
+                sponsors: "Patrocinadores: {names}",
+                sponsorCta: "Patrocinar um pedido"
+            },
+            es: {
+                title: "Pide un Libro",
+                intro: "Cuéntanos qué clásico falta — o en qué idioma te encantaría leer uno. Cada edición de la biblioteca empezó con una petición como la tuya.",
+                bookLabel: "El libro",
+                bookPlaceholder: "Título y autor",
+                langLabel: "Idioma o traducción (opcional)",
+                langPlaceholder: "p. ej., español",
+                emailLabel: "Tu correo",
+                emailPlaceholder: "Para avisarte cuando llegue",
+                emailError: "Ingresa un correo válido.",
+                emailSuggestion: "¿Quisiste decir {email}?",
+                emailSuggestionDismiss: "Mantener como lo escribí",
+                notesLabel: "¿Algo más? (opcional)",
+                notesPlaceholder: "Una edición concreta, enlaces, contexto…",
+                submit: "Enviar petición",
+                subject: "Petición de libro — Public Domain Books",
+                trTitle: "Pide una Traducción",
+                trIntro: "Este libro ya está en la biblioteca en su idioma original o en una edición clásica de dominio público — y traducimos a pedido. Cuéntanos en qué idioma te encantaría leerlo.",
+                trTiming: "Las obras más cortas pueden estar listas en pocos días (las más largas tardan un poco más).",
+                trSubject: "Petición de traducción — Public Domain Books",
+                noteDomain: "Solo podemos incluir obras en dominio público.",
+                noteAuto: "Las nuevas ediciones aparecen en la app automáticamente en cuanto están listas.",
+                bodyBook: "Libro", bodyLang: "Idioma", bodyContact: "Contacto",
+                privacy: "Política de Privacidad",
+                support: "Soporte",
+                success: "¡Gracias! Tu solicitud fue enviada.",
+                netError: "No se pudo enviar ahora — inténtalo de nuevo o escríbeme a",
+                priorityTitle: "Próximas ediciones y traducciones",
+                priorityIntro: "Esta lista se ordena según la demanda, con la prioridad influida por el apoyo.",
+                sponsorLead: "Patrocinar ayuda a financiar las próximas ediciones; la prioridad está influida por el apoyo.",
+                sponsorNote: "El patrocinio no es una venta ni una preventa, no reserva ni compra un libro y no promete una fecha de publicación.",
+                readerRequests: "Peticiones de lectores: {count}",
+                plusOne: "+1 a esta petición",
+                plusOnePending: "Añadiendo…",
+                plusOneSuccess: "Tu apoyo se ha añadido.",
+                plusOneAlready: "Ya apoyaste esta petición hoy.",
+                plusOneInvalid: "No se pudo validar esta petición.",
+                plusOneMissing: "Esta petición ya no está disponible.",
+                plusOneConflict: "El recuento cambió al mismo tiempo. Inténtalo de nuevo.",
+                plusOneUnavailable: "El apoyo en directo no está disponible temporalmente.",
+                plusOneError: "No se pudo actualizar esta petición. Inténtalo de nuevo.",
+                priorityFallback: "La clasificación en directo necesita JavaScript y conexión. Esta lista guardada sigue disponible; el +1 está desactivado.",
+                sponsors: "Patrocinadores: {names}",
+                sponsorCta: "Patrocinar una petición"
+            },
+            it: {
+                title: "Richiedi un Libro",
+                intro: "Dicci quale classico manca — o in quale lingua ti piacerebbe leggerne uno. Ogni edizione della biblioteca è nata da una richiesta come la tua.",
+                bookLabel: "Il libro",
+                bookPlaceholder: "Titolo e autore",
+                langLabel: "Lingua o traduzione (facoltativo)",
+                langPlaceholder: "es. italiano",
+                emailLabel: "La tua email",
+                emailPlaceholder: "Per avvisarti quando arriva",
+                emailError: "Inserisci un'email valida.",
+                emailSuggestion: "Intendevi {email}?",
+                emailSuggestionDismiss: "Mantieni come scritto",
+                notesLabel: "Altro? (facoltativo)",
+                notesPlaceholder: "Un'edizione particolare, link, contesto…",
+                submit: "Invia richiesta",
+                subject: "Richiesta di libro — Public Domain Books",
+                trTitle: "Richiedi una Traduzione",
+                trIntro: "Questo libro è già in biblioteca nella lingua originale o in un'edizione classica di pubblico dominio — e traduciamo su richiesta. Dicci in quale lingua ti piacerebbe leggerlo.",
+                trTiming: "Le opere più brevi possono essere pronte in pochi giorni (le più lunghe richiedono un po' di più).",
+                trSubject: "Richiesta di traduzione — Public Domain Books",
+                noteDomain: "Possiamo includere solo opere di pubblico dominio.",
+                noteAuto: "Le nuove edizioni appaiono nell'app automaticamente appena pronte.",
+                bodyBook: "Libro", bodyLang: "Lingua", bodyContact: "Contatto",
+                privacy: "Informativa sulla Privacy",
+                support: "Supporto",
+                success: "Grazie! La tua richiesta è stata inviata.",
+                netError: "Impossibile inviare ora — riprova o scrivimi a",
+                priorityTitle: "Prossime edizioni e traduzioni",
+                priorityIntro: "Questo elenco è ordinato in base alla domanda, con la priorità influenzata dal sostegno.",
+                sponsorLead: "Sponsorizzare aiuta a finanziare le prossime edizioni; la priorità è influenzata dal sostegno.",
+                sponsorNote: "La sponsorizzazione non è una vendita o prevendita, non riserva né acquista un libro e non promette una data di pubblicazione.",
+                readerRequests: "Richieste dei lettori: {count}",
+                plusOne: "+1 a questa richiesta",
+                plusOnePending: "Aggiunta…",
+                plusOneSuccess: "Il tuo sostegno è stato aggiunto.",
+                plusOneAlready: "Hai già sostenuto questa richiesta oggi.",
+                plusOneInvalid: "Non è stato possibile convalidare questa richiesta.",
+                plusOneMissing: "Questa richiesta non è più disponibile.",
+                plusOneConflict: "Il conteggio è cambiato nello stesso momento. Riprova.",
+                plusOneUnavailable: "Il sostegno in tempo reale è temporaneamente non disponibile.",
+                plusOneError: "Impossibile aggiornare questa richiesta. Riprova.",
+                priorityFallback: "La classifica in tempo reale richiede JavaScript e una connessione. Questo elenco salvato resta disponibile; il +1 è disattivato.",
+                sponsors: "Sponsor: {names}",
+                sponsorCta: "Sponsorizza una richiesta"
+            },
+            fr: {
+                title: "Demandez un Livre",
+                intro: "Dites-nous quel classique il manque — ou dans quelle langue vous aimeriez en lire un. Chaque édition de la bibliothèque est née d'une demande comme la vôtre.",
+                bookLabel: "Le livre",
+                bookPlaceholder: "Titre et auteur",
+                langLabel: "Langue ou traduction (facultatif)",
+                langPlaceholder: "p. ex. français",
+                emailLabel: "Votre e-mail",
+                emailPlaceholder: "Pour vous prévenir à son arrivée",
+                emailError: "Veuillez saisir une adresse e-mail valide.",
+                emailSuggestion: "Vouliez-vous dire {email} ?",
+                emailSuggestionDismiss: "Garder tel quel",
+                notesLabel: "Autre chose ? (facultatif)",
+                notesPlaceholder: "Une édition particulière, des liens, du contexte…",
+                submit: "Envoyer la demande",
+                subject: "Demande de livre — Public Domain Books",
+                trTitle: "Demandez une Traduction",
+                trIntro: "Ce livre est déjà dans la bibliothèque, dans sa langue d'origine ou dans une édition classique du domaine public — et nous traduisons à la demande. Dites-nous dans quelle langue vous aimeriez le lire.",
+                trTiming: "Les œuvres courtes peuvent être prêtes en quelques jours (les plus longues demandent un peu plus).",
+                trSubject: "Demande de traduction — Public Domain Books",
+                noteDomain: "Seules les œuvres du domaine public peuvent rejoindre la bibliothèque.",
+                noteAuto: "Les nouvelles éditions apparaissent automatiquement dans l'app dès qu'elles sont prêtes.",
+                bodyBook: "Livre", bodyLang: "Langue", bodyContact: "Contact",
+                privacy: "Politique de Confidentialité",
+                support: "Assistance",
+                success: "Merci ! Votre demande a été envoyée.",
+                netError: "Impossible d’envoyer pour l’instant — réessayez ou écrivez-moi à",
+                priorityTitle: "Prochaines éditions et traductions",
+                priorityIntro: "Cette liste est classée selon la demande, la priorité étant influencée par le soutien.",
+                sponsorLead: "Parrainer aide à financer les prochaines éditions ; la priorité est influencée par le soutien.",
+                sponsorNote: "Le parrainage n’est ni une vente ni une prévente, ne réserve ni n’achète un livre et ne promet aucune date de publication.",
+                readerRequests: "Demandes de lecteurs : {count}",
+                plusOne: "+1 pour cette demande",
+                plusOnePending: "Ajout…",
+                plusOneSuccess: "Votre soutien a été ajouté.",
+                plusOneAlready: "Vous avez déjà soutenu cette demande aujourd’hui.",
+                plusOneInvalid: "Cette demande n’a pas pu être validée.",
+                plusOneMissing: "Cette demande n’est plus disponible.",
+                plusOneConflict: "Le compteur a changé au même moment. Veuillez réessayer.",
+                plusOneUnavailable: "Le soutien en direct est temporairement indisponible.",
+                plusOneError: "Impossible de mettre à jour cette demande. Veuillez réessayer.",
+                priorityFallback: "Le classement en direct nécessite JavaScript et une connexion. Cette liste enregistrée reste disponible ; le +1 est désactivé.",
+                sponsors: "Parrains : {names}",
+                sponsorCta: "Parrainer une demande"
+            },
+            de: {
+                title: "Wünsch dir ein Buch",
+                intro: "Sag uns, welcher Klassiker fehlt — oder in welcher Sprache du einen lesen möchtest. Jede Ausgabe der Bibliothek begann mit einem Wunsch wie deinem.",
+                bookLabel: "Das Buch",
+                bookPlaceholder: "Titel und Autor",
+                langLabel: "Sprache oder Übersetzung (optional)",
+                langPlaceholder: "z. B. Deutsch",
+                emailLabel: "Deine E-Mail",
+                emailPlaceholder: "Damit wir dir Bescheid geben können",
+                emailError: "Bitte gib eine gültige E-Mail-Adresse ein.",
+                emailSuggestion: "Meintest du {email}?",
+                emailSuggestionDismiss: "So lassen",
+                notesLabel: "Noch etwas? (optional)",
+                notesPlaceholder: "Eine bestimmte Ausgabe, Links, Kontext…",
+                submit: "Wunsch senden",
+                subject: "Buchwunsch — Public Domain Books",
+                trTitle: "Wünsch dir eine Übersetzung",
+                trIntro: "Dieses Buch ist bereits in der Bibliothek — in der Originalsprache oder in einer klassischen gemeinfreien Ausgabe — und wir übersetzen auf Wunsch. Sag uns, in welcher Sprache du es gern lesen möchtest.",
+                trTiming: "Kürzere Werke können in wenigen Tagen fertig sein (längere brauchen etwas mehr).",
+                trSubject: "Übersetzungswunsch — Public Domain Books",
+                noteDomain: "Nur gemeinfreie Werke können in die Bibliothek aufgenommen werden.",
+                noteAuto: "Neue Ausgaben erscheinen automatisch in der App, sobald sie fertig sind.",
+                bodyBook: "Buch", bodyLang: "Sprache", bodyContact: "Kontakt",
+                privacy: "Datenschutzerklärung",
+                support: "Support",
+                success: "Danke! Deine Anfrage wurde gesendet.",
+                netError: "Konnte gerade nicht senden — versuch es erneut oder schreib mir an",
+                priorityTitle: "Kommende Ausgaben und Übersetzungen",
+                priorityIntro: "Diese Liste ist nach Nachfrage geordnet; Unterstützung beeinflusst die Priorität.",
+                sponsorLead: "Sponsoring hilft, die nächsten Ausgaben zu finanzieren; Unterstützung beeinflusst die Priorität.",
+                sponsorNote: "Sponsoring ist weder Verkauf noch Vorverkauf, reserviert oder kauft kein Buch und verspricht kein Veröffentlichungsdatum.",
+                readerRequests: "Leseranfragen: {count}",
+                plusOne: "+1 für diesen Wunsch",
+                plusOnePending: "Wird hinzugefügt…",
+                plusOneSuccess: "Deine Unterstützung wurde hinzugefügt.",
+                plusOneAlready: "Du hast diesen Wunsch heute bereits unterstützt.",
+                plusOneInvalid: "Dieser Wunsch konnte nicht bestätigt werden.",
+                plusOneMissing: "Dieser Wunsch ist nicht mehr verfügbar.",
+                plusOneConflict: "Der Zähler wurde gleichzeitig geändert. Bitte versuche es erneut.",
+                plusOneUnavailable: "Live-Unterstützung ist vorübergehend nicht verfügbar.",
+                plusOneError: "Dieser Wunsch konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+                priorityFallback: "Die Live-Rangliste benötigt JavaScript und eine Verbindung. Diese gespeicherte Liste bleibt verfügbar; +1 ist deaktiviert.",
+                sponsors: "Sponsoren: {names}",
+                sponsorCta: "Einen Wunsch sponsern"
+            },
+            ja: {
+                title: "本のリクエスト",
+                intro: "読みたい古典や、希望の言語をお知らせください。このライブラリーのすべての版は、あなたのようなリクエストから生まれました。",
+                bookLabel: "本",
+                bookPlaceholder: "タイトルと著者",
+                langLabel: "言語・翻訳（任意）",
+                langPlaceholder: "例：日本語",
+                emailLabel: "メールアドレス",
+                emailPlaceholder: "公開時にお知らせします",
+                emailError: "有効なメールアドレスを入力してください。",
+                emailSuggestion: "{email} のことですか？",
+                emailSuggestionDismiss: "このまま使う",
+                notesLabel: "その他（任意）",
+                notesPlaceholder: "特定の版、リンク、補足など…",
+                submit: "リクエストを送信",
+                subject: "本のリクエスト — Public Domain Books",
+                trTitle: "翻訳のリクエスト",
+                trIntro: "この本はすでに原語版、または著作権保護期間の満了した古典的な翻訳でライブラリに収録されています。翻訳はリクエストに応じて制作しています。読みたい言語を教えてください。",
+                trTiming: "短い作品は数日で完成することもあります（長編はもう少しかかります）。",
+                trSubject: "翻訳リクエスト — Public Domain Books",
+                noteDomain: "ライブラリに追加できるのはパブリックドメインの作品のみです。",
+                noteAuto: "新しい版は完成しだい自動的にアプリに表示されます。",
+                bodyBook: "本", bodyLang: "言語", bodyContact: "連絡先",
+                privacy: "プライバシーポリシー",
+                support: "サポート",
+                success: "ありがとうございます！リクエストを送信しました。",
+                netError: "現在送信できませんでした。もう一度お試しいただくか、こちらまでメールしてください:",
+                priorityTitle: "今後の版と翻訳",
+                priorityIntro: "この一覧は需要順で、支援によって優先度が変わります。",
+                sponsorLead: "支援は次の版の制作を支えます。優先度は支援によって変わります。",
+                sponsorNote: "スポンサー支援は販売や予約販売ではなく、本の予約・購入にはならず、公開日を約束するものでもありません。",
+                readerRequests: "読者からのリクエスト：{count}",
+                plusOne: "このリクエストに+1",
+                plusOnePending: "追加中…",
+                plusOneSuccess: "あなたの支援を追加しました。",
+                plusOneAlready: "今日はすでにこのリクエストを支援しています。",
+                plusOneInvalid: "このリクエストを確認できませんでした。",
+                plusOneMissing: "このリクエストは利用できなくなりました。",
+                plusOneConflict: "同時に件数が変更されました。もう一度お試しください。",
+                plusOneUnavailable: "現在、リアルタイムの支援は一時的に利用できません。",
+                plusOneError: "このリクエストを更新できませんでした。もう一度お試しください。",
+                priorityFallback: "ライブランキングにはJavaScriptと接続が必要です。保存済みの一覧は引き続き表示されますが、+1は無効です。",
+                sponsors: "スポンサー：{names}",
+                sponsorCta: "リクエストを支援する"
+            },
+            ko: {
+                title: "책 요청하기",
+                intro: "어떤 고전이 필요한지, 어떤 언어로 읽고 싶은지 알려주세요. 이 라이브러리의 모든 판본은 당신과 같은 요청에서 시작되었습니다.",
+                bookLabel: "책",
+                bookPlaceholder: "제목과 저자",
+                langLabel: "언어 또는 번역 (선택)",
+                langPlaceholder: "예: 한국어",
+                emailLabel: "이메일",
+                emailPlaceholder: "출간 시 알려드립니다",
+                emailError: "유효한 이메일 주소를 입력해 주세요.",
+                emailSuggestion: "{email}을(를) 의미하셨나요?",
+                emailSuggestionDismiss: "입력한 대로 유지",
+                notesLabel: "기타 (선택)",
+                notesPlaceholder: "특정 판본, 링크, 참고 사항…",
+                submit: "요청 보내기",
+                subject: "책 요청 — Public Domain Books",
+                trTitle: "번역 요청",
+                trIntro: "이 책은 이미 원어판 또는 저작권이 만료된 고전 번역본으로 서재에 있습니다. 번역은 요청에 따라 준비됩니다. 어떤 언어로 읽고 싶은지 알려주세요.",
+                trTiming: "짧은 작품은 며칠 안에 준비되기도 합니다(긴 작품은 조금 더 걸립니다).",
+                trSubject: "번역 요청 — Public Domain Books",
+                noteDomain: "퍼블릭 도메인 작품만 서재에 추가할 수 있습니다.",
+                noteAuto: "새 판은 준비되는 대로 앱에 자동으로 표시됩니다.",
+                bodyBook: "책", bodyLang: "언어", bodyContact: "연락처",
+                privacy: "개인정보 처리방침",
+                support: "지원",
+                success: "감사합니다! 요청이 전송되었습니다.",
+                netError: "지금은 전송할 수 없습니다 — 다시 시도하거나 다음 주소로 이메일을 보내 주세요:",
+                priorityTitle: "출간 예정 판본 및 번역",
+                priorityIntro: "이 목록은 수요순이며 후원이 우선순위에 영향을 줍니다.",
+                sponsorLead: "후원은 다음 판본 제작에 보탬이 됩니다. 우선순위는 후원의 영향을 받습니다.",
+                sponsorNote: "후원은 판매나 사전 판매가 아니며 책을 예약하거나 구매하는 것이 아니고 출간일을 약속하지 않습니다.",
+                readerRequests: "독자 요청: {count}",
+                plusOne: "이 요청에 +1",
+                plusOnePending: "추가 중…",
+                plusOneSuccess: "후원이 추가되었습니다.",
+                plusOneAlready: "오늘 이미 이 요청을 후원했습니다.",
+                plusOneInvalid: "이 요청을 확인할 수 없습니다.",
+                plusOneMissing: "이 요청은 더 이상 이용할 수 없습니다.",
+                plusOneConflict: "동시에 요청 수가 변경되었습니다. 다시 시도해 주세요.",
+                plusOneUnavailable: "실시간 후원을 일시적으로 이용할 수 없습니다.",
+                plusOneError: "이 요청을 업데이트할 수 없습니다. 다시 시도해 주세요.",
+                priorityFallback: "실시간 순위에는 JavaScript와 연결이 필요합니다. 저장된 목록은 계속 볼 수 있지만 +1은 비활성화됩니다.",
+                sponsors: "후원자: {names}",
+                sponsorCta: "요청 후원하기"
+            },
+            ru: {
+                title: "Запросить книгу",
+                intro: "Расскажите, какой классики не хватает — или на каком языке вы хотели бы её прочесть. Каждое издание в библиотеке началось с такой просьбы.",
+                bookLabel: "Книга",
+                bookPlaceholder: "Название и автор",
+                langLabel: "Язык или перевод (необязательно)",
+                langPlaceholder: "напр., русский",
+                emailLabel: "Ваш e-mail",
+                emailPlaceholder: "Чтобы сообщить, когда книга появится",
+                emailError: "Пожалуйста, введите корректный адрес электронной почты.",
+                emailSuggestion: "Может быть, вы имели в виду {email}?",
+                emailSuggestionDismiss: "Оставить как есть",
+                notesLabel: "Что-то ещё? (необязательно)",
+                notesPlaceholder: "Особое издание, ссылки, контекст…",
+                submit: "Отправить запрос",
+                subject: "Запрос книги — Public Domain Books",
+                trTitle: "Запрос перевода",
+                trIntro: "Эта книга уже есть в библиотеке — в оригинале или в классическом издании, перешедшем в общественное достояние. Переводы мы готовим по запросу: напишите, на каком языке вам хотелось бы её читать.",
+                trTiming: "Короткие произведения могут быть готовы за несколько дней (длинные — чуть дольше).",
+                trSubject: "Запрос перевода — Public Domain Books",
+                noteDomain: "В библиотеку могут войти только произведения в общественном достоянии.",
+                noteAuto: "Новые издания появляются в приложении автоматически, как только будут готовы.",
+                bodyBook: "Книга", bodyLang: "Язык", bodyContact: "Контакт",
+                privacy: "Политика конфиденциальности",
+                support: "Поддержка",
+                success: "Спасибо! Ваш запрос отправлен.",
+                netError: "Не удалось отправить сейчас — попробуйте ещё раз или напишите мне на",
+                priorityTitle: "Будущие издания и переводы",
+                priorityIntro: "Список упорядочен по спросу, а поддержка влияет на приоритет.",
+                sponsorLead: "Спонсорство помогает финансировать следующие издания; поддержка влияет на приоритет.",
+                sponsorNote: "Спонсорство — не продажа и не предзаказ, оно не резервирует и не покупает книгу и не обещает дату публикации.",
+                readerRequests: "Запросы читателей: {count}",
+                plusOne: "+1 к этому запросу",
+                plusOnePending: "Добавление…",
+                plusOneSuccess: "Ваша поддержка добавлена.",
+                plusOneAlready: "Сегодня вы уже поддержали этот запрос.",
+                plusOneInvalid: "Не удалось проверить этот запрос.",
+                plusOneMissing: "Этот запрос больше недоступен.",
+                plusOneConflict: "Счётчик изменился одновременно. Попробуйте ещё раз.",
+                plusOneUnavailable: "Поддержка в реальном времени временно недоступна.",
+                plusOneError: "Не удалось обновить этот запрос. Попробуйте ещё раз.",
+                priorityFallback: "Для текущего рейтинга нужны JavaScript и подключение. Сохранённый список остаётся доступен, но +1 отключён.",
+                sponsors: "Спонсоры: {names}",
+                sponsorCta: "Поддержать запрос"
+            },
+            zh: {
+                title: "申请新书",
+                intro: "告诉我们你想要哪部经典，或希望用哪种语言阅读。这座图书馆的每一版都始于像你这样的请求。",
+                bookLabel: "书籍",
+                bookPlaceholder: "书名与作者",
+                langLabel: "语言或译本（可选）",
+                langPlaceholder: "例如：中文",
+                emailLabel: "你的邮箱",
+                emailPlaceholder: "上架时通知你",
+                emailError: "请输入有效的电子邮件地址。",
+                emailSuggestion: "你是不是想输入 {email}？",
+                emailSuggestionDismiss: "保留原样",
+                notesLabel: "其他（可选）",
+                notesPlaceholder: "特定版本、链接、背景…",
+                submit: "发送请求",
+                subject: "图书请求 — Public Domain Books",
+                trTitle: "请求翻译",
+                trIntro: "这本书已以原文或经典公版译本收录在书库中。翻译按请求制作——告诉我们您希望用哪种语言阅读它。",
+                trTiming: "较短的作品几天内即可完成（较长的作品需要更久）。",
+                trSubject: "翻译请求 — Public Domain Books",
+                noteDomain: "书库只能收录公有领域的作品。",
+                noteAuto: "新版本完成后会自动出现在应用中。",
+                bodyBook: "书籍", bodyLang: "语言", bodyContact: "联系方式",
+                privacy: "隐私政策",
+                support: "支持",
+                success: "谢谢！您的请求已发送。",
+                netError: "暂时无法发送——请重试，或发送邮件至",
+                priorityTitle: "即将推出的版本与翻译",
+                priorityIntro: "此列表按需求排序，支持会影响优先级。",
+                sponsorLead: "赞助有助于资助后续版本；支持会影响优先级。",
+                sponsorNote: "赞助不是销售或预售，不会预订或购买书籍，也不承诺发布日期。",
+                readerRequests: "读者请求：{count}",
+                plusOne: "为此请求 +1",
+                plusOnePending: "正在添加…",
+                plusOneSuccess: "已添加你的支持。",
+                plusOneAlready: "你今天已经支持过此请求。",
+                plusOneInvalid: "无法验证此请求。",
+                plusOneMissing: "此请求已不可用。",
+                plusOneConflict: "计数同时发生了变化，请重试。",
+                plusOneUnavailable: "实时支持暂时不可用。",
+                plusOneError: "无法更新此请求，请重试。",
+                priorityFallback: "实时排名需要 JavaScript 和网络连接。已保存的列表仍可查看；+1 已禁用。",
+                sponsors: "赞助者：{names}",
+                sponsorCta: "赞助一个请求"
+            },
+            tr: {
+                title: "Kitap İste",
+                intro: "Hangi klasiğin eksik olduğunu — ya da hangi dilde okumak istediğini — bize söyle. Kütüphanedeki her basım, senin gibi bir istekle başladı.",
+                bookLabel: "Kitap",
+                bookPlaceholder: "Başlık ve yazar",
+                langLabel: "Dil veya çeviri (isteğe bağlı)",
+                langPlaceholder: "örn. Türkçe",
+                emailLabel: "E-postan",
+                emailPlaceholder: "Geldiğinde haber verebilmemiz için",
+                emailError: "Lütfen geçerli bir e-posta adresi gir.",
+                emailSuggestion: "{email} mi demek istedin?",
+                emailSuggestionDismiss: "Yazdığım gibi kalsın",
+                notesLabel: "Başka bir şey? (isteğe bağlı)",
+                notesPlaceholder: "Belirli bir basım, bağlantılar, bağlam…",
+                submit: "İsteği gönder",
+                subject: "Kitap isteği — Public Domain Books",
+                trTitle: "Bir Çeviri İsteyin",
+                trIntro: "Bu kitap özgün dilinde veya kamu malı klasik bir çeviriyle zaten kitaplıkta. Çeviriler istek üzerine hazırlanır — hangi dilde okumak istediğinizi söyleyin.",
+                trTiming: "Kısa eserler birkaç günde hazır olabilir (uzunlar biraz daha sürer).",
+                trSubject: "Çeviri isteği — Public Domain Books",
+                noteDomain: "Kitaplığa yalnızca kamu malı eserler eklenebilir.",
+                noteAuto: "Yeni basımlar hazır olduğunda uygulamada kendiliğinden görünür.",
+                bodyBook: "Kitap", bodyLang: "Dil", bodyContact: "İletişim",
+                privacy: "Gizlilik Politikası",
+                support: "Destek",
+                success: "Teşekkürler! İsteğiniz gönderildi.",
+                netError: "Şu anda gönderilemedi — tekrar deneyin veya bana şu adresten yazın:",
+                priorityTitle: "Yaklaşan basımlar ve çeviriler",
+                priorityIntro: "Bu liste talebe göre sıralanır; destek önceliği etkiler.",
+                sponsorLead: "Sponsorluk sonraki basımların finansmanına yardımcı olur; destek önceliği etkiler.",
+                sponsorNote: "Sponsorluk satış veya ön satış değildir, bir kitabı ayırtmaz ya da satın almaz ve yayın tarihi sözü vermez.",
+                readerRequests: "Okur istekleri: {count}",
+                plusOne: "Bu isteğe +1",
+                plusOnePending: "Ekleniyor…",
+                plusOneSuccess: "Desteğiniz eklendi.",
+                plusOneAlready: "Bu isteği bugün zaten desteklediniz.",
+                plusOneInvalid: "Bu istek doğrulanamadı.",
+                plusOneMissing: "Bu istek artık kullanılamıyor.",
+                plusOneConflict: "Sayaç aynı anda değişti. Lütfen tekrar deneyin.",
+                plusOneUnavailable: "Canlı destek geçici olarak kullanılamıyor.",
+                plusOneError: "Bu istek güncellenemedi. Lütfen tekrar deneyin.",
+                priorityFallback: "Canlı sıralama için JavaScript ve bağlantı gerekir. Kayıtlı liste görünür kalır; +1 devre dışıdır.",
+                sponsors: "Sponsorlar: {names}",
+                sponsorCta: "Bir isteğe sponsor ol"
+            }
+        };
+
+        function getLocale() {
+            var lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+            var primary = lang.split('-')[0];
+            if (i18n[primary]) return primary;
+            return 'en';
+        }
+
+        // --- Email typo guard (T-FORM-EMAIL) ---
+        // Local-only, no network call. isEmailSyntaxValid() catches addresses
+        // that can never be delivered (no dot in the domain, a trailing dot,
+        // doubled @, internal whitespace) and is the one thing here allowed
+        // to block submission — none of those forms would ever reach a real
+        // inbox anyway. suggestEmailDomain() is a *guess* at a mistyped
+        // well-known domain (gimail.com -> gmail.com) via edit distance
+        // against a short known-domains list, so a new typo needs no code
+        // change; it only ever offers, never corrects or blocks.
+        var KNOWN_EMAIL_DOMAINS = [
+            'gmail.com', 'googlemail.com', 'yahoo.com', 'outlook.com', 'hotmail.com',
+            'icloud.com', 'me.com', 'live.com', 'aol.com', 'protonmail.com',
+            'gmx.com', 'yandex.com', 'mail.com', 'zoho.com'
+        ];
+
+        function isEmailSyntaxValid(value) {
+            if (!value || /\s/.test(value)) return false;
+            if ((value.match(/@/g) || []).length !== 1) return false;
+            var at = value.indexOf('@');
+            var local = value.slice(0, at);
+            var domain = value.slice(at + 1);
+            if (!local || !domain) return false;
+            if (domain.charAt(0) === '.' || domain.charAt(domain.length - 1) === '.') return false;
+            if (domain.indexOf('..') !== -1) return false;
+            if (domain.indexOf('.') === -1) return false;
+            var labels = domain.split('.');
+            var tld = labels[labels.length - 1];
+            return /^[a-zA-Z]{2,}$/.test(tld);
+        }
+
+        function levenshtein(a, b) {
+            var m = a.length, n = b.length;
+            var prev = [];
+            for (var j = 0; j <= n; j++) prev[j] = j;
+            for (var i = 1; i <= m; i++) {
+                var cur = [i];
+                for (j = 1; j <= n; j++) {
+                    var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+                    cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+                }
+                prev = cur;
+            }
+            return prev[n];
+        }
+
+        function suggestEmailDomain(value) {
+            var at = value.lastIndexOf('@');
+            if (at === -1 || at === value.length - 1) return null;
+            var domain = value.slice(at + 1).toLowerCase();
+            if (KNOWN_EMAIL_DOMAINS.indexOf(domain) !== -1) return null;
+
+            var best = null, bestDist = Infinity;
+            for (var i = 0; i < KNOWN_EMAIL_DOMAINS.length; i++) {
+                var candidate = KNOWN_EMAIL_DOMAINS[i];
+                if (Math.abs(candidate.length - domain.length) > 3) continue;
+                var dist = levenshtein(domain, candidate);
+                if (dist < bestDist) { bestDist = dist; best = candidate; }
+            }
+            var threshold = domain.length <= 5 ? 1 : 2;
+            if (best && bestDist > 0 && bestDist <= threshold) {
+                return value.slice(0, at + 1) + best;
+            }
+            return null;
+        }
+
+        // Wires the inline "did you mean…?" suggestion onto one email input.
+        // Purely advisory: accepting fills the field, dismissing just hides
+        // it for that exact typed value, and either way the form still
+        // submits whatever the reader leaves in the field.
+        function setupEmailSuggestion(input, container, strings) {
+            if (!input || !container) return;
+            var dismissedFor = null;
+
+            function clear() {
+                container.textContent = '';
+                container.style.display = 'none';
+            }
+
+            function show(rawValue, suggested) {
+                container.textContent = '';
+                var template = strings.suggestion;
+                var idx = template.indexOf('{email}');
+                var before = idx === -1 ? template : template.slice(0, idx);
+                var after = idx === -1 ? '' : template.slice(idx + 7);
+                container.appendChild(document.createTextNode(before));
+                var acceptBtn = document.createElement('button');
+                acceptBtn.type = 'button';
+                acceptBtn.className = 'email-suggestion-accept';
+                acceptBtn.textContent = suggested;
+                acceptBtn.addEventListener('click', function() {
+                    input.value = suggested;
+                    clear();
+                    input.focus();
+                });
+                container.appendChild(acceptBtn);
+                container.appendChild(document.createTextNode(after + ' '));
+                var dismissBtn = document.createElement('button');
+                dismissBtn.type = 'button';
+                dismissBtn.className = 'email-suggestion-dismiss';
+                dismissBtn.textContent = strings.dismiss;
+                dismissBtn.addEventListener('click', function() {
+                    dismissedFor = rawValue;
+                    clear();
+                });
+                container.appendChild(dismissBtn);
+                container.style.display = 'block';
+            }
+
+            function evaluate() {
+                var value = input.value.trim();
+                if (!value || value === dismissedFor) { clear(); return; }
+                var suggested = suggestEmailDomain(value);
+                if (suggested && suggested.toLowerCase() !== value.toLowerCase()) {
+                    show(value, suggested);
+                } else {
+                    clear();
+                }
+            }
+
+            input.addEventListener('blur', evaluate);
+            input.addEventListener('input', function() {
+                if (container.style.display !== 'none') clear();
+            });
+        }
+
+        // Translation mode: the reader's "not in your language yet" banner
+        // links here with ?mode=translation&book=<title>&lang=<name or code>.
+        // Same form, same payload contract — only the copy, the prefill, and
+        // the subject line change (plus an additive `mode` field). A plain
+        // visit without params behaves exactly as before.
+        var PARAMS = new URLSearchParams(window.location.search);
+        var MODE = PARAMS.get('mode') === 'translation' ? 'translation' : 'request';
+
+        // If `lang` arrives as one of the app's language codes, expand it to
+        // the language's own native name (locale-independent). Anything else
+        // passes through untouched.
+        var LANG_NAMES = {
+            en: "English", pt: "Português", es: "Español", it: "Italiano",
+            fr: "Français", de: "Deutsch", ja: "日本語", ko: "한국어",
+            ru: "Русский", zh: "中文", tr: "Türkçe", la: "Latina"
+        };
+        function requestedLanguage() {
+            var raw = (PARAMS.get('lang') || '').trim();
+            return LANG_NAMES[raw.toLowerCase()] || raw;
+        }
+
+        function formatPriorityText(template, key, value) {
+            return template.replace('{' + key + '}', value);
+        }
+
+        // The control shows "+1 · 3"; its accessible name says what the 3 is,
+        // in the reader's language, every time the number changes.
+        function labelPlusOne(button, count, t) {
+            button.setAttribute('aria-label',
+                t.plusOne + ' — ' + formatPriorityText(t.readerRequests, 'count', count));
+        }
+
+        function localizePriorityFallback(t) {
+            document.getElementById('priority-heading').textContent = t.priorityTitle;
+            document.getElementById('priority-intro').textContent = t.priorityIntro;
+            document.getElementById('priority-status').textContent = t.priorityFallback;
+            document.querySelectorAll('#priority-list .plus-one-button').forEach(function(button) {
+                var count = button.querySelector('.plus-one-count');
+                labelPlusOne(button, count ? count.dataset.count : '0', t);
+            });
+        }
+
+        // Both offers are built from one function so the button, the framing
+        // sentence and the "not a sale" line can never drift apart.
+        function sponsorCardHtml(t, standalone) {
+            var open = standalone
+                ? '<div class="sponsor-card sponsor-card--standalone" id="sponsor-standalone">'
+                : '<div class="sponsor-card">';
+            return open +
+                '<p class="sponsor-lead">' + t.sponsorLead + '</p>' +
+                '<a class="sponsor-button" href="' + SPONSOR_URL + '" target="_blank" rel="noopener">' + t.sponsorCta + '</a>' +
+                '<p class="sponsor-note">' + t.sponsorNote + '</p>' +
+            '</div>';
+        }
+
+        function isValidPriorityRequest(request) {
+            if (!request || typeof request !== 'object') return false;
+            if (typeof request.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(request.id)) return false;
+            if (!Number.isInteger(request.rank) || request.rank < 1) return false;
+            if (typeof request.title !== 'string' || !request.title.trim()) return false;
+            if (typeof request.author !== 'string' || !request.author.trim()) return false;
+            if (typeof request.language !== 'string' || !request.language.trim()) return false;
+            if (!Number.isInteger(request.readerRequests) || request.readerRequests < 0) return false;
+            if (Object.prototype.hasOwnProperty.call(request, 'sponsorNames')) {
+                if (!Array.isArray(request.sponsorNames)) return false;
+                if (!request.sponsorNames.every(function(name) { return typeof name === 'string'; })) return false;
+            }
+            return true;
+        }
+
+        function isValidPriorityUpdate(request) {
+            return request && typeof request === 'object' &&
+                typeof request.id === 'string' &&
+                /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(request.id) &&
+                Number.isInteger(request.readerRequests) && request.readerRequests >= 0;
+        }
+
+        function makePriorityItem(request, t) {
+            var item = document.createElement('li');
+            item.className = 'priority-item';
+            item.dataset.requestId = request.id;
+
+            var rank = document.createElement('span');
+            rank.className = 'priority-rank';
+            rank.textContent = request.rank;
+
+            var main = document.createElement('div');
+            main.className = 'priority-main';
+            var title = document.createElement('h3');
+            title.className = 'priority-title';
+            title.textContent = request.title;
+            var meta = document.createElement('p');
+            meta.className = 'priority-meta';
+            var author = document.createElement('span');
+            author.className = 'priority-author';
+            author.textContent = request.author;
+            var separator = document.createElement('span');
+            separator.className = 'priority-sep';
+            separator.textContent = ' · ';
+            var language = document.createElement('span');
+            language.className = 'priority-language';
+            language.textContent = request.language;
+            meta.appendChild(author);
+            meta.appendChild(separator);
+            meta.appendChild(language);
+
+            main.appendChild(title);
+            main.appendChild(meta);
+
+            if (Object.prototype.hasOwnProperty.call(request, 'sponsorNames') && request.sponsorNames.length) {
+                var sponsors = document.createElement('p');
+                sponsors.className = 'priority-sponsors';
+                sponsors.textContent = formatPriorityText(t.sponsors, 'names', request.sponsorNames.join(', '));
+                main.appendChild(sponsors);
+            }
+
+            var button = document.createElement('button');
+            button.className = 'plus-one-button';
+            button.type = 'button';
+            var label = document.createElement('span');
+            label.className = 'plus-one-label';
+            label.textContent = '+1';
+            var count = document.createElement('span');
+            count.className = 'plus-one-count';
+            count.dataset.count = request.readerRequests;
+            count.textContent = request.readerRequests;
+            button.appendChild(label);
+            button.appendChild(count);
+            labelPlusOne(button, request.readerRequests, t);
+
+            var message = document.createElement('p');
+            message.className = 'request-message';
+            message.setAttribute('role', 'status');
+            message.setAttribute('aria-live', 'polite');
+            button.addEventListener('click', function() {
+                supportPriorityRequest(request.id, count, label, button, message, t);
+            });
+
+            item.appendChild(rank);
+            item.appendChild(main);
+            item.appendChild(button);
+            item.appendChild(message);
+            return item;
+        }
+
+        function renderPriorityRequests(requests, t) {
+            var list = document.getElementById('priority-list');
+            list.textContent = '';
+            requests.forEach(function(request) {
+                list.appendChild(makePriorityItem(request, t));
+            });
+            document.getElementById('priority-status').textContent = '';
+        }
+
+        function supportPriorityRequest(requestId, count, label, button, message, t) {
+            button.disabled = true;
+            // "Adding…" will not fit a 62px control, so the label goes to an
+            // ellipsis and the whole sentence goes to the accessible name.
+            label.textContent = '…';
+            button.setAttribute('aria-label', t.plusOnePending);
+            message.textContent = '';
+            message.classList.remove('is-error');
+
+            return fetch(PRIORITY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ requestId: requestId })
+            })
+                .then(function(response) {
+                    return response.text().then(function(body) {
+                        var payload = null;
+                        try { payload = JSON.parse(body); } catch (_) {}
+                        return { status: response.status, payload: payload };
+                    });
+                })
+                .then(function(result) {
+                    if (result.status === 200 && result.payload &&
+                        isValidPriorityUpdate(result.payload.request) &&
+                        result.payload.request.id === requestId) {
+                        count.dataset.count = result.payload.request.readerRequests;
+                        count.textContent = result.payload.request.readerRequests;
+                        label.textContent = '+1';
+                        labelPlusOne(button, result.payload.request.readerRequests, t);
+                        message.textContent = t.plusOneSuccess;
+                        return;
+                    }
+
+                    var messages = {
+                        400: t.plusOneInvalid,
+                        404: t.plusOneMissing,
+                        409: t.plusOneConflict,
+                        429: t.plusOneAlready,
+                        503: t.plusOneUnavailable
+                    };
+                    message.textContent = messages[result.status] || t.plusOneError;
+                    message.classList.add('is-error');
+                    label.textContent = '+1';
+                    labelPlusOne(button, count.dataset.count, t);
+                    button.disabled = result.status === 400 || result.status === 404 || result.status === 429;
+                })
+                .catch(function() {
+                    message.textContent = t.plusOneError;
+                    message.classList.add('is-error');
+                    label.textContent = '+1';
+                    labelPlusOne(button, count.dataset.count, t);
+                    button.disabled = false;
+                });
+        }
+
+        function loadPriorityRanking(t) {
+            return fetch(PRIORITY_URL, { headers: { 'Accept': 'application/json' } })
+                .then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
+                .then(function(payload) {
+                    if (!payload || payload.version !== 1 ||
+                        payload.framing !== 'priority_influenced_by_support' ||
+                        !Array.isArray(payload.requests) ||
+                        !payload.requests.every(isValidPriorityRequest)) {
+                        throw new Error('Invalid priority payload');
+                    }
+                    renderPriorityRequests(payload.requests, t);
+                })
+                .catch(function() {
+                    document.getElementById('priority-status').textContent = t.priorityFallback;
+                });
+        }
+
+        function sendRequest(event) {
+            event.preventDefault();
+            var locale = getLocale();
+            var t = i18n[locale];
+            var book = document.getElementById('book').value.trim();
+            var language = document.getElementById('language').value.trim();
+            var emailEl = document.getElementById('email');
+            var email = emailEl.value.trim();
+            var notes = document.getElementById('notes').value.trim();
+            var errorEl = document.getElementById('form-error');
+            var button = document.getElementById('submit-button');
+
+            // Honeypot: a bot that fills the hidden field is silently dropped.
+            if (document.getElementById('_hp').value) { return; }
+
+            emailEl.value = email;
+            if (!isEmailSyntaxValid(email)) {
+                errorEl.textContent = t.emailError;
+                errorEl.style.display = 'block';
+                emailEl.focus();
+                return;
+            }
+
+            var data = new FormData();
+            data.set('formType', FORM_TYPE);
+            data.set('source', SOURCE);
+            data.set('subject', MODE === 'translation' ? t.trSubject : t.subject);
+            if (MODE === 'translation') data.set('mode', 'translation');
+            data.set('book', book);
+            if (language) data.set('language', language);
+            data.set('contact', email);
+            if (notes) data.set('notes', notes);
+            data.set('platform', detectPlatform());
+            data.set('pageLanguage', locale);
+            var v = new URLSearchParams(window.location.search).get('v');
+            if (v) data.set('appVersion', v);
+
+            errorEl.style.display = 'none';
+            button.disabled = true;
+
+            fetch(SCRIPT_URL, { method: 'POST', body: data })
+                .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                .then(function() {
+                    document.getElementById('form-wrap').style.display = 'none';
+                    var s = document.getElementById('form-success');
+                    // Only the thank-you line is written here; the sponsor
+                    // card beside it was rendered (and localized) up front.
+                    document.getElementById('form-success-text').textContent = t.success;
+                    s.style.display = 'block';
+                    // The standalone offer and the success-state offer are the
+                    // same offer; only one of them is ever on screen.
+                    var standalone = document.getElementById('sponsor-standalone');
+                    if (standalone) standalone.style.display = 'none';
+                    // Hiding a tall form shortens the page under the reader,
+                    // who may have been at the submit button. Put the result
+                    // of their action back in front of them.
+                    s.scrollIntoView({ block: 'center' });
+                })
+                .catch(function() {
+                    errorEl.innerHTML = t.netError + ' <a href="mail' + 'to:' + RECIPIENT + '">' + RECIPIENT + '</a>';
+                    errorEl.style.display = 'block';
+                    button.disabled = false;
+                });
+        }
+
+        function render() {
+            var locale = getLocale();
+            var t = i18n[locale];
+            var prioritySection = document.getElementById('priority-section');
+            // The sponsor card inside the static section is the no-JS copy.
+            // With scripts running, the block above the list is the only one
+            // the reader needs, so it comes out before the section is reused.
+            var staticSponsor = prioritySection.querySelector('.sponsor-card');
+            if (staticSponsor) staticSponsor.parentNode.removeChild(staticSponsor);
+            var priorityFallback = prioritySection.outerHTML;
+            document.documentElement.lang = locale === 'zh' ? 'zh-Hans' : locale;
+            var title = MODE === 'translation' ? t.trTitle : t.title;
+            // The opening paragraph now says only what it takes to start
+            // typing. The two standing conditions it used to carry (public
+            // domain only; new editions arrive on their own) moved down to
+            // the fields they belong to, and in translation mode the "how
+            // long it takes" sentence moved under the language field.
+            var intro = MODE === 'translation' ? t.trIntro : t.intro;
+            document.title = title;
+            // In translation mode the language IS the request — require it,
+            // and drop the "(optional)" parenthetical from the label (the
+            // regex handles Western and full-width CJK parentheses alike).
+            var langRequired = MODE === 'translation' ? ' required' : '';
+            var langLabel = MODE === 'translation'
+                ? t.langLabel.replace(/\s*[（(][^)）]*[)）]\s*$/, '')
+                : t.langLabel;
+            var langHint = MODE === 'translation'
+                ? '<p class="field-hint" id="language-hint">' + t.trTiming + '</p>'
+                : '';
+            var langDescribed = MODE === 'translation' ? ' aria-describedby="language-hint"' : '';
+
+            document.getElementById('page').innerHTML =
+                '<h1>' + title + '</h1>' +
+                '<div class="divider"></div>' +
+                '<p class="body-text">' + intro + '</p>' +
+                // Pedro's ask: tell the reader the waiting list exists without
+                // letting it stand between them and the form. An in-page
+                // anchor does exactly that — it costs one quiet line, it is
+                // labelled with the section's own heading (so it needs no new
+                // copy in eleven locales), and following it loses nothing,
+                // because it never leaves the page.
+                '<a class="jump-link" href="#priority-section">' +
+                    '<span class="arrow" aria-hidden="true">↓</span>' + t.priorityTitle +
+                '</a>' +
+                // The form comes BEFORE the ranked list, deliberately. It used
+                // to come after, and requests fell from ~1.4/day to zero for
+                // three straight days (last one 2026-08-05, the day the ranked
+                // list shipped) — with 15+ entries above it, the form was below
+                // the fold and readers took the page for a list-only page. The
+                // intro already asks them to tell us what is missing, so the
+                // form belongs directly under it; the list keeps its own
+                // heading and reads as "what others asked for" below.
+                '<div id="form-wrap">' +
+                '<form onsubmit="sendRequest(event)">' +
+                    '<div class="field">' +
+                        '<label for="book">' + t.bookLabel + '</label>' +
+                        '<input id="book" type="text" required aria-describedby="book-hint" placeholder="' + t.bookPlaceholder + '">' +
+                        '<p class="field-hint" id="book-hint">' + t.noteDomain + '</p>' +
+                    '</div>' +
+                    '<div class="field">' +
+                        '<label for="language">' + langLabel + '</label>' +
+                        '<input id="language" type="text"' + langRequired + langDescribed + ' placeholder="' + t.langPlaceholder + '">' +
+                        langHint +
+                    '</div>' +
+                    '<div class="field">' +
+                        '<label for="email">' + t.emailLabel + '</label>' +
+                        '<input id="email" type="email" required aria-describedby="email-hint" placeholder="' + t.emailPlaceholder + '">' +
+                        '<p class="field-hint" id="email-hint">' + t.noteAuto + '</p>' +
+                        '<p class="email-suggestion" id="email-suggestion" role="status" aria-live="polite"></p>' +
+                    '</div>' +
+                    '<div class="field">' +
+                        '<label for="notes">' + t.notesLabel + '</label>' +
+                        '<textarea id="notes" placeholder="' + t.notesPlaceholder + '"></textarea>' +
+                    '</div>' +
+                    '<input type="text" id="_hp" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+                    '<p class="form-error" id="form-error"></p>' +
+                    '<button type="submit" class="submit-button" id="submit-button">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>' +
+                        t.submit +
+                    '</button>' +
+                '</form>' +
+                '</div>' +
+                // Sponsoring, offer #1: the success state. The request is
+                // already sent, so there is nothing left to lose by leaving
+                // the page — and this is the one moment the reader has both
+                // the intent and the context to weigh it.
+                '<div class="form-success" id="form-success">' +
+                    '<p class="form-success-text" id="form-success-text"></p>' +
+                    sponsorCardHtml(t, false) +
+                '</div>' +
+                // Sponsoring, offer #2: a block of its own between the form
+                // and the list — visible without scrolling for it, but not a
+                // second button under Send. It says what support does before
+                // it asks, and the sentence that says what it is not travels
+                // with it. It steps aside once the success state takes over,
+                // so the reader is never offered the same thing twice.
+                sponsorCardHtml(t, true) +
+                // Breathing room. The list heading used to butt straight up
+                // against the submit button; this ornament — the only one the
+                // page still has — closes the form half and opens the list.
+                '<div class="section-break" aria-hidden="true">•   •   •</div>' +
+                priorityFallback +
+                // The way back up, for a reader who took the jump link down.
+                // Labelled with the page's own H1, so no new copy is needed.
+                '<a class="back-link" href="#page">' +
+                    '<span class="arrow" aria-hidden="true">↑</span>' + title +
+                '</a>' +
+                '<div class="footer">' +
+                    '<a href="support.html" class="footer-link">' + t.support + '</a>' +
+                    '<span class="footer-sep">·</span>' +
+                    '<a href="privacy.html" class="footer-link">' + t.privacy + '</a>' +
+                '</div>';
+
+            setupEmailSuggestion(
+                document.getElementById('email'),
+                document.getElementById('email-suggestion'),
+                { suggestion: t.emailSuggestion, dismiss: t.emailSuggestionDismiss }
+            );
+
+            localizePriorityFallback(t);
+            loadPriorityRanking(t);
+        }
+
+        render();
+
+        // Prefill from the app's deep link — assigned via .value (never
+        // interpolated into markup) so URL params can't inject HTML. Both
+        // fields stay editable; the user can still adjust before sending.
+        (function prefill() {
+            var book = (PARAMS.get('book') || '').trim();
+            if (book) document.getElementById('book').value = book;
+            var lang = requestedLanguage();
+            if (lang) document.getElementById('language').value = lang;
+        })();
+    </script>
+</body>
+</html>

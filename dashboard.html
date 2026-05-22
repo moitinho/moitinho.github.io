@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Pedro Moitinho — App Dashboard</title>
+<meta name="description" content="A live, dated view of six independently built apps: downloads, library usage, requests and releases — with every figure stamped with the date of the data behind it.">
+<link rel="stylesheet" href="css/portfolio.css?v=8">
+<link rel="stylesheet" href="css/dashboard.css?v=6">
+<script>(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<div class="container">
+
+    <header class="site-header">
+        <a class="brand" href="index.html">Pedro Moitinho<span>Senior Software Engineer · Brazil / Remote</span></a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+        </button>
+    </header>
+
+    <section class="hero">
+        <h1>Dashboard</h1>
+
+        <p class="see-all" style="margin-top:18px;"><a href="index.html">← Back to work &amp; experience</a></p>
+
+        <noscript>
+            <div class="notice hatched" style="margin-top:22px;">
+                <span class="notice-glyph" aria-hidden="true">■</span>
+                <div>
+                    <div class="notice-title">This page needs JavaScript</div>
+                    <div class="notice-body">
+                        The figures are fetched live so that each one can be shown with the date of
+                        the data behind it. Rather than bake in numbers that would silently go out
+                        of date, the page shows nothing at all without JavaScript.
+                    </div>
+                </div>
+            </div>
+        </noscript>
+    </section>
+
+    <main id="main" aria-busy="true">
+
+        <div class="notice hatched" id="notice" hidden>
+            <span class="notice-glyph" aria-hidden="true">■</span>
+            <div>
+                <div class="notice-title" id="notice-title"></div>
+                <div class="notice-body" id="notice-body"></div>
+            </div>
+        </div>
+
+        <section class="reveal" aria-label="The apps">
+            <!-- Section head removed 2026-08-20: the cards say what they are,
+                 and the developer-page link was a way off a page about the apps. -->
+            <div class="app-grid" id="app-grid"></div>
+            <p class="footnote" id="apps-foot"></p>
+            <aside class="note-block" id="adoption-note" aria-label="How adoption is measured" hidden></aside>
+        </section>
+
+        <!-- v1.5 (Pedro, 2026-09-26): the library's usage, and the old
+             "Most-read editions" table folded into it as one table by book.
+             "Reach" and "Sources" were removed — the payload still carries
+             coverage and sources[], the page no longer draws them. -->
+        <section class="reveal" aria-labelledby="use-title">
+            <div class="section-head">
+                <h2 class="section-title" id="use-title">Library usage</h2>
+            </div>
+            <div class="panel usage">
+                <p class="metric-asof use-window" id="use-window"></p>
+                <div class="use-strip" id="use-strip"></div>
+                <div class="table-wrap">
+                    <table class="books">
+                        <caption id="bk-caption"></caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col-rank">#</th>
+                                <th scope="col">Book</th>
+                                <th scope="col" class="col-num">Opens, 7 days</th>
+                                <th scope="col" class="col-num">Downloads, 30 days</th>
+                                <th scope="col" class="col-num">Downloads, total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bk-body">
+                            <tr><td colspan="5" class="empty-row">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <button type="button" class="btn more-btn" id="bk-more" aria-expanded="false" aria-controls="bk-body" hidden></button>
+            <p class="footnote">Library app 2.2+, anonymous counts; the last 3 days are left out while they arrive.</p>
+        </section>
+
+        <section class="reveal" aria-labelledby="pipe-title">
+            <div class="section-head">
+                <h2 class="section-title" id="pipe-title">Requests, and what is next</h2>
+            </div>
+            <!-- One panel, not two. These were a `.duo` whose left card held two
+                 numbers and its right card a five-row list, so equal-height forced
+                 a hole through the middle of the short one — the CSS mitigated it
+                 by pushing the figures to the floor and calling the gap breathing
+                 room. They are one story anyway: what readers asked for, how fast
+                 it went out, and what is next. Told in one column, the record
+                 becomes a strip and the queue gets the full width. -->
+            <div class="panel requests">
+                <div class="panel-title">Request → shipped</div>
+                <p class="panel-sub">Readers ask for a book or a translation; it goes out over the air, with no app update.</p>
+
+                <div class="req-record">
+                    <div>
+                        <div class="pipeline-num tnum" id="req-count">—</div>
+                        <div class="pipeline-cap">requests fulfilled</div>
+                    </div>
+                    <div>
+                        <div class="pipeline-num tnum" id="req-days">—</div>
+                        <div class="pipeline-cap">median days to ship</div>
+                    </div>
+                    <p class="metric-asof" id="req-asof"></p>
+                </div>
+
+                <div class="req-next-head">
+                    <span class="req-next-title">Next up</span>
+                    <span class="req-next-sub">Ordered by reader demand.</span>
+                </div>
+                <ol class="queue" id="queue"></ol>
+                <p class="footnote"><a href="bookrequest.html">Request a book →</a></p>
+            </div>
+        </section>
+
+        <p class="freshness" id="freshness">
+            <span class="stamp" id="generated-at">Loading…</span>
+        </p>
+
+    </main>
+
+    <footer class="site-footer">
+        <span>moitinhoneto@gmail.com · São Paulo, Brazil (UTC−3)</span>
+        <span class="footer-links">
+            <a href="index.html">Work</a>
+            <a href="stack.html">Stack &amp; About</a>
+            <a href="privacy.html">Privacy</a>
+        </span>
+    </footer>
+
+</div>
+
+<script>
+    document.documentElement.classList.add('js');
+
+    /* Theme toggle — identical behaviour to index.html and stack.html. */
+    (function(){
+        var btn = document.querySelector('.theme-toggle');
+        function current(){ return document.documentElement.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+        btn && btn.addEventListener('click', function(){
+            var next = current() === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch(e){}
+        });
+    })();
+
+    (function(){
+        // One GET, no parameters, no credentials. Same edge-function pattern as
+        // bookrequest.html: read-only, unauthenticated, and it degrades to a
+        // stated "unavailable" rather than to invented numbers.
+        var DASHBOARD_URL = 'https://pyqvubxmmlksjgbbtgva.supabase.co/functions/v1/dashboard';
+
+        var LANGS = {
+            en: 'English', pt: 'Portuguese', es: 'Spanish', fr: 'French', de: 'German',
+            it: 'Italian', la: 'Latin', ja: 'Japanese', ko: 'Korean', ru: 'Russian',
+            zh: 'Chinese', tr: 'Turkish', el: 'Greek', nl: 'Dutch', pl: 'Polish'
+        };
+
+        // Cosmetic only — the payload carries no monogram, and an app id the
+        // page has never heard of falls back to initials from its name rather
+        // than to a blank tile.
+        var MARKS = {
+            'ccb': 'CCB', 'library': 'CL', 'meditations': 'M', 'art-of-war': 'AW',
+            'the-prince': 'P', 'book-of-five-rings': '5R', 'de-brevitate-vitae': 'SL'
+        };
+        var MARK_SKIP = { the: 1, of: 1, a: 1, an: 1, on: 1, and: 1, e: 1 };
+        function markFor(app) {
+            if (MARKS[app.id]) return MARKS[app.id];
+            var words = String(app.name || '').split(/[\s–—-]+/).filter(function(w) {
+                return w && !MARK_SKIP[w.toLowerCase()];
+            });
+            return words.slice(0, 2).map(function(w) { return w.charAt(0).toUpperCase(); }).join('') || '?';
+        }
+
+        // The App Store artwork, self-hosted. Deliberately a map in the page and
+        // not a payload field, on the same test the `bundled` count had to pass
+        // and failed: is a stale entry here capable of telling a reader something
+        // untrue? No. An id missing from this map draws its monogram, an id
+        // present draws a picture, and either way every number on the card is
+        // the payload's. `bundled` was a claim about a quantity on screen and so
+        // belongs to the producer; a picture is decoration and belongs to the
+        // page. Copies of these files live in icons/ precisely so that no
+        // visitor's browser has to ask Apple for them.
+        var ICONS = {
+            'ccb': 'icons/app-ccb.png',
+            'library': 'icons/app-classics.png',
+            'meditations': 'icons/app-meditations.png',
+            'art-of-war': 'icons/app-art-of-war.png',
+            'the-prince': 'icons/app-the-prince.png',
+            'de-brevitate-vitae': 'icons/app-de-brevitate-vitae.png'
+        };
+
+        // Per-app store links, keyed like ICONS above. These are identity,
+        // not data: they never drift, which is what separates this from the
+        // hardcoded bundled-books list that once advertised an app nobody
+        // could download.
+        var STORES = {
+            'ccb': { ios: 'https://apps.apple.com/app/id6504291938',
+                     android: 'https://play.google.com/store/apps/details?id=moitinho.bibleandhymnal' },
+            'library': { ios: 'https://apps.apple.com/app/id6787402596' },
+            'meditations': { ios: 'https://apps.apple.com/app/id6759670450' },
+            'art-of-war': { ios: 'https://apps.apple.com/app/id6768119516' },
+            'the-prince': { ios: 'https://apps.apple.com/app/id6777144484' },
+            'de-brevitate-vitae': { ios: 'https://apps.apple.com/app/id6759208725' }
+        };
+
+        var PLATFORMS = { ios: 'iOS', android: 'Android', web: 'Web' };
+        var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        /* ---------- small helpers ---------- */
+
+        function el(tag, cls, text) {
+            var n = document.createElement(tag);
+            if (cls) n.className = cls;
+            if (text !== undefined && text !== null) n.textContent = String(text);
+            return n;
+        }
+        function num(v) {
+            return typeof v === 'number' && isFinite(v) ? v.toLocaleString('en-US') : '—';
+        }
+        function isDate(s) { return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s); }
+
+        // Date-only strings are parsed by hand: new Date('2026-08-04') is UTC
+        // midnight, which renders as the 3rd for anyone west of Greenwich. A
+        // dashboard whose whole argument is "the date is part of the number"
+        // cannot afford to be off by one.
+        function fmtDate(s) {
+            if (!isDate(s)) return '—';
+            var p = s.split('-');
+            return Number(p[2]) + ' ' + MONTHS[Number(p[1]) - 1] + ' ' + p[0];
+        }
+        function fmtStamp(iso) {
+            var d = new Date(iso);
+            if (isNaN(d.getTime())) return '—';
+            var mm = String(d.getUTCMinutes());
+            if (mm.length < 2) mm = '0' + mm;
+            return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()] + ' ' + d.getUTCFullYear() +
+                   ', ' + d.getUTCHours() + ':' + mm + ' UTC';
+        }
+        function langName(code) {
+            if (typeof code !== 'string') return '';
+            return LANGS[code] || code.toUpperCase();
+        }
+
+        function badge(cls, glyph, text) {
+            var b = el('span', 'badge ' + cls);
+            if (glyph) { var g = el('span', 'badge-glyph', glyph); g.setAttribute('aria-hidden', 'true'); b.appendChild(g); }
+            b.appendChild(document.createTextNode(text));
+            return b;
+        }
+
+        /* ---------- source freshness ---------- */
+
+        // A source string may name more than one report ("App Store Connect
+        // (CCB) + Google Play installs + ..."), because one app can ship on two
+        // stores whose reports have different dates, and part of a figure can
+        // come from a declared baseline. The number is only as fresh as its
+        // oldest input, and it is stale if any input is stale.
+        //
+        // Match by CONTAINMENT, never by splitting the label on '+'. Two
+        // reasons, and the old split failed on both:
+        //
+        //  * one source is named "App Store Connect (library + single-book
+        //    apps)" — a literal '+' inside a name, which splitting cuts in
+        //    half so neither fragment matches anything;
+        //  * the producers emitted labels that were DESCRIPTIONS rather than
+        //    names ("App Store Connect" against a row called "App Store
+        //    Connect (CCB)"), so exact equality found nothing. Five of the six
+        //    apps resolved no source at all and the sixth resolved half. A
+        //    failed lookup renders exactly like a fresh, uncaveated figure,
+        //    which is why nobody saw it.
+        //
+        // The producers now emit real row names and refuse to publish a label
+        // with an unmatched part, so containment is exact in practice; it stays
+        // tolerant here because the page must not go silent if that slips.
+        function resolveSource(sources, label) {
+            var text = String(label || '');
+            var hits = [];
+            sources.forEach(function(s) {
+                if (s && typeof s.name === 'string' && s.name && text.indexOf(s.name) !== -1) hits.push(s);
+            });
+            // Drop a row matched only because a LONGER matched name contains
+            // it, so "App Store Connect" could never claim the "App Store
+            // Connect (CCB)" half of a label it does not belong to.
+            var kept = hits.filter(function(s) {
+                return !hits.some(function(o) { return o !== s && o.name.indexOf(s.name) !== -1; });
+            });
+            var stale = false, oldest = null, notes = [];
+            kept.forEach(function(s) {
+                if (s.stale === true) stale = true;
+                if (isDate(s.as_of) && (oldest === null || s.as_of < oldest)) oldest = s.as_of;
+                if (s.note) notes.push(s.note);
+            });
+            return { stale: stale, as_of: oldest, notes: notes, matched: kept.length };
+        }
+
+        /* ---------- sparkline ---------- */
+
+        // The line is never the only way to read the series: the readout under
+        // it repeats every fact it carries, and the SVG has an aria-label that
+        // says the same thing again. Colour carries nothing.
+        function sparkline(series, unitLabel) {
+            var wrap = el('div', 'spark');
+            var vals = series.map(function(p) { return p.value; });
+            var W = 300, H = 40, PAD = 3;
+            var max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
+            var span = (max - min) || 1;
+            var n = vals.length;
+            var xAt = function(i) { return n < 2 ? W / 2 : (i / (n - 1)) * W; };
+            var yAt = function(v) { return PAD + (1 - (v - min) / span) * (H - PAD * 2); };
+
+            var d = '';
+            for (var i = 0; i < n; i++) d += (i ? 'L' : 'M') + xAt(i).toFixed(2) + ' ' + yAt(vals[i]).toFixed(2);
+
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+            svg.setAttribute('preserveAspectRatio', 'none');
+            svg.setAttribute('role', 'img');
+
+            var first = series[0], last = series[n - 1];
+            var peak = series[vals.indexOf(max)];
+            svg.setAttribute('aria-label',
+                unitLabel + ' from ' + fmtDate(first.date) + ' to ' + fmtDate(last.date) +
+                '. Low ' + num(min) + ', high ' + num(max) + ' on ' + fmtDate(peak.date) +
+                ', latest ' + num(last.value) + '.');
+
+            function node(name, attrs, cls) {
+                var e = document.createElementNS('http://www.w3.org/2000/svg', name);
+                for (var k in attrs) e.setAttribute(k, attrs[k]);
+                if (cls) e.setAttribute('class', cls);
+                e.setAttribute('vector-effect', 'non-scaling-stroke');
+                return e;
+            }
+
+            svg.appendChild(node('path', { d: d + 'L' + W + ' ' + H + 'L0 ' + H + 'Z' }, 'spark-area'));
+            svg.appendChild(node('line', { x1: 0, y1: H, x2: W, y2: H }, 'spark-base'));
+            svg.appendChild(node('path', { d: d }, 'spark-line'));
+            svg.appendChild(node('line', {
+                x1: xAt(n - 1), y1: yAt(last.value), x2: xAt(n - 1), y2: H
+            }, 'spark-tick'));
+            wrap.appendChild(svg);
+
+            var read = el('div', 'spark-read');
+            function pair(label, value) {
+                var s = el('span');
+                s.appendChild(document.createTextNode(label + ' '));
+                s.appendChild(el('b', 'tnum', value));
+                return s;
+            }
+            read.appendChild(el('span', null, unitLabel));
+            read.appendChild(pair('low', num(min)));
+            read.appendChild(pair('high', num(max)));
+            read.appendChild(pair('latest', num(last.value)));
+            wrap.appendChild(read);
+            return wrap;
+        }
+
+        /* ---------- app cards ---------- */
+
+        function versionRow(v) {
+            var row = el('div', 'app-version');
+            var states = {
+                live:      { cls: 'badge-live',   glyph: '●', text: 'Live' },
+                in_review: { cls: 'badge-review', glyph: '◐', text: 'In review' },
+                preparing: { cls: 'badge',        glyph: '○', text: 'Preparing' }
+            };
+            var s = states[v.state] || { cls: 'badge', glyph: '○', text: String(v.state || 'unknown') };
+            row.appendChild(badge(s.cls, s.glyph, s.text));
+            row.appendChild(el('span', 'ver', 'v' + v.version));
+
+            if (v.state === 'live' && isDate(v.released_on)) {
+                row.appendChild(el('span', null, 'released ' + fmtDate(v.released_on)));
+            } else if (v.state === 'in_review') {
+                row.appendChild(el('span', null, 'not released yet'));
+            }
+
+            // ONE line below the badges, always, whichever of the two fills
+            // it. `adoptionBar` returns a bar exactly when `suppressedPhrase`
+            // returns nothing and the other way round — they are keyed on the
+            // same two fields — so the card never wants both and never wants
+            // neither.
+            //
+            // This used to append the foot's spacer unconditionally, so a card
+            // WITH a bar got a third flex line holding an empty span. It
+            // measured 0px tall and still took its row gap, which made the
+            // version block 87px on CCB against 73px everywhere else and
+            // pushed CCB's whole footer 14px up. Every card is the same height,
+            // so the misalignment was invisible as a height bug and showed up
+            // only as rows that would not line up across the grid.
+            //
+            // The suppressed case costs one short phrase on the line the card
+            // already had. At 5–10 opted-in devices a day the book apps may
+            // never clear the floor, so a dedicated slot would sit empty on
+            // five of six cards forever; the section note below the grid does
+            // the explaining, once.
+            var bar = adoptionBar(v);
+            var note = suppressedPhrase(v);
+            row.appendChild(el('span', 'spacer'));
+            var foot = el('span', 'ver-foot');
+            if (bar) {
+                foot.appendChild(bar);
+            } else if (note) {
+                var g = el('span', 'ver-foot-glyph', note.glyph);
+                g.setAttribute('aria-hidden', 'true');
+                foot.appendChild(g);
+                foot.appendChild(document.createTextNode(note.text));
+            }
+            // The card already dates itself above the sparkline. Repeating the
+            // date here was a second timestamp on the same card for a slightly
+            // different day — accurate and not worth the line (Pedro,
+            // 2026-08-20, taking the small inconsistency knowingly).
+            row.appendChild(foot);
+            return row;
+        }
+
+        // Published only. A share that is published always carries its
+        // denominator, because a share without its sample size is not a
+        // measurement. A share that is NOT published deliberately does not:
+        // "8 devices" printed beside "6,120 downloads" reads as "this app has
+        // eight users", which is false and badly understates it. The sample
+        // counts only owners who opted into Apple's analytics sharing.
+        function adoptionBar(v) {
+            var pct = (typeof v.adoption_pct === 'number' && isFinite(v.adoption_pct))
+                ? Math.max(0, Math.min(100, v.adoption_pct)) : null;
+            if (pct === null || v.suppressed_reason) return null;
+
+            var devices = (typeof v.sample_devices === 'number' && isFinite(v.sample_devices))
+                ? v.sample_devices : null;
+            var a = el('div', 'adoption');
+            var track = el('div', 'adoption-track');
+            var fill = el('div', 'adoption-fill');
+            fill.style.width = pct + '%';
+            track.appendChild(fill);
+            track.setAttribute('role', 'img');
+            track.setAttribute('aria-label',
+                pct.toFixed(1) + ' per cent of ' + (devices === null ? 'the sampled devices' : num(devices) +
+                ' sampled iOS devices') + ' are on version ' + v.version + '.');
+            a.appendChild(el('span', 'tnum', pct.toFixed(1) + '%'));
+            a.appendChild(track);
+            a.appendChild(el('span', 'adoption-denom',
+                devices === null ? 'on this version' : 'of ' + num(devices) + ' sampled iOS devices'));
+            return a;
+        }
+
+        // One line, not the old four paragraphs. The clause that has to survive
+        // any rewording is "not a count of readers": it is what stops a device
+        // sample read next to a download total from being taken as a user count.
+        // The wording branches because the page must not assert that nothing is
+        // published while a card is publishing a share — CCB clears the floor
+        // whenever its sessions feed covers the shipped version.
+        function renderAdoptionExplainer(apps) {
+            var box = document.getElementById('adoption-note');
+            box.textContent = '';
+
+            var published = apps.filter(function(a) { return adoptionBar(a.latest_version || {}) !== null; }).length;
+            var p = el('p', 'note-body-text');
+            if (published === 0) {
+                // WHY the shares are withheld is not one fact. "Too small" is
+                // true of the five book apps (5-11 devices); it is false of
+                // CCB, whose sample is ~170 and whose share is withheld
+                // because the version is too new for the report to have seen
+                // a full day of it. Asserting the small-sample reason over
+                // both would be a plain untruth about the bigger app, so the
+                // sentence is built from the reasons actually present.
+                var reasons = {};
+                apps.forEach(function(a) {
+                    var r = (a.latest_version || {}).suppressed_reason;
+                    if (r) { reasons[r] = true; }
+                });
+                var why = reasons['sample_too_small'] && reasons['not_measured']
+                    ? 'is too small to carry a percentage on most of these apps, and has not had a full day on the version the rest just shipped'
+                    : reasons['not_measured']
+                        ? 'has not had a full day on the versions now shipping'
+                        : 'is too small on these apps to carry a percentage';
+                p.appendChild(document.createTextNode(
+                    'No adoption share is published here: the iOS-only, opt-in device sample behind it ' +
+                    why + ' — and it is '));
+            } else {
+                p.appendChild(document.createTextNode(
+                    'Adoption is an iOS-only, opt-in device sample, published with its denominator only where it is ' +
+                    'large enough to carry a percentage and withheld where it is not — and it is '));
+            }
+            p.appendChild(el('strong', null, 'not a count of readers'));
+            p.appendChild(document.createTextNode('.'));
+            box.appendChild(p);
+            box.hidden = false;
+        }
+
+        // Two suppressed states, two different facts, kept apart by wording and
+        // by glyph — and neither of them prints the device count.
+        function suppressedPhrase(v) {
+            if (typeof v.adoption_pct === 'number' && isFinite(v.adoption_pct) && !v.suppressed_reason) return null;
+            if (v.suppressed_reason === 'not_measured') {
+                return { glyph: '○', text: 'Adoption not measured yet' };
+            }
+            // sample_too_small, and anything else that arrives without a share:
+            // a report that could not see a version has not measured 0% of it.
+            return { glyph: '⊘', text: 'Adoption not reported' };
+        }
+
+        function appCard(app, sources) {
+            var card = el('div', 'panel app-card');
+
+            var head = el('div', 'app-head');
+            // The monogram is always built, and stays in the tile underneath the
+            // artwork. An app id with no icon — a new one, or one still in
+            // review — keeps its initials, and so does one whose file 404s.
+            var mark = el('div', 'app-mark', markFor(app));
+            mark.setAttribute('data-app', app.id);
+            mark.setAttribute('aria-hidden', 'true');
+            if (ICONS[app.id]) {
+                var art = document.createElement('img');
+                art.alt = '';
+                art.width = 40;
+                art.height = 40;
+                art.loading = 'lazy';
+                art.decoding = 'async';
+                art.addEventListener('error', function() {
+                    mark.classList.remove('has-art');
+                    art.remove();
+                });
+                art.src = ICONS[app.id];
+                mark.classList.add('has-art');
+                mark.appendChild(art);
+            }
+            head.appendChild(mark);
+
+            var titles = el('div');
+            titles.appendChild(el('div', 'app-name', app.name));
+            var platRow = el('div', 'app-platforms');
+            var stores = STORES[app.id] || {};
+            (app.platforms || []).forEach(function(pf, n) {
+                if (n) platRow.appendChild(document.createTextNode(' · '));
+                var name = PLATFORMS[pf] || pf;
+                if (stores[pf]) {
+                    var a = el('a', 'store-link', name);
+                    a.href = stores[pf];
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.setAttribute('aria-label', 'Open ' + app.name + ' on ' +
+                        (pf === 'ios' ? 'the App Store' : 'Google Play'));
+                    platRow.appendChild(a);
+                } else {
+                    platRow.appendChild(document.createTextNode(name));
+                }
+            });
+            titles.appendChild(platRow);
+            head.appendChild(titles);
+            card.appendChild(head);
+
+            var dl = app.downloads_total || {};
+            var src = resolveSource(sources, dl.source);
+            // v1.1 puts an explicit `stale` on the total, and the producer
+            // resolves the cross-store rule too. Either half saying stale is
+            // enough — the two can only ever disagree towards optimism, and
+            // this page does not round in that direction.
+            var isStale = dl.stale === true || src.stale;
+            // ⚠ The date is the payload's, full stop (fixed 2026-08-20).
+            // This used to defer to the OLDEST contributing source, mirroring
+            // v1.1's oldest-wins rule. Once the producer stopped truncating
+            // the cross-store total, that second-guessing pulled the CCB card
+            // back to 4 Aug — the day the Play feed died — and misdated the
+            // 97% of the figure that runs to 18 Aug.
+            //
+            // The producer already decides this, and it is the only half that
+            // knows what it summed. A staleness signal is not a date: `isStale`
+            // above still inherits from any contributing source, and the badge
+            // beside the number carries it. Freshness and completeness are two
+            // axes, and collapsing them is what made the date wrong.
+            var asOf = dl.as_of;
+
+            var metric = el('div', 'metric' + (isStale ? ' is-stale' : ''));
+            // The stale mark sits BESIDE the figure, not in the row under it
+            // (Pedro, 2026-08-20). It is not decoration here: the producer
+            // stopped truncating the cross-store total to the last day both
+            // stores covered, and this badge is what replaced that truncation.
+            // Adjacency is the whole mechanism — a caveat a line below can be
+            // read as being about the date; one against the number is about
+            // the number.
+            var valueRow = el('div', 'metric-value-row');
+            valueRow.appendChild(el('div', 'metric-value tnum', num(dl.value)));
+            if (isStale) valueRow.appendChild(badge('badge-stale', '▲', 'Stale'));
+            metric.appendChild(valueRow);
+            // v1.2: the producer states the app's launch date and the page
+            // renders it. This used to read "downloads, lifetime", which was
+            // false for CCB by about nineteen months — Apple's analytics floor
+            // is the start of 2026 and that app shipped in mid-2024. "Since"
+            // is a claim the payload can actually support; "lifetime" was not.
+            // No `since`, no claim: the label degrades to the bare noun rather
+            // than inventing a left edge.
+            // ⚠ "App Store downloads", not "downloads" (v1.3, 2026-08-20).
+            // The figure counts ONE store. CCB is on two and the card says so
+            // in its platform line, so a bare "downloads" beside "iOS +
+            // Android" would be read as covering both. Two words in the label
+            // is the cheapest way to keep that honest — and it is what made
+            // dropping the source name from the row below safe.
+            // Name the stores the figure actually counts. Five of the six
+            // apps are iOS-only, so "App Store downloads" is exact for them;
+            // CCB ships on both and its number includes both, so saying only
+            // "App Store" would understate it and saying only "downloads"
+            // beside a platform line reading "iOS + Android" would leave the
+            // reader to guess. Derived from `platforms` so it cannot drift
+            // from what the producer summed.
+            var plats = Array.isArray(app.platforms) ? app.platforms : [];
+            var storeLabel = plats.indexOf('android') >= 0
+                ? 'App Store and Play Store downloads' : 'App Store downloads';
+            // "since <launch date>" dropped 2026-08-20: every figure here
+            // counts from the app's own launch, so the date was the same claim
+            // repeated six times. `since` stays in the payload — it is what
+            // makes the claim true and it is what the producer checks against.
+            metric.appendChild(el('div', 'metric-label', storeLabel));
+
+            var asOfRow = el('div', 'metric-asof');
+            // The source name used to be joined on here. Pedro, 2026-08-20: he
+            // knows where these come from — on the card it was a long string
+            // competing with the number it belonged to. The DATE stays:
+            // freshness is what changes day to day. (v1.5: the Sources section
+            // that restated every source is gone too; sources[] stays in the
+            // payload, and resolveSource still reads it for the stale badge.)
+            asOfRow.appendChild(document.createTextNode('as of ' + fmtDate(asOf)));
+
+            metric.appendChild(asOfRow);
+
+            // v1.2: a figure part of which is a hand-entered constant has to
+            // say so where the figure is, not only in the chips at the foot.
+            // Everything here comes out of the payload's own fields, so the
+            // page cannot drift from what the producer actually did.
+            // ⚠ REMOVED 2026-08-20 (Pedro): the baseline prose and the joined
+            // source notes used to render HERE as well as in the Sources chips
+            // at the foot. Two copies of the same paragraphs, and on a card the
+            // long one buried the number it was explaining — "apenas noise que
+            // me atrapalham a ter uma boa visualização".
+            //
+            // The contract is still met: docs/DASHBOARD.md requires every source
+            // to declare its freshness and the baseline to declare itself in
+            // `sources[]`, and the payload still does. v1.5 (Pedro, 2026-09-26)
+            // stopped rendering the source chips at the foot as well — the page
+            // is for following the numbers, and the stale badge beside a figure
+            // is what the freshness rule actually needs.
+            //
+            // Do NOT restore these blocks as a "missing caveat" bug.
+            card.appendChild(metric);
+
+            if (Array.isArray(app.downloads_30d_series) && app.downloads_30d_series.length) {
+                // Every card reads "Last 30 days". The metric label directly
+                // above already names the store(s), so repeating it here was
+                // noise (Pedro, 2026-08-20).
+                //
+                // ⚠ On CCB the total counts two stores and this series counts
+                // one, so the label no longer states that difference. Pedro
+                // took the trade knowingly. sources[] in the payload still carries
+                // it, and the real fix is under way: the Play Console clearly
+                // HAS daily installs past the date our export stops at, so the
+                // gap is in how we fetch them, not in what Google has.
+                card.appendChild(sparkline(app.downloads_30d_series, 'Last 30 days'));
+            }
+            if (app.latest_version) card.appendChild(versionRow(app.latest_version));
+            return card;
+        }
+
+        /* ---------- library usage (v1.5) ---------- */
+
+        // "12–18 Oct 2026", or "28 Sep – 4 Oct 2026" across a month.
+        function fmtRange(a, b) {
+            if (!isDate(a) || !isDate(b)) return '—';
+            var pa = a.split('-'), pb = b.split('-');
+            if (pa[0] === pb[0] && pa[1] === pb[1]) return Number(pa[2]) + '–' + fmtDate(b);
+            return Number(pa[2]) + ' ' + MONTHS[Number(pa[1]) - 1] + ' – ' + fmtDate(b);
+        }
+        function dec(v) {
+            return typeof v === 'number' && isFinite(v) ? v.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '—';
+        }
+
+        // ▲▼ against the previous closed week. The producer sends null unless
+        // BOTH weeks were fully measured, and null reads as no comparison —
+        // never as "flat". The arrow is the signal; colour only repeats it.
+        function deltaLine(v, unit) {
+            var d;
+            if (typeof v !== 'number' || !isFinite(v)) {
+                d = el('div', 'use-delta trend trend-none');
+                var dash = el('span', 'arrow', '–'); dash.setAttribute('aria-hidden', 'true');
+                d.appendChild(dash);
+                d.appendChild(el('span', null, 'no comparison yet'));
+                return d;
+            }
+            var up = v > 0.05, down = v < -0.05;
+            d = el('div', 'use-delta trend ' + (up ? 'trend-up' : down ? 'trend-down' : 'trend-flat'));
+            var arrow = el('span', 'arrow', up ? '▲' : down ? '▼' : '▬');
+            arrow.setAttribute('aria-hidden', 'true');
+            d.appendChild(arrow);
+            var mag = unit === 'pts' ? dec(Math.abs(v)) + ' pts' : Math.round(Math.abs(v)) + '%';
+            // The window line above names the week this compares against, once.
+            d.appendChild(el('span', 'sr-only', up ? 'up ' : down ? 'down ' : 'flat, '));
+            d.appendChild(el('span', 'tnum', mag));
+            return d;
+        }
+
+        function renderStrip(u) {
+            var strip = document.getElementById('use-strip');
+            strip.textContent = '';
+            // A pre-v1.5 document has no usage at all: say so in one line
+            // rather than drawing four dashes.
+            strip.hidden = !(u && u.current);
+            var cur = (u && u.current) || {}, delta = (u && u.delta) || {};
+            [
+                { v: dec(cur.opens_per_day), cap: 'app opens / day', d: delta.opens_per_day_pct },
+                { v: dec(cur.minutes_per_open), cap: 'minutes per open', d: delta.minutes_per_open_pct },
+                { v: dec(cur.book_opens_per_day), cap: 'books opened / day', d: delta.book_opens_per_day_pct },
+                { v: cur.plan_pct == null ? '—' : dec(cur.plan_pct) + '%', cap: 'with a reading plan (iOS)',
+                  d: delta.plan_pct_points, unit: 'pts' }
+            ].forEach(function(f) {
+                var box = el('div', 'use-fig');
+                box.appendChild(el('div', 'use-num tnum', f.v));
+                box.appendChild(el('div', 'use-cap', f.cap));
+                box.appendChild(deltaLine(f.d, f.unit));
+                strip.appendChild(box);
+            });
+
+            var line = 'No usage figures in this data run.';
+            if (u && u.current) {
+                line = 'Last 7 closed days · ' + fmtRange(cur.start, cur.end);
+                var n = cur.days_measured;
+                if (n === 0 && isDate(u.full_week_on)) {
+                    line += ' · first full week on ' + fmtDate(u.full_week_on);
+                } else if (typeof n === 'number' && n > 0 && n < 7) {
+                    line += ' · ' + n + ' of 7 days measured';
+                }
+                var compared = Object.keys(delta).some(function(k) { return typeof delta[k] === 'number'; });
+                if (compared && u.previous) line += ' · ▲▼ vs ' + fmtRange(u.previous.start, u.previous.end);
+            }
+            setText('use-window', line);
+        }
+
+        // The table's rows. v1.5 documents carry usage.books[], ranked by the
+        // producer over EVERY shipped edition. A pre-v1.5 document has only
+        // editions[] (the top 25, per book × language): fold it per book so the
+        // page still says something true while page and producer are out of
+        // step — the fold can only undercount a book's tail editions, and it
+        // lasts until the next producer run.
+        function bookRows(p) {
+            if (p.usage && Array.isArray(p.usage.books)) {
+                return { rows: p.usage.books, rankedBy: p.usage.books_ranked_by };
+            }
+            var by = {}, order = [];
+            (p.editions || []).forEach(function(e) {
+                var k = e.book_slug || e.book;
+                if (!by[k]) { by[k] = { book: e.book, book_slug: k, opens_7d: null, downloads_30d: 0, downloads_total: 0 }; order.push(k); }
+                by[k].downloads_30d += typeof e.downloads_30d === 'number' ? e.downloads_30d : 0;
+                by[k].downloads_total += typeof e.downloads_total === 'number' ? e.downloads_total : 0;
+            });
+            var rows = order.map(function(k) { return by[k]; });
+            rows.sort(function(a, b) {
+                return (b.downloads_30d - a.downloads_30d) || (b.downloads_total - a.downloads_total) ||
+                       String(a.book_slug).localeCompare(String(b.book_slug));
+            });
+            return { rows: rows, rankedBy: 'downloads_30d' };
+        }
+
+        // More than COLLAPSE_AFTER rows fold behind a button, at every width.
+        var COLLAPSE_AFTER = 10;
+
+        function wireBooksDisclosure(total) {
+            var table = document.querySelector('table.books');
+            var btn = document.getElementById('bk-more');
+            if (total <= COLLAPSE_AFTER) { btn.hidden = true; table.classList.remove('is-collapsed'); return; }
+            table.classList.add('is-collapsed');
+            btn.hidden = false;
+            btn.textContent = 'Show all ' + total + ' books';
+            btn.setAttribute('aria-expanded', 'false');
+            btn.onclick = function() {
+                table.classList.remove('is-collapsed');
+                btn.setAttribute('aria-expanded', 'true');
+                btn.hidden = true;
+            };
+        }
+
+        function renderBooks(p) {
+            var body = document.getElementById('bk-body');
+            body.textContent = '';
+            var t = bookRows(p);
+            var byOpens = t.rankedBy === 'opens_7d';
+            var caption = byOpens ? 'Ranked by opens in the last 7 closed days' : 'Ranked by downloads in the last 30 days';
+            if (isDate(p.editions_reason_since) && isDate(p.editions_as_of)) {
+                caption += ' · downloads counted since ' + fmtDate(p.editions_reason_since) +
+                           ', as of ' + fmtDate(p.editions_as_of);
+            }
+            setText('bk-caption', caption);
+
+            if (!t.rows.length) {
+                var er = el('tr');
+                var ec = el('td', 'empty-row', 'No books reported.');
+                ec.setAttribute('colspan', '5');
+                er.appendChild(ec);
+                body.appendChild(er);
+                wireBooksDisclosure(0);
+                return;
+            }
+
+            var key = byOpens ? 'opens_7d' : 'downloads_30d';
+            var top = t.rows[0][key] || 1;
+            t.rows.forEach(function(b, i) {
+                var tr = el('tr', i >= COLLAPSE_AFTER ? 'bk-extra' : null);
+                tr.appendChild(el('td', 'col-rank tnum', i + 1));
+                var title = el('td', 'col-title');
+                title.appendChild(el('div', 'bk-title', b.book));
+                tr.appendChild(title);
+
+                [['opens_7d', 'Opens, 7 days'], ['downloads_30d', 'Downloads, 30 days'],
+                 ['downloads_total', 'Downloads, total']].forEach(function(c) {
+                    var td = el('td', 'col-num tnum');
+                    td.setAttribute('data-label', c[1]);
+                    td.appendChild(el('span', null, num(b[c[0]])));
+                    if (c[0] === key && typeof b[key] === 'number') {
+                        var bar = el('span', 'bar');
+                        if (b[key] > 0) {  // a zero gets the empty track, not a sliver
+                            var fill = el('i');
+                            fill.style.width = Math.max(2, Math.round((b[key] / top) * 100)) + '%';
+                            bar.appendChild(fill);
+                        }
+                        bar.setAttribute('aria-hidden', 'true');
+                        td.appendChild(bar);
+                    }
+                    tr.appendChild(td);
+                });
+                body.appendChild(tr);
+            });
+            wireBooksDisclosure(t.rows.length);
+        }
+
+        /* ---------- upcoming ---------- */
+
+        function renderQueue(upcoming) {
+            var list = document.getElementById('queue');
+            list.textContent = '';
+            if (!upcoming.length) {
+                list.appendChild(el('li', null, 'Nothing queued right now.'));
+                return;
+            }
+            upcoming.forEach(function(u) {
+                var li = el('li');
+                var r = el('span', 'q-rank tnum', u.rank);
+                r.setAttribute('aria-hidden', 'true');
+                li.appendChild(r);
+                var box = el('div');
+                box.appendChild(el('div', 'q-title', u.title));
+                var meta = [u.author, langName(u.language)].filter(Boolean).join(' · ');
+                if (meta) box.appendChild(el('div', 'q-meta', meta));
+                li.appendChild(box);
+                list.appendChild(li);
+            });
+        }
+
+        /* ---------- validation ---------- */
+
+        // Deliberately strict. A payload that only half-matches the contract is
+        // rejected outright, because a half-rendered dashboard that still looks
+        // confident is exactly the failure this page exists to avoid.
+        //
+        // It checks what the page RENDERS. `coverage` is still in the document
+        // (v1.5) but no longer drawn, so it is no longer a reason to refuse one.
+        // `usage` is optional — a pre-v1.5 document renders the book table from
+        // editions[] — but a `usage` that is present must be whole.
+        function isValid(p) {
+            if (!p || typeof p !== 'object') return false;
+            if (typeof p.generated_at !== 'string' || isNaN(new Date(p.generated_at).getTime())) return false;
+            if (!Array.isArray(p.apps) || !Array.isArray(p.upcoming) || !Array.isArray(p.sources)) return false;
+            if (!p.requests || typeof p.requests !== 'object') return false;
+            if (p.usage !== undefined) {
+                var u = p.usage;
+                if (!u || typeof u !== 'object' || !Array.isArray(u.books) ||
+                    !u.current || typeof u.current !== 'object' || !isDate(u.current.start) ||
+                    !isDate(u.current.end)) return false;
+            } else if (!Array.isArray(p.editions)) {
+                return false;
+            }
+            return p.apps.every(function(a) {
+                return a && typeof a.id === 'string' && typeof a.name === 'string' &&
+                       a.downloads_total && typeof a.downloads_total === 'object';
+            }) && p.sources.every(function(s) {
+                return s && typeof s.name === 'string';
+            });
+        }
+
+        /* ---------- render ---------- */
+
+        function setText(id, value) { document.getElementById(id).textContent = value; }
+
+        function showNotice(title, body) {
+            setText('notice-title', title);
+            setText('notice-body', body);
+            document.getElementById('notice').hidden = false;
+        }
+
+        function renderUnavailable(reason) {
+            document.body.classList.add('is-placeholder');
+            document.getElementById('main').setAttribute('aria-busy', 'false');
+
+            var f = document.getElementById('freshness');
+            f.className = 'freshness is-error';
+            setText('generated-at', 'Live data unavailable');
+
+            showNotice(
+                'The figures could not be loaded',
+                reason + ' Nothing on this page has been filled in with estimates, cached copies or ' +
+                'placeholder numbers — where a figure would be, there is a dash. Try again later.'
+            );
+
+            ['req-count', 'req-days'].forEach(function(id) { setText(id, '—'); });
+            setText('req-asof', '');
+
+            document.getElementById('adoption-note').hidden = true;
+            document.getElementById('app-grid').textContent = '';
+            var card = el('div', 'panel');
+            card.style.gridColumn = '1 / -1';
+            card.appendChild(el('div', 'empty-row', 'Per-app figures unavailable.'));
+            document.getElementById('app-grid').appendChild(card);
+
+            renderStrip(null);
+            setText('use-window', '');
+            setText('bk-caption', '');
+            document.getElementById('bk-more').hidden = true;
+            var body = document.getElementById('bk-body');
+            body.textContent = '';
+            var tr = el('tr');
+            var td = el('td', 'empty-row', 'Book figures unavailable.');
+            td.setAttribute('colspan', '5');
+            tr.appendChild(td);
+            body.appendChild(tr);
+
+            var q = document.getElementById('queue');
+            q.textContent = '';
+            q.appendChild(el('li', 'empty-row', 'Queue unavailable.'));
+        }
+
+        function render(p) {
+            var main = document.getElementById('main');
+
+            setText('generated-at', 'Data generated ' + fmtStamp(p.generated_at));
+            var ageHours = (Date.now() - new Date(p.generated_at).getTime()) / 3600000;
+            var f = document.getElementById('freshness');
+            if (ageHours > 36) {
+                var days = Math.floor(ageHours / 24);
+                f.className = 'freshness is-warn';
+                f.appendChild(badge('badge-stale', '▲', 'Not refreshed'));
+                showNotice(
+                    'This page has not refreshed today',
+                    'The last successful run was ' + days + (days === 1 ? ' day' : ' days') + ' ago. Everything ' +
+                    'below is that run’s data, shown with its own dates — it has not been topped up or estimated.'
+                );
+            } else {
+                f.className = 'freshness';
+            }
+
+            var grid = document.getElementById('app-grid');
+            grid.textContent = '';
+            p.apps.forEach(function(a) { grid.appendChild(appCard(a, p.sources)); });
+
+            var staleApps = p.apps.filter(function(a) {
+                var d = a.downloads_total || {};
+                return d.stale === true || resolveSource(p.sources, d.source).stale;
+            });
+            setText('apps-foot', staleApps.length
+                ? 'Marked figures are drawn from a report that has stopped updating; they are shown at the ' +
+                  'last date the source actually wrote, not brought forward.'
+                : 'Every figure above is from a source that is still updating.');
+            renderAdoptionExplainer(p.apps);
+
+            renderStrip(p.usage || null);
+            renderBooks(p);
+
+            var r = p.requests || {};
+            setText('req-count', num(r.fulfilled_count));
+            setText('req-days', num(r.median_days_to_ship));
+            setText('req-asof', 'as of ' + fmtDate(r.as_of));
+
+            renderQueue(p.upcoming);
+
+            main.setAttribute('aria-busy', 'false');
+        }
+
+        function load() {
+            return fetch(DASHBOARD_URL, { headers: { 'Accept': 'application/json' } })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(payload) {
+                    if (!isValid(payload)) throw new Error('payload did not match the contract');
+                    render(payload);
+                })
+                .catch(function() {
+                    renderUnavailable('The dashboard endpoint did not answer with a usable document.');
+                });
+        }
+
+        load();
+    })();
+
+    /* Scroll reveal — same as the rest of the site. */
+    (function(){
+        var els = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window) {
+            var io = new IntersectionObserver(function(entries){
+                entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+            els.forEach(function(el){ io.observe(el); });
+        } else { els.forEach(function(el){ el.classList.add('visible'); }); }
+    })();
+</script>
+
+</body>
+</html>
