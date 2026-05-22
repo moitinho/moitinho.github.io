@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classics – Public Domain Books</title>
+<meta name="description" content="50+ public domain classics to read or listen to. Free, no ads, no account. iPhone, iPad and Android.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Classics – Public Domain Books">
+<meta property="og:description" content="50+ public domain classics to read or listen to. Free, no ads, no account.">
+<meta property="og:image" content="https://moitinho.github.io/icons/app-classics-512.jpg">
+<meta property="og:url" content="https://moitinho.github.io/classics/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/icons/app-classics.png">
+<link rel="apple-touch-icon" href="/icons/app-classics.png">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--fg:#1f1d1a;--muted:#6b665e;--btn:#1f1d1a;--btnfg:#fff;--line:#e4e0d8}
+@media (prefers-color-scheme:dark){:root{--bg:#141311;--card:#1d1c19;--fg:#f1eee8;--muted:#a8a296;--btn:#f1eee8;--btnfg:#141311;--line:#2c2a26}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:420px;margin:0 auto;padding:40px 16px;text-align:center}
+img.icon{width:112px;height:112px;border-radius:24px;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+h1{font-size:1.45rem;margin:18px 0 6px}p{color:var(--muted);margin:0 0 26px}
+a.btn{display:block;background:var(--btn);color:var(--btnfg);text-decoration:none;font-weight:600;padding:14px 16px;border-radius:12px;margin:0 0 4px}
+small.dest{display:block;color:var(--muted);font-size:.78rem;margin:0 0 16px}
+footer{margin-top:28px;font-size:.8rem;color:var(--muted)}footer a{color:var(--muted)}
+h1,p,a.btn{word-break:auto-phrase}
+</style>
+</head>
+<body>
+<main>
+  <img class="icon" id="icon" src="/icons/app-classics-512.jpg" alt="Classics app icon">
+  <h1 id="name">Classics – Public Domain Books</h1>
+  <p id="pitch">50+ public domain classics to read or listen to.<br>Free, no ads, no account.</p>
+  <a class="btn" id="ios" href="https://apps.apple.com/app/apple-store/id6787402596?pt=2183464&amp;ct=share&amp;mt=8">Download on the App Store (iPhone and iPad)</a>
+  <small class="dest">apps.apple.com</small>
+  <a class="btn" id="android" href="https://play.google.com/store/apps/details?id=moitinho.publicdomainbooks&amp;referrer=utm_source%3Dshare%26utm_medium%3Dlink%26utm_campaign%3Dshare">Get it on Google Play (Android)</a>
+  <small class="dest">play.google.com</small>
+  <footer><a id="support" href="/support.html">Support</a> · <a id="privacy" href="/privacy.html">Privacy</a></footer>
+</main>
+<script>
+(function(){
+  // Names are the store listing titles; the book count comes from
+  // GenericBook's catalog.json (54 on 2026-10-22), rounded down so it stays true.
+  var t = {
+    pt: ["Clássicos – Domínio Público", "Mais de 50 clássicos de domínio público para ler ou ouvir.<br>Grátis, sem anúncios e sem cadastro.", "Baixar na App Store (iPhone e iPad)", "Baixar no Google Play (Android)", "Suporte", "Privacidade", "Ícone do app Clássicos"],
+    es: ["Clásicos – Dominio Público", "Más de 50 clásicos de dominio público para leer o escuchar.<br>Gratis, sin anuncios y sin registro.", "Descargar en la App Store (iPhone y iPad)", "Descargar en Google Play (Android)", "Soporte", "Privacidad", "Ícono de la app Clásicos"],
+    fr: ["Classiques – Domaine Public", "Plus de 50 classiques du domaine public à lire ou à écouter.<br>Gratuit, sans publicité et sans compte.", "Télécharger sur l’App Store (iPhone et iPad)", "Télécharger sur Google Play (Android)", "Assistance", "Confidentialité", "Icône de l’app Classiques"],
+    de: ["Klassiker – Gemeinfreie Bücher", "Über 50 gemeinfreie Klassiker zum Lesen oder Hören.<br>Kostenlos, ohne Werbung und ohne Konto.", "Im App Store laden (iPhone und iPad)", "Bei Google Play laden (Android)", "Support", "Datenschutz", "App-Symbol Klassiker"],
+    it: ["Classici – Pubblico Dominio", "Oltre 50 classici di pubblico dominio da leggere o ascoltare.<br>Gratis, senza pubblicità e senza account.", "Scarica dall’App Store (iPhone e iPad)", "Scarica da Google Play (Android)", "Supporto", "Privacy", "Icona dell’app Classici"],
+    ja: ["古典 – パブリックドメイン", "パブリックドメインの古典50冊以上。<br>読むことも聴くこともできます。<br>無料、広告なし、アカウント不要。", "App Storeでダウンロード（iPhone・iPad）", "Google Playで入手（Android）", "サポート", "プライバシー", "古典アプリのアイコン"],
+    ko: ["고전 – 퍼블릭 도메인", "퍼블릭 도메인 고전 50권 이상을 읽고 들어 보세요.<br>무료이며 광고도, 회원가입도 없습니다.", "App Store에서 다운로드 (iPhone, iPad)", "Google Play에서 다운로드 (Android)", "지원", "개인정보 처리방침", "고전 앱 아이콘"],
+    ru: ["Классика – Свободные книги", "Более 50 классических книг из общественного достояния.<br>Читайте или слушайте бесплатно, без рекламы и регистрации.", "Загрузить в App Store (iPhone и iPad)", "Загрузить в Google Play (Android)", "Поддержка", "Конфиденциальность", "Значок приложения Классика"],
+    zh: ["经典 – 公共领域", "50 多部公版经典，可读可听。<br>免费，无广告，无需注册。", "在 App Store 下载（iPhone 和 iPad）", "在 Google Play 下载（Android）", "支持", "隐私", "经典应用图标"],
+    tr: ["Klasikler – Kamu Malı Kitaplar", "Okuyabileceğiniz ya da dinleyebileceğiniz 50’den fazla kamu malı klasik.<br>Ücretsiz, reklamsız ve üyelik gerektirmez.", "App Store’dan indirin (iPhone ve iPad)", "Google Play’den indirin (Android)", "Destek", "Gizlilik", "Klasikler uygulama simgesi"]
+  };
+  var m = /[?&]lang=([a-z]{2})\b/.exec(location.search);
+  var lang = m ? m[1] : (navigator.language || "en").toLowerCase().split("-")[0];
+  var s = t[lang];
+  if (s) {
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : lang;
+    document.title = s[0];
+    document.getElementById("name").textContent = s[0];
+    document.getElementById("pitch").innerHTML = s[1];
+    document.getElementById("ios").textContent = s[2];
+    document.getElementById("android").textContent = s[3];
+    document.getElementById("support").textContent = s[4];
+    document.getElementById("privacy").textContent = s[5];
+    document.getElementById("icon").alt = s[6];
+  }
+})();
+(function(){
+  if (/[?&]show=1\b/.test(location.search)) return;
+  var ua = navigator.userAgent || "";
+  var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var android = /Android/.test(ua);
+  var target = ios ? document.getElementById("ios") : android ? document.getElementById("android") : null;
+  if (target) location.replace(target.href);
+})();
+</script>
+</body>
+</html>
