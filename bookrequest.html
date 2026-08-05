@@ -90,6 +90,124 @@
             margin-bottom: 36px;
         }
 
+        .priority-section {
+            margin-bottom: 42px;
+        }
+
+        .priority-section h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .priority-intro,
+        .priority-status {
+            color: var(--fg-secondary);
+            font-size: 0.92rem;
+            font-weight: 300;
+            text-align: center;
+        }
+
+        .priority-intro { margin-bottom: 20px; }
+
+        .priority-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .priority-item {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr);
+            gap: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .priority-rank {
+            color: var(--fg-tertiary);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.15rem;
+            text-align: center;
+        }
+
+        .priority-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .priority-author,
+        .priority-language,
+        .priority-count,
+        .priority-sponsors {
+            color: var(--fg-secondary);
+            font-size: 0.86rem;
+            line-height: 1.45;
+        }
+
+        .priority-author { font-style: italic; }
+        .priority-count { margin-top: 7px; }
+        .priority-sponsors { margin-top: 5px; }
+
+        .priority-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .plus-one-button {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 0.86rem;
+            font-weight: 500;
+            color: var(--fg);
+            background: transparent;
+            border: 1px solid var(--divider);
+            border-radius: 9px;
+            padding: 7px 11px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .plus-one-button:hover:not(:disabled) {
+            border-color: var(--fg-tertiary);
+            background: var(--bg);
+        }
+
+        .plus-one-button:disabled { opacity: 0.55; cursor: default; }
+
+        .request-message {
+            color: var(--fg-secondary);
+            font-size: 0.82rem;
+            line-height: 1.35;
+        }
+
+        .request-message.is-error { color: #b3403a; }
+        @media (prefers-color-scheme: dark) { .request-message.is-error { color: #ffb4a9; } }
+
+        .priority-status {
+            margin-top: 14px;
+            min-height: 1.5em;
+        }
+
+        .sponsor-link {
+            display: block;
+            width: fit-content;
+            margin: 18px auto 0;
+            color: var(--fg);
+            font-size: 0.92rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-bottom: 1px solid var(--fg-tertiary);
+        }
+
         form { display: flex; flex-direction: column; gap: 22px; }
 
         .field label {
@@ -199,7 +317,44 @@
     </style>
 </head>
 <body>
-    <div class="page" id="page"></div>
+    <div class="page" id="page">
+        <section class="priority-section" id="priority-section" aria-labelledby="priority-heading">
+            <h2 id="priority-heading">Upcoming editions and translations</h2>
+            <p class="priority-intro" id="priority-intro">This list is ordered by demand, with priority influenced by support. Sponsorship is not a sale or pre-sale, does not reserve or purchase a book, and does not promise a publication date.</p>
+            <ol class="priority-list" id="priority-list">
+                <li class="priority-item" data-request-id="the-idiot-es">
+                    <span class="priority-rank">1</span>
+                    <div><h3 class="priority-title">The Idiot</h3><p class="priority-author">Fyodor Dostoevsky</p><p class="priority-language">Spanish</p><p class="priority-count" data-count="1">Reader requests: 1</p><div class="priority-actions"><button class="plus-one-button" type="button" disabled>+1 this request</button><p class="request-message" role="status" aria-live="polite"></p></div></div>
+                </li>
+                <li class="priority-item" data-request-id="phantom-of-the-opera-en">
+                    <span class="priority-rank">2</span>
+                    <div><h3 class="priority-title">The Phantom of the Opera</h3><p class="priority-author">Gaston Leroux</p><p class="priority-language">English</p><p class="priority-count" data-count="1">Reader requests: 1</p><div class="priority-actions"><button class="plus-one-button" type="button" disabled>+1 this request</button><p class="request-message" role="status" aria-live="polite"></p></div></div>
+                </li>
+                <li class="priority-item" data-request-id="north-and-south-en">
+                    <span class="priority-rank">3</span>
+                    <div><h3 class="priority-title">North and South</h3><p class="priority-author">Elizabeth Gaskell</p><p class="priority-language">English</p><p class="priority-count" data-count="1">Reader requests: 1</p><div class="priority-actions"><button class="plus-one-button" type="button" disabled>+1 this request</button><p class="request-message" role="status" aria-live="polite"></p></div></div>
+                </li>
+                <li class="priority-item" data-request-id="the-odyssey-it">
+                    <span class="priority-rank">4</span>
+                    <div><h3 class="priority-title">The Odyssey</h3><p class="priority-author">Homer</p><p class="priority-language">Italian</p><p class="priority-count" data-count="1">Reader requests: 1</p><div class="priority-actions"><button class="plus-one-button" type="button" disabled>+1 this request</button><p class="request-message" role="status" aria-live="polite"></p></div></div>
+                </li>
+                <li class="priority-item" data-request-id="pushkin-poems-ru">
+                    <span class="priority-rank">5</span>
+                    <div><h3 class="priority-title">Poems by Pushkin</h3><p class="priority-author">Alexander Pushkin</p><p class="priority-language">Russian</p><p class="priority-count" data-count="1">Reader requests: 1</p><div class="priority-actions"><button class="plus-one-button" type="button" disabled>+1 this request</button><p class="request-message" role="status" aria-live="polite"></p></div></div>
+                </li>
+                <li class="priority-item" data-request-id="golden-cockerel-ru">
+                    <span class="priority-rank">6</span>
+                    <div><h3 class="priority-title">The Golden Cockerel</h3><p class="priority-author">Alexander Pushkin</p><p class="priority-language">Russian</p><p class="priority-count" data-count="1">Reader requests: 1</p><div class="priority-actions"><button class="plus-one-button" type="button" disabled>+1 this request</button><p class="request-message" role="status" aria-live="polite"></p></div></div>
+                </li>
+                <li class="priority-item" data-request-id="brothers-karamazov-es">
+                    <span class="priority-rank">7</span>
+                    <div><h3 class="priority-title">The Brothers Karamazov</h3><p class="priority-author">Fyodor Dostoevsky</p><p class="priority-language">Spanish</p><p class="priority-count" data-count="1">Reader requests: 1</p><div class="priority-actions"><button class="plus-one-button" type="button" disabled>+1 this request</button><p class="request-message" role="status" aria-live="polite"></p></div></div>
+                </li>
+            </ol>
+            <p class="priority-status" id="priority-status">Live ranking needs JavaScript and a connection. This saved list stays available; +1 is disabled.</p>
+            <a class="sponsor-link" id="sponsor-link" href="https://donate.stripe.com/14A5kE9Pe3fk5MA49OfUQ00" target="_blank" rel="noopener">Sponsor a request</a>
+        </section>
+    </div>
 
     <script>
         // Requests POST straight to the shared Apps Script web app (no mail
@@ -211,6 +366,7 @@
         var FORM_TYPE = 'public_domain_books_request';
         var SOURCE = 'Public Domain Books — Book request';
         var RECIPIENT = 'bibliahinarioccb@gmail.com';
+        var PRIORITY_URL = 'https://pyqvubxmmlksjgbbtgva.supabase.co/functions/v1/book-priority';
 
         // Which platform the submission came from. An explicit ?platform= (set
         // by the app's link) wins; otherwise infer from the user agent, so every
@@ -247,7 +403,22 @@
                 privacy: "Privacy Policy",
                 support: "Support",
                 success: "Thank you! Your request was sent.",
-                netError: "Couldn’t send just now — please try again, or email me at"
+                netError: "Couldn’t send just now — please try again, or email me at",
+                priorityTitle: "Upcoming editions and translations",
+                priorityIntro: "This list is ordered by demand, with priority influenced by support. Sponsorship is not a sale or pre-sale, does not reserve or purchase a book, and does not promise a publication date.",
+                readerRequests: "Reader requests: {count}",
+                plusOne: "+1 this request",
+                plusOnePending: "Adding…",
+                plusOneSuccess: "Your support was added.",
+                plusOneAlready: "You already supported this request today.",
+                plusOneInvalid: "This request could not be validated.",
+                plusOneMissing: "This request is no longer available.",
+                plusOneConflict: "The count changed at the same time. Please try again.",
+                plusOneUnavailable: "Live support is temporarily unavailable.",
+                plusOneError: "Couldn’t update this request. Please try again.",
+                priorityFallback: "Live ranking needs JavaScript and a connection. This saved list stays available; +1 is disabled.",
+                sponsors: "Sponsors: {names}",
+                sponsorCta: "Sponsor a request"
             },
             pt: {
                 title: "Peça um Livro",
@@ -270,7 +441,22 @@
                 privacy: "Política de Privacidade",
                 support: "Suporte",
                 success: "Obrigado! Seu pedido foi enviado.",
-                netError: "Não foi possível enviar agora — tente novamente ou envie um e-mail para"
+                netError: "Não foi possível enviar agora — tente novamente ou envie um e-mail para",
+                priorityTitle: "Próximas edições e traduções",
+                priorityIntro: "Esta lista é ordenada pela demanda, com a prioridade influenciada pelo apoio. O patrocínio não é uma venda nem pré-venda, não reserva nem compra um livro e não promete uma data de publicação.",
+                readerRequests: "Pedidos de leitores: {count}",
+                plusOne: "+1 neste pedido",
+                plusOnePending: "Adicionando…",
+                plusOneSuccess: "Seu apoio foi adicionado.",
+                plusOneAlready: "Você já apoiou este pedido hoje.",
+                plusOneInvalid: "Não foi possível validar este pedido.",
+                plusOneMissing: "Este pedido não está mais disponível.",
+                plusOneConflict: "A contagem mudou ao mesmo tempo. Tente novamente.",
+                plusOneUnavailable: "O apoio ao vivo está temporariamente indisponível.",
+                plusOneError: "Não foi possível atualizar este pedido. Tente novamente.",
+                priorityFallback: "A classificação ao vivo precisa de JavaScript e conexão. Esta lista salva continua disponível; o +1 está desativado.",
+                sponsors: "Patrocinadores: {names}",
+                sponsorCta: "Patrocinar um pedido"
             },
             es: {
                 title: "Pide un Libro",
@@ -293,7 +479,22 @@
                 privacy: "Política de Privacidad",
                 support: "Soporte",
                 success: "¡Gracias! Tu solicitud fue enviada.",
-                netError: "No se pudo enviar ahora — inténtalo de nuevo o escríbeme a"
+                netError: "No se pudo enviar ahora — inténtalo de nuevo o escríbeme a",
+                priorityTitle: "Próximas ediciones y traducciones",
+                priorityIntro: "Esta lista se ordena según la demanda, con la prioridad influida por el apoyo. El patrocinio no es una venta ni una preventa, no reserva ni compra un libro y no promete una fecha de publicación.",
+                readerRequests: "Peticiones de lectores: {count}",
+                plusOne: "+1 a esta petición",
+                plusOnePending: "Añadiendo…",
+                plusOneSuccess: "Tu apoyo se ha añadido.",
+                plusOneAlready: "Ya apoyaste esta petición hoy.",
+                plusOneInvalid: "No se pudo validar esta petición.",
+                plusOneMissing: "Esta petición ya no está disponible.",
+                plusOneConflict: "El recuento cambió al mismo tiempo. Inténtalo de nuevo.",
+                plusOneUnavailable: "El apoyo en directo no está disponible temporalmente.",
+                plusOneError: "No se pudo actualizar esta petición. Inténtalo de nuevo.",
+                priorityFallback: "La clasificación en directo necesita JavaScript y conexión. Esta lista guardada sigue disponible; el +1 está desactivado.",
+                sponsors: "Patrocinadores: {names}",
+                sponsorCta: "Patrocinar una petición"
             },
             it: {
                 title: "Richiedi un Libro",
@@ -316,7 +517,22 @@
                 privacy: "Informativa sulla Privacy",
                 support: "Supporto",
                 success: "Grazie! La tua richiesta è stata inviata.",
-                netError: "Impossibile inviare ora — riprova o scrivimi a"
+                netError: "Impossibile inviare ora — riprova o scrivimi a",
+                priorityTitle: "Prossime edizioni e traduzioni",
+                priorityIntro: "Questo elenco è ordinato in base alla domanda, con la priorità influenzata dal sostegno. La sponsorizzazione non è una vendita o prevendita, non riserva né acquista un libro e non promette una data di pubblicazione.",
+                readerRequests: "Richieste dei lettori: {count}",
+                plusOne: "+1 a questa richiesta",
+                plusOnePending: "Aggiunta…",
+                plusOneSuccess: "Il tuo sostegno è stato aggiunto.",
+                plusOneAlready: "Hai già sostenuto questa richiesta oggi.",
+                plusOneInvalid: "Non è stato possibile convalidare questa richiesta.",
+                plusOneMissing: "Questa richiesta non è più disponibile.",
+                plusOneConflict: "Il conteggio è cambiato nello stesso momento. Riprova.",
+                plusOneUnavailable: "Il sostegno in tempo reale è temporaneamente non disponibile.",
+                plusOneError: "Impossibile aggiornare questa richiesta. Riprova.",
+                priorityFallback: "La classifica in tempo reale richiede JavaScript e una connessione. Questo elenco salvato resta disponibile; il +1 è disattivato.",
+                sponsors: "Sponsor: {names}",
+                sponsorCta: "Sponsorizza una richiesta"
             },
             fr: {
                 title: "Demandez un Livre",
@@ -339,7 +555,22 @@
                 privacy: "Politique de Confidentialité",
                 support: "Assistance",
                 success: "Merci ! Votre demande a été envoyée.",
-                netError: "Impossible d’envoyer pour l’instant — réessayez ou écrivez-moi à"
+                netError: "Impossible d’envoyer pour l’instant — réessayez ou écrivez-moi à",
+                priorityTitle: "Prochaines éditions et traductions",
+                priorityIntro: "Cette liste est classée selon la demande, la priorité étant influencée par le soutien. Le parrainage n’est ni une vente ni une prévente, ne réserve ni n’achète un livre et ne promet aucune date de publication.",
+                readerRequests: "Demandes de lecteurs : {count}",
+                plusOne: "+1 pour cette demande",
+                plusOnePending: "Ajout…",
+                plusOneSuccess: "Votre soutien a été ajouté.",
+                plusOneAlready: "Vous avez déjà soutenu cette demande aujourd’hui.",
+                plusOneInvalid: "Cette demande n’a pas pu être validée.",
+                plusOneMissing: "Cette demande n’est plus disponible.",
+                plusOneConflict: "Le compteur a changé au même moment. Veuillez réessayer.",
+                plusOneUnavailable: "Le soutien en direct est temporairement indisponible.",
+                plusOneError: "Impossible de mettre à jour cette demande. Veuillez réessayer.",
+                priorityFallback: "Le classement en direct nécessite JavaScript et une connexion. Cette liste enregistrée reste disponible ; le +1 est désactivé.",
+                sponsors: "Parrains : {names}",
+                sponsorCta: "Parrainer une demande"
             },
             de: {
                 title: "Wünsch dir ein Buch",
@@ -362,7 +593,22 @@
                 privacy: "Datenschutzerklärung",
                 support: "Support",
                 success: "Danke! Deine Anfrage wurde gesendet.",
-                netError: "Konnte gerade nicht senden — versuch es erneut oder schreib mir an"
+                netError: "Konnte gerade nicht senden — versuch es erneut oder schreib mir an",
+                priorityTitle: "Kommende Ausgaben und Übersetzungen",
+                priorityIntro: "Diese Liste ist nach Nachfrage geordnet; Unterstützung beeinflusst die Priorität. Sponsoring ist weder Verkauf noch Vorverkauf, reserviert oder kauft kein Buch und verspricht kein Veröffentlichungsdatum.",
+                readerRequests: "Leseranfragen: {count}",
+                plusOne: "+1 für diesen Wunsch",
+                plusOnePending: "Wird hinzugefügt…",
+                plusOneSuccess: "Deine Unterstützung wurde hinzugefügt.",
+                plusOneAlready: "Du hast diesen Wunsch heute bereits unterstützt.",
+                plusOneInvalid: "Dieser Wunsch konnte nicht bestätigt werden.",
+                plusOneMissing: "Dieser Wunsch ist nicht mehr verfügbar.",
+                plusOneConflict: "Der Zähler wurde gleichzeitig geändert. Bitte versuche es erneut.",
+                plusOneUnavailable: "Live-Unterstützung ist vorübergehend nicht verfügbar.",
+                plusOneError: "Dieser Wunsch konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+                priorityFallback: "Die Live-Rangliste benötigt JavaScript und eine Verbindung. Diese gespeicherte Liste bleibt verfügbar; +1 ist deaktiviert.",
+                sponsors: "Sponsoren: {names}",
+                sponsorCta: "Einen Wunsch sponsern"
             },
             ja: {
                 title: "本のリクエスト",
@@ -385,7 +631,22 @@
                 privacy: "プライバシーポリシー",
                 support: "サポート",
                 success: "ありがとうございます！リクエストを送信しました。",
-                netError: "現在送信できませんでした。もう一度お試しいただくか、こちらまでメールしてください:"
+                netError: "現在送信できませんでした。もう一度お試しいただくか、こちらまでメールしてください:",
+                priorityTitle: "今後の版と翻訳",
+                priorityIntro: "この一覧は需要順で、支援によって優先度が変わります。スポンサー支援は販売や予約販売ではなく、本の予約・購入にはならず、公開日を約束するものでもありません。",
+                readerRequests: "読者からのリクエスト：{count}",
+                plusOne: "このリクエストに+1",
+                plusOnePending: "追加中…",
+                plusOneSuccess: "あなたの支援を追加しました。",
+                plusOneAlready: "今日はすでにこのリクエストを支援しています。",
+                plusOneInvalid: "このリクエストを確認できませんでした。",
+                plusOneMissing: "このリクエストは利用できなくなりました。",
+                plusOneConflict: "同時に件数が変更されました。もう一度お試しください。",
+                plusOneUnavailable: "現在、リアルタイムの支援は一時的に利用できません。",
+                plusOneError: "このリクエストを更新できませんでした。もう一度お試しください。",
+                priorityFallback: "ライブランキングにはJavaScriptと接続が必要です。保存済みの一覧は引き続き表示されますが、+1は無効です。",
+                sponsors: "スポンサー：{names}",
+                sponsorCta: "リクエストを支援する"
             },
             ko: {
                 title: "책 요청하기",
@@ -408,7 +669,22 @@
                 privacy: "개인정보 처리방침",
                 support: "지원",
                 success: "감사합니다! 요청이 전송되었습니다.",
-                netError: "지금은 전송할 수 없습니다 — 다시 시도하거나 다음 주소로 이메일을 보내 주세요:"
+                netError: "지금은 전송할 수 없습니다 — 다시 시도하거나 다음 주소로 이메일을 보내 주세요:",
+                priorityTitle: "출간 예정 판본 및 번역",
+                priorityIntro: "이 목록은 수요순이며 후원이 우선순위에 영향을 줍니다. 후원은 판매나 사전 판매가 아니며 책을 예약하거나 구매하는 것이 아니고 출간일을 약속하지 않습니다.",
+                readerRequests: "독자 요청: {count}",
+                plusOne: "이 요청에 +1",
+                plusOnePending: "추가 중…",
+                plusOneSuccess: "후원이 추가되었습니다.",
+                plusOneAlready: "오늘 이미 이 요청을 후원했습니다.",
+                plusOneInvalid: "이 요청을 확인할 수 없습니다.",
+                plusOneMissing: "이 요청은 더 이상 이용할 수 없습니다.",
+                plusOneConflict: "동시에 요청 수가 변경되었습니다. 다시 시도해 주세요.",
+                plusOneUnavailable: "실시간 후원을 일시적으로 이용할 수 없습니다.",
+                plusOneError: "이 요청을 업데이트할 수 없습니다. 다시 시도해 주세요.",
+                priorityFallback: "실시간 순위에는 JavaScript와 연결이 필요합니다. 저장된 목록은 계속 볼 수 있지만 +1은 비활성화됩니다.",
+                sponsors: "후원자: {names}",
+                sponsorCta: "요청 후원하기"
             },
             ru: {
                 title: "Запросить книгу",
@@ -431,7 +707,22 @@
                 privacy: "Политика конфиденциальности",
                 support: "Поддержка",
                 success: "Спасибо! Ваш запрос отправлен.",
-                netError: "Не удалось отправить сейчас — попробуйте ещё раз или напишите мне на"
+                netError: "Не удалось отправить сейчас — попробуйте ещё раз или напишите мне на",
+                priorityTitle: "Будущие издания и переводы",
+                priorityIntro: "Список упорядочен по спросу, а поддержка влияет на приоритет. Спонсорство — не продажа и не предзаказ, оно не резервирует и не покупает книгу и не обещает дату публикации.",
+                readerRequests: "Запросы читателей: {count}",
+                plusOne: "+1 к этому запросу",
+                plusOnePending: "Добавление…",
+                plusOneSuccess: "Ваша поддержка добавлена.",
+                plusOneAlready: "Сегодня вы уже поддержали этот запрос.",
+                plusOneInvalid: "Не удалось проверить этот запрос.",
+                plusOneMissing: "Этот запрос больше недоступен.",
+                plusOneConflict: "Счётчик изменился одновременно. Попробуйте ещё раз.",
+                plusOneUnavailable: "Поддержка в реальном времени временно недоступна.",
+                plusOneError: "Не удалось обновить этот запрос. Попробуйте ещё раз.",
+                priorityFallback: "Для текущего рейтинга нужны JavaScript и подключение. Сохранённый список остаётся доступен, но +1 отключён.",
+                sponsors: "Спонсоры: {names}",
+                sponsorCta: "Поддержать запрос"
             },
             zh: {
                 title: "申请新书",
@@ -454,7 +745,22 @@
                 privacy: "隐私政策",
                 support: "支持",
                 success: "谢谢！您的请求已发送。",
-                netError: "暂时无法发送——请重试，或发送邮件至"
+                netError: "暂时无法发送——请重试，或发送邮件至",
+                priorityTitle: "即将推出的版本与翻译",
+                priorityIntro: "此列表按需求排序，支持会影响优先级。赞助不是销售或预售，不会预订或购买书籍，也不承诺发布日期。",
+                readerRequests: "读者请求：{count}",
+                plusOne: "为此请求 +1",
+                plusOnePending: "正在添加…",
+                plusOneSuccess: "已添加你的支持。",
+                plusOneAlready: "你今天已经支持过此请求。",
+                plusOneInvalid: "无法验证此请求。",
+                plusOneMissing: "此请求已不可用。",
+                plusOneConflict: "计数同时发生了变化，请重试。",
+                plusOneUnavailable: "实时支持暂时不可用。",
+                plusOneError: "无法更新此请求，请重试。",
+                priorityFallback: "实时排名需要 JavaScript 和网络连接。已保存的列表仍可查看；+1 已禁用。",
+                sponsors: "赞助者：{names}",
+                sponsorCta: "赞助一个请求"
             },
             tr: {
                 title: "Kitap İste",
@@ -477,7 +783,22 @@
                 privacy: "Gizlilik Politikası",
                 support: "Destek",
                 success: "Teşekkürler! İsteğiniz gönderildi.",
-                netError: "Şu anda gönderilemedi — tekrar deneyin veya bana şu adresten yazın:"
+                netError: "Şu anda gönderilemedi — tekrar deneyin veya bana şu adresten yazın:",
+                priorityTitle: "Yaklaşan basımlar ve çeviriler",
+                priorityIntro: "Bu liste talebe göre sıralanır; destek önceliği etkiler. Sponsorluk satış veya ön satış değildir, bir kitabı ayırtmaz ya da satın almaz ve yayın tarihi sözü vermez.",
+                readerRequests: "Okur istekleri: {count}",
+                plusOne: "Bu isteğe +1",
+                plusOnePending: "Ekleniyor…",
+                plusOneSuccess: "Desteğiniz eklendi.",
+                plusOneAlready: "Bu isteği bugün zaten desteklediniz.",
+                plusOneInvalid: "Bu istek doğrulanamadı.",
+                plusOneMissing: "Bu istek artık kullanılamıyor.",
+                plusOneConflict: "Sayaç aynı anda değişti. Lütfen tekrar deneyin.",
+                plusOneUnavailable: "Canlı destek geçici olarak kullanılamıyor.",
+                plusOneError: "Bu istek güncellenemedi. Lütfen tekrar deneyin.",
+                priorityFallback: "Canlı sıralama için JavaScript ve bağlantı gerekir. Kayıtlı liste görünür kalır; +1 devre dışıdır.",
+                sponsors: "Sponsorlar: {names}",
+                sponsorCta: "Bir isteğe sponsor ol"
             }
         };
 
@@ -507,6 +828,181 @@
         function requestedLanguage() {
             var raw = (PARAMS.get('lang') || '').trim();
             return LANG_NAMES[raw.toLowerCase()] || raw;
+        }
+
+        function formatPriorityText(template, key, value) {
+            return template.replace('{' + key + '}', value);
+        }
+
+        function localizePriorityFallback(t) {
+            document.getElementById('priority-heading').textContent = t.priorityTitle;
+            document.getElementById('priority-intro').textContent = t.priorityIntro;
+            document.getElementById('priority-status').textContent = t.priorityFallback;
+            document.getElementById('sponsor-link').textContent = t.sponsorCta;
+            document.querySelectorAll('#priority-list .priority-count').forEach(function(count) {
+                count.textContent = formatPriorityText(t.readerRequests, 'count', count.dataset.count);
+            });
+            document.querySelectorAll('#priority-list .plus-one-button').forEach(function(button) {
+                button.textContent = t.plusOne;
+            });
+        }
+
+        function isValidPriorityRequest(request) {
+            if (!request || typeof request !== 'object') return false;
+            if (typeof request.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(request.id)) return false;
+            if (!Number.isInteger(request.rank) || request.rank < 1) return false;
+            if (typeof request.title !== 'string' || !request.title.trim()) return false;
+            if (typeof request.author !== 'string' || !request.author.trim()) return false;
+            if (typeof request.language !== 'string' || !request.language.trim()) return false;
+            if (!Number.isInteger(request.readerRequests) || request.readerRequests < 0) return false;
+            if (Object.prototype.hasOwnProperty.call(request, 'sponsorNames')) {
+                if (!Array.isArray(request.sponsorNames)) return false;
+                if (!request.sponsorNames.every(function(name) { return typeof name === 'string'; })) return false;
+            }
+            return true;
+        }
+
+        function isValidPriorityUpdate(request) {
+            return request && typeof request === 'object' &&
+                typeof request.id === 'string' &&
+                /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(request.id) &&
+                Number.isInteger(request.readerRequests) && request.readerRequests >= 0;
+        }
+
+        function makePriorityItem(request, t) {
+            var item = document.createElement('li');
+            item.className = 'priority-item';
+            item.dataset.requestId = request.id;
+
+            var rank = document.createElement('span');
+            rank.className = 'priority-rank';
+            rank.textContent = request.rank;
+
+            var content = document.createElement('div');
+            var title = document.createElement('h3');
+            title.className = 'priority-title';
+            title.textContent = request.title;
+            var author = document.createElement('p');
+            author.className = 'priority-author';
+            author.textContent = request.author;
+            var language = document.createElement('p');
+            language.className = 'priority-language';
+            language.textContent = request.language;
+            var count = document.createElement('p');
+            count.className = 'priority-count';
+            count.dataset.count = request.readerRequests;
+            count.textContent = formatPriorityText(t.readerRequests, 'count', request.readerRequests);
+
+            content.appendChild(title);
+            content.appendChild(author);
+            content.appendChild(language);
+            content.appendChild(count);
+
+            if (Object.prototype.hasOwnProperty.call(request, 'sponsorNames') && request.sponsorNames.length) {
+                var sponsors = document.createElement('p');
+                sponsors.className = 'priority-sponsors';
+                sponsors.textContent = formatPriorityText(t.sponsors, 'names', request.sponsorNames.join(', '));
+                content.appendChild(sponsors);
+            }
+
+            var actions = document.createElement('div');
+            actions.className = 'priority-actions';
+            var button = document.createElement('button');
+            button.className = 'plus-one-button';
+            button.type = 'button';
+            button.textContent = t.plusOne;
+            var message = document.createElement('p');
+            message.className = 'request-message';
+            message.setAttribute('role', 'status');
+            message.setAttribute('aria-live', 'polite');
+            button.addEventListener('click', function() {
+                supportPriorityRequest(request.id, count, button, message, t);
+            });
+            actions.appendChild(button);
+            actions.appendChild(message);
+            content.appendChild(actions);
+
+            item.appendChild(rank);
+            item.appendChild(content);
+            return item;
+        }
+
+        function renderPriorityRequests(requests, t) {
+            var list = document.getElementById('priority-list');
+            list.textContent = '';
+            requests.forEach(function(request) {
+                list.appendChild(makePriorityItem(request, t));
+            });
+            document.getElementById('priority-status').textContent = '';
+        }
+
+        function supportPriorityRequest(requestId, count, button, message, t) {
+            button.disabled = true;
+            button.textContent = t.plusOnePending;
+            message.textContent = '';
+            message.classList.remove('is-error');
+
+            return fetch(PRIORITY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ requestId: requestId })
+            })
+                .then(function(response) {
+                    return response.text().then(function(body) {
+                        var payload = null;
+                        try { payload = JSON.parse(body); } catch (_) {}
+                        return { status: response.status, payload: payload };
+                    });
+                })
+                .then(function(result) {
+                    if (result.status === 200 && result.payload &&
+                        isValidPriorityUpdate(result.payload.request) &&
+                        result.payload.request.id === requestId) {
+                        count.dataset.count = result.payload.request.readerRequests;
+                        count.textContent = formatPriorityText(t.readerRequests, 'count', result.payload.request.readerRequests);
+                        button.textContent = t.plusOne;
+                        message.textContent = t.plusOneSuccess;
+                        return;
+                    }
+
+                    var messages = {
+                        400: t.plusOneInvalid,
+                        404: t.plusOneMissing,
+                        409: t.plusOneConflict,
+                        429: t.plusOneAlready,
+                        503: t.plusOneUnavailable
+                    };
+                    message.textContent = messages[result.status] || t.plusOneError;
+                    message.classList.add('is-error');
+                    button.textContent = t.plusOne;
+                    button.disabled = result.status === 400 || result.status === 404 || result.status === 429;
+                })
+                .catch(function() {
+                    message.textContent = t.plusOneError;
+                    message.classList.add('is-error');
+                    button.textContent = t.plusOne;
+                    button.disabled = false;
+                });
+        }
+
+        function loadPriorityRanking(t) {
+            return fetch(PRIORITY_URL, { headers: { 'Accept': 'application/json' } })
+                .then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
+                .then(function(payload) {
+                    if (!payload || payload.version !== 1 ||
+                        payload.framing !== 'priority_influenced_by_support' ||
+                        !Array.isArray(payload.requests) ||
+                        !payload.requests.every(isValidPriorityRequest)) {
+                        throw new Error('Invalid priority payload');
+                    }
+                    renderPriorityRequests(payload.requests, t);
+                })
+                .catch(function() {
+                    document.getElementById('priority-status').textContent = t.priorityFallback;
+                });
         }
 
         function sendRequest(event) {
@@ -558,6 +1054,7 @@
         function render() {
             var locale = getLocale();
             var t = i18n[locale];
+            var priorityFallback = document.getElementById('priority-section').outerHTML;
             document.documentElement.lang = locale === 'zh' ? 'zh-Hans' : locale;
             var title = MODE === 'translation' ? t.trTitle : t.title;
             var intro = MODE === 'translation'
@@ -577,6 +1074,7 @@
                 '<h1>' + title + '</h1>' +
                 '<div class="divider"></div>' +
                 '<p class="body-text">' + intro + '</p>' +
+                priorityFallback +
                 '<div id="form-wrap">' +
                 '<form onsubmit="sendRequest(event)">' +
                     '<div class="field">' +
@@ -609,6 +1107,9 @@
                     '<span class="footer-sep">·</span>' +
                     '<a href="privacy.html" class="footer-link">' + t.privacy + '</a>' +
                 '</div>';
+
+            localizePriorityFallback(t);
+            loadPriorityRanking(t);
         }
 
         render();
